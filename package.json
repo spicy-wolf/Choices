@@ -1,0 +1,26 @@
+{
+  "name": "choices",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Spicy Wolf",
+  "scripts": {
+    "ci": "npm ci",
+    "format": "npx prettier --write .",
+    "start": "webpack serve --open --config webpack.dev.js",
+    "build": "webpack --progress --color --config webpack.prod.js"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.19",
+    "@types/react-dom": "^17.0.9",
+    "copy-webpack-plugin": "^9.0.1",
+    "prettier": "2.3.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.4.2",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.1.0",
+    "webpack-merge": "^5.8.0"
+  }
+}
