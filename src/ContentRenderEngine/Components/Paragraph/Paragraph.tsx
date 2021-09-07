@@ -6,8 +6,9 @@ type ParagraphProps = { text: string } & AbstractComponentType;
 const Paragraph = (props: ParagraphProps) => {
   return (
     <>
-      <p>{props.text?.toString()}</p>
       <br />
+      <p>{props.text?.toString()}</p>
+      {/* allow sentences or values append after */}
     </>
   );
 };
