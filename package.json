@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "author": "Spicy Wolf",
+  "homepage": "http://spicy-wolf.github.io/Choices",
   "scripts": {
     "ci": "npm ci",
     "format": "npx prettier --write .",
     "start": "webpack serve --open --config webpack.dev.js",
-    "build": "webpack --progress --color --config webpack.prod.js"
+    "build": "webpack --progress --color --config webpack.prod.js",
+    "predeployGithub": "npm run build",
+    "deployGithub": "gh-pages -d dist"
   },
   "devDependencies": {
     "@types/react": "^17.0.19",
