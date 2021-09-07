@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Main.scss';
 import { Content, SidePanel } from '..';
 import { useQuery } from '@src/Utils';
-import type { MainContextType } from '@src/Context';
-import { MainContextDefault } from '@src/Context';
+import { MainContext, MainContextType } from '@src/Context';
 
 type MainProps = {};
 
@@ -12,10 +11,6 @@ const MainContainer = (props: MainProps) => {
   const query = useQuery();
   const globalVersion = query.get('v');
   const src = query.get('src');
-  //#endregion
-
-  //#region Context
-  const MainContext = React.createContext<MainContextType>(MainContextDefault);
   //#endregion
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
