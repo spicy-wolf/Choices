@@ -1,0 +1,17 @@
+// Content
+#content {
+  background: var(--bg-main);
+  flex-grow: 1;
+  height: 100vh;
+
+  #contentBody {
+    overflow: auto;
+    box-sizing: border-box;
+    height: 100vh;
+    padding: 1rem;
+
+    p {
+      display: inline;
+    }
+  }
+}
