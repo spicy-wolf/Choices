@@ -4,7 +4,17 @@ import { Content, SidePanel } from '..';
 import { combinePath, useQuery } from '@src/Utils';
 import { MainContext, MainContextType } from '@src/Context';
 import axios from 'axios';
+import { matchPath } from 'react-router-dom';
+import { request } from '@octokit/request';
+import { Endpoints } from '@octokit/types';
+import { ScriptStatementType } from '@src/ContentRenderEngine';
+import {
+  AbstractComponentType,
+  ComponentList,
+} from '@src/ContentRenderEngine/Components';
 
+type RepoRequestParam =
+  Endpoints['GET /repos/{owner}/{repo}/git/trees/{tree_sha}']['parameters'];
 type MainProps = {};
 
 const MainContainer = (props: MainProps) => {
@@ -12,6 +22,9 @@ const MainContainer = (props: MainProps) => {
   const query = useQuery();
   const globalVersion = query.get('v');
   const src = query.get('src');
+  const { owner, repo, tree_sha } = getSrcInfo(src);
+
+  if (!owner || !repo || !tree_sha) return <div>Error</div>;
   //#endregion
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -28,50 +41,49 @@ const MainContainer = (props: MainProps) => {
     // TODO: load from DB, or from src
     // TODO: decorate script if first time
     // TODO: load history / save data
-    // TODO: maybe https://github.com/octokit/octokit.js
 
-    let srcUrl = new URL(src);
-    let host = srcUrl.host;
-    if (host === 'github.com') {
-      const apiHost = 'https://api.github.com/';
-      let pathname = srcUrl.pathname;
+    const response = await request(
+      'GET /repos/{owner}/{repo}/git/trees/{tree_sha}',
+      {
+        repo: repo,
+        owner: owner,
+        tree_sha: tree_sha,
+      }
+    );
 
-      const getTreeUrl =
-        apiHost + combinePath('repos', pathname, 'git/trees', 'master');
+    let fileListPromises = response.data.tree.map((item) =>
+      request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
+        repo: repo,
+        owner: owner,
+        file_sha: item.sha,
+      })
+    );
 
-      let response = await axios.get(getTreeUrl, {
-        params: {
-          recursive: 1,
-        },
-      });
+    const fileBlobsResponse = await Promise.all(fileListPromises);
 
-      let data = response.data as {
-        sha: string;
-        url: string;
-        tree: Array<{
-          path: string;
-          mode: string;
-          type: string;
-          sha: string;
-          size: number;
-          url: string;
-        }>;
-      };
+    console.log(fileBlobsResponse);
 
-      let fileList = data.tree.map((item) =>
-        axios.get(item.url, {
-          headers: {
-            Accept: 'application/vnd.github.v3.raw',
-          },
-        })
-      );
+    const scripts: any[] = [];
+    fileBlobsResponse.forEach((resp, idx) => {
+      const encoding = resp.data.content;
+      if (encoding === 'base64') {
+        const raw = Buffer.from(resp.data.content as string, encoding).toString(
+          'utf-8'
+        );
+        const jsonArray = JSON.parse(raw);
+        if (jsonArray instanceof Array) {
+          const statements = jsonArray as Array<ScriptStatementType>;
+          for (const statement of statements) {
+            // decorate and check raw statement, like compiler checking
+            // e.g. assign id
+          }
+        } else {
+          // throw exception
+        }
+      }
+    });
 
-      let fileContentRaw = await Promise.all(fileList);
-
-      console.log(fileContentRaw);
-
-      setScripts(fileContentRaw[0].data);
-    }
+    setScripts([]);
 
     setIsLoading(false);
   };
@@ -93,8 +105,45 @@ const MainContainer = (props: MainProps) => {
         <SidePanel isOpen={isSidePanelOpen} />
         <Content scripts={scripts} />
       </div>
+      {/* // TODO: add popup to paste URL */}
     </MainContext.Provider>
   );
 };
 
 export default MainContainer;
+
+function getSrcInfo(src: string): RepoRequestParam {
+  try {
+    let url = new URL(src);
+
+    const match = matchPath<RepoRequestParam>(url.pathname ?? '', {
+      path: ['/:owner/:repo/tree/:tree_sha', '/:owner/:repo'],
+      exact: false,
+      strict: false,
+    });
+
+    const result = match.params;
+
+    if (!result.tree_sha) {
+      result.tree_sha = 'master'; // default to master
+    }
+    return result;
+  } catch (ex) {
+    console.error(ex);
+    return { owner: '', repo: '', tree_sha: '' };
+  }
+}
+
+function decorateAndCheck(
+  statement: ScriptStatementType
+): AbstractComponentType {
+  let result: AbstractComponentType = null;
+  switch (typeof statement) {
+    case 'string':
+    case 'number':
+    case 'object':
+    default:
+    // throw exception
+  }
+  return result;
+}
