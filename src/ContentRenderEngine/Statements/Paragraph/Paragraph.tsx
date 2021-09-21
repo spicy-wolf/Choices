@@ -1,9 +1,10 @@
 import React from 'react';
-import { AbstractComponentType } from '../AbstractComponentType';
+import { AbstractStatementType } from '../AbstractComponentType.type';
 
-type ParagraphProps = { text: string } & AbstractComponentType;
+export type ParagraphProps = AbstractStatementType & { text: string };
 
 const Paragraph = (props: ParagraphProps) => {
+  // TODO: make sure the pre-spaces are rendered! => &nbsp;
   return (
     <>
       <br />

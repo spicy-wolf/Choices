@@ -1,7 +1,7 @@
 import React from 'react';
-import { AbstractComponentType } from '../AbstractComponentType';
+import { AbstractStatementType } from '../AbstractComponentType.type';
 
-type EndOfLineProps = {} & AbstractComponentType;
+export type EndOfLineProps = {} & AbstractStatementType;
 
 const EndOfLine = (props: EndOfLineProps): JSX.Element => {
   return <br />;
