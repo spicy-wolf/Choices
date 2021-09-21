@@ -3,18 +3,15 @@ import './Main.scss';
 import { Content, SidePanel } from '..';
 import { combinePath, useQuery } from '@src/Utils';
 import { MainContext, MainContextType } from '@src/Context';
-import axios from 'axios';
 import { matchPath } from 'react-router-dom';
 import { request } from '@octokit/request';
 import { Endpoints } from '@octokit/types';
-import { ScriptStatementType } from '@src/ContentRenderEngine';
-import {
-  AbstractComponentType,
-  ComponentList,
-} from '@src/ContentRenderEngine/Components';
+import * as RenderEngine from '@src/ContentRenderEngine';
+import { Base64 } from 'js-base64';
 
 type RepoRequestParam =
   Endpoints['GET /repos/{owner}/{repo}/git/trees/{tree_sha}']['parameters'];
+type StatementType = RenderEngine.Statements.AbstractStatementType;
 type MainProps = {};
 
 const MainContainer = (props: MainProps) => {
@@ -30,7 +27,7 @@ const MainContainer = (props: MainProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(false);
 
-  const [scripts, setScripts] = useState([]);
+  const [scripts, setScripts] = useState<StatementType[]>([]);
 
   useEffect(() => {
     init(src);
@@ -63,27 +60,32 @@ const MainContainer = (props: MainProps) => {
 
     console.log(fileBlobsResponse);
 
-    const scripts: any[] = [];
-    fileBlobsResponse.forEach((resp, idx) => {
-      const encoding = resp.data.content;
+    const scripts: StatementType[] = [];
+    fileBlobsResponse.forEach((file, idx) => {
+      const encoding = file.data.encoding;
       if (encoding === 'base64') {
-        const raw = Buffer.from(resp.data.content as string, encoding).toString(
-          'utf-8'
-        );
+        const raw = Base64.decode(file.data.content as string);
         const jsonArray = JSON.parse(raw);
         if (jsonArray instanceof Array) {
-          const statements = jsonArray as Array<ScriptStatementType>;
-          for (const statement of statements) {
-            // decorate and check raw statement, like compiler checking
-            // e.g. assign id
-          }
+          const statements = jsonArray as Array<any>;
+          statements.forEach((rawStatement, index) => {
+            // decorate and check raw statement
+            const statement = RenderEngine.Statements.CompileAndCheck(
+              rawStatement,
+              {
+                suggestId: `${file.data.sha}:${index}`,
+                scriptPath: file.data.url,
+                scriptSha: file.data.sha,
+              }
+            );
+            scripts.push(statement);
+          });
         } else {
           // throw exception
         }
       }
     });
-
-    setScripts([]);
+    setScripts(scripts);
 
     setIsLoading(false);
   };
@@ -101,9 +103,13 @@ const MainContainer = (props: MainProps) => {
   return (
     <MainContext.Provider value={{ v: globalVersion, src: src }}>
       <div id="main">
-        <SidePanelControlBtn />
-        <SidePanel isOpen={isSidePanelOpen} />
-        <Content scripts={scripts} />
+        {!isLoading && (
+          <>
+            <SidePanelControlBtn />
+            <SidePanel isOpen={isSidePanelOpen} />
+            <Content scripts={scripts} />
+          </>
+        )}
       </div>
       {/* // TODO: add popup to paste URL */}
     </MainContext.Provider>
@@ -132,18 +138,4 @@ function getSrcInfo(src: string): RepoRequestParam {
     console.error(ex);
     return { owner: '', repo: '', tree_sha: '' };
   }
-}
-
-function decorateAndCheck(
-  statement: ScriptStatementType
-): AbstractComponentType {
-  let result: AbstractComponentType = null;
-  switch (typeof statement) {
-    case 'string':
-    case 'number':
-    case 'object':
-    default:
-    // throw exception
-  }
-  return result;
 }

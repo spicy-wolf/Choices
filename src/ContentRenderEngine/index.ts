@@ -1,4 +1,3 @@
-import type { ScriptStatementType } from './RenderContentElement';
-import { RenderContentElement } from './RenderContentElement';
+import * as Statements from './Statements';
 
-export { RenderContentElement, ScriptStatementType };
+export { Statements };
