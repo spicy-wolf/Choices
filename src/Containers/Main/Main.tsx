@@ -19,6 +19,7 @@ const MainContainer = (props: MainProps) => {
   const query = useQuery();
   const globalVersion = query.get('v');
   const src = query.get('src');
+  const token = query.get('token');
   const { owner, repo, tree_sha } = getSrcInfo(src);
 
   if (!owner || !repo || !tree_sha) return <div>Error</div>;
@@ -42,6 +43,9 @@ const MainContainer = (props: MainProps) => {
     const response = await request(
       'GET /repos/{owner}/{repo}/git/trees/{tree_sha}',
       {
+        headers: {
+          authorization: token ?? `token ${token}`,
+        },
         repo: repo,
         owner: owner,
         tree_sha: tree_sha,
