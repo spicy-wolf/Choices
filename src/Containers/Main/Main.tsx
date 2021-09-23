@@ -44,7 +44,7 @@ const MainContainer = (props: MainProps) => {
       'GET /repos/{owner}/{repo}/git/trees/{tree_sha}',
       {
         headers: {
-          authorization: token ?? `token ${token}`,
+          authorization: token ? `token ${token}` : '',
         },
         repo: repo,
         owner: owner,
