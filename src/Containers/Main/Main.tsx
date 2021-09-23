@@ -62,8 +62,6 @@ const MainContainer = (props: MainProps) => {
 
     const fileBlobsResponse = await Promise.all(fileListPromises);
 
-    console.log(fileBlobsResponse);
-
     const scripts: StatementType[] = [];
     fileBlobsResponse.forEach((file, idx) => {
       const encoding = file.data.encoding;

@@ -44,7 +44,6 @@ const Content = (props: ContentProps) => {
     const element = contentRef.current;
     const _distanceToBottom = getDistanceToBottom(element);
     setDistanceToBottom(_distanceToBottom);
-    console.log(_distanceToBottom);
   }, [readingLogs]);
 
   const theStory = React.useMemo(() => {
@@ -65,7 +64,6 @@ const Content = (props: ContentProps) => {
     let element = e.target as HTMLDivElement;
     const _distanceToBottom = getDistanceToBottom(element);
     setDistanceToBottom(_distanceToBottom);
-    console.log(_distanceToBottom);
   };
 
   return (
