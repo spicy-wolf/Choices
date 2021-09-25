@@ -11,6 +11,7 @@
     }
   }
   #sidePanelBody {
+    position: relative;
     transition: transform var(--secs); // <-- Portrait AND landscape!
     background: var(--bg-side-panel);
     height: 100%;

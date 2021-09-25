@@ -26,7 +26,6 @@ const MainContainer = (props: MainProps) => {
   //#endregion
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(false);
 
   const [scripts, setScripts] = useState<StatementType[]>([]);
 
@@ -92,23 +91,12 @@ const MainContainer = (props: MainProps) => {
     setIsLoading(false);
   };
 
-  const toggleSidebar = (event: React.FormEvent<HTMLDivElement>) => {
-    setIsSidePanelOpen(!isSidePanelOpen);
-  };
-
-  const SidePanelControlBtn = () => (
-    <div id="sidePanelControlBtn" className="icon" onClick={toggleSidebar}>
-      &equiv;
-    </div>
-  );
-
   return (
     <MainContext.Provider value={{ v: globalVersion, src: src }}>
       <div id="main">
         {!isLoading && (
           <>
-            <SidePanelControlBtn />
-            <SidePanel isOpen={isSidePanelOpen} />
+            <SidePanel />
             <Content scripts={scripts} />
           </>
         )}
