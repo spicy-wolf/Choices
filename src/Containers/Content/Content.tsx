@@ -19,7 +19,13 @@ const Content = (props: ContentProps) => {
       // TODO: more features on this condition
       // pre-load some. TODO: hard code 100?
       if (statementCounter < props.scripts.length && distanceToBottom < 100) {
-        setExecuteMore(true);
+        /**
+         * The whole Content render is similar to a CPU instruction cycle.
+         * so, to avoid React "maximum update depth exceeded" error
+         * we use settimeout to push setExecuteMore into the macrotask queue.
+         * This can move the next React render cycle outside of the current "state update stack" (like a call stack)
+         */
+        setTimeout(() => setExecuteMore(true), 0);
       }
     }
   }, [executeMore, distanceToBottom]);
