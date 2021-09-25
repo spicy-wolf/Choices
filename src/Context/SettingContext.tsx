@@ -4,7 +4,10 @@ type SettingContextType = {
   themeName: string; // selected theme name
   fontSize: number;
 } & {
-  setSetting: (fieldName: string, value: any) => Promise<void> | void;
+  setSetting: (
+    fieldName: keyof SettingContextType,
+    value: any
+  ) => Promise<void> | void;
 };
 
 const SettingContextDefault: SettingContextType = {
@@ -56,7 +59,7 @@ export type ThemeContextType = {
   sidePanelFontColor: string;
 };
 
-const ThemeList: { [key: string]: ThemeContextType } = {
+export const ThemeList: { [key: string]: ThemeContextType } = {
   light: {
     contentBgColor: '#f9f9f9',
     contentFontColor: 'rgb(51, 51, 51)',

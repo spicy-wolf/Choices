@@ -5,6 +5,7 @@ import 'bootstrap/scss/bootstrap.scss';
 import { IoGitBranch, IoSettingsOutline } from 'react-icons/io5';
 import SidePanelControlBtn from './SidePanelControlBtn/SidePanelControlBtn';
 import { useTheme } from '@src/Context';
+import SettingPanel from './SettingPanel/SettingPanel';
 
 type SidePanelProps = {};
 
@@ -23,7 +24,7 @@ const SidePanel = (props: SidePanelProps) => {
     <div
       id="sidePanel"
       className={sidePanelClassName}
-      style={{ backgroundColor: sidePanelBgColor, color: sidePanelFontColor }}
+      style={{ color: sidePanelFontColor }}
     >
       <div id="sidePanelBody" className={sidePanelClassName}>
         <SidePanelControlBtn
@@ -31,11 +32,16 @@ const SidePanel = (props: SidePanelProps) => {
           isSidePanelOpen={isSidePanelOpen}
           onClick={toggleSidebar}
         />
-        <div className="h-100 p-1 d-flex flex-column" style={{ rowGap: '5px' }}>
+        <div
+          className="h-100 p-1 d-flex flex-column gap-2"
+          style={{ backgroundColor: sidePanelBgColor }}
+        >
           <div
             className="rounded flex-grow-1"
             style={{ backgroundColor: sidePanelSectionColor }}
-          ></div>
+          >
+            <SettingPanel />
+          </div>
           <div
             className="d-flex align-items-center justify-content-around rounded"
             style={{ height: '50px', backgroundColor: sidePanelSectionColor }}
