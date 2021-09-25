@@ -73,10 +73,8 @@ const Content = (props: ContentProps) => {
   };
 
   return (
-    <div id="content">
-      <div id="contentBody" onScroll={onScrollWrapper} ref={contentRef}>
-        {theStory}
-      </div>
+    <div id="content" onScroll={onScrollWrapper} ref={contentRef}>
+      <div id="contentBody">{theStory}</div>
     </div>
   );
 };
