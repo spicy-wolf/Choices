@@ -1,12 +1,12 @@
 import { MainContext } from './MainContext';
 import type { MainContextType } from './MainContext';
-import { ThemeContext, useTheme } from './ThemeContext';
-import type { ThemeContextType } from './ThemeContext';
+import { SettingContext, useTheme } from './SettingContext';
+import type { ThemeContextType } from './SettingContext';
 
 export {
   MainContext,
   MainContextType,
-  ThemeContext,
+  SettingContext,
   ThemeContextType,
   useTheme,
 };

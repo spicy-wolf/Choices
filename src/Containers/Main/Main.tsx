@@ -5,7 +5,7 @@ import { combinePath, useQuery } from '@src/Utils';
 import {
   MainContext,
   MainContextType,
-  ThemeContext,
+  SettingContext,
   ThemeContextType,
 } from '@src/Context';
 import { matchPath } from 'react-router-dom';
@@ -98,7 +98,7 @@ const MainContainer = (props: MainProps) => {
 
   return (
     <MainContext.Provider value={{ v: globalVersion, src: src }}>
-      <ThemeContext>
+      <SettingContext>
         <div id="main">
           {!isLoading && (
             <>
@@ -108,7 +108,7 @@ const MainContainer = (props: MainProps) => {
           )}
         </div>
         {/* // TODO: add popup to paste URL */}
-      </ThemeContext>
+      </SettingContext>
     </MainContext.Provider>
   );
 };
