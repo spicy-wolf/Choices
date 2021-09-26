@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import './Main.scss';
 import { Content, SidePanel } from '..';
 import { combinePath, useQuery } from '@src/Utils';
-import { MainContext, MainContextType } from '@src/Context';
+import {
+  MainContext,
+  MainContextType,
+  SettingContext,
+  ThemeContextType,
+} from '@src/Context';
 import { matchPath } from 'react-router-dom';
 import { request } from '@octokit/request';
 import { Endpoints } from '@octokit/types';
@@ -93,15 +98,17 @@ const MainContainer = (props: MainProps) => {
 
   return (
     <MainContext.Provider value={{ v: globalVersion, src: src }}>
-      <div id="main">
-        {!isLoading && (
-          <>
-            <SidePanel />
-            <Content scripts={scripts} />
-          </>
-        )}
-      </div>
-      {/* // TODO: add popup to paste URL */}
+      <SettingContext>
+        <div id="main">
+          {!isLoading && (
+            <>
+              <SidePanel />
+              <Content scripts={scripts} />
+            </>
+          )}
+        </div>
+        {/* // TODO: add popup to paste URL */}
+      </SettingContext>
     </MainContext.Provider>
   );
 };

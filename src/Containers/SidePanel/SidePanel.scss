@@ -4,7 +4,6 @@
   width: 0;
   height: 100vh;
   z-index: 5;
-  background: var(--bg-side-panel);
   @media (orientation: landscape) {
     &.open {
       width: calc(1% * var(--landscape-width));
@@ -13,7 +12,6 @@
   #sidePanelBody {
     position: relative;
     transition: transform var(--secs); // <-- Portrait AND landscape!
-    background: var(--bg-side-panel);
     height: 100%;
     &.closed {
       transform: translateX(-100%);
