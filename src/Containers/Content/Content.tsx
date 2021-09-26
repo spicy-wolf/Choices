@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as RenderEngine from '@src/ContentRenderEngine';
 import './Content.scss';
-import { useTheme } from '@src/Context';
+import { useSetting, useTheme } from '@src/Context';
 
 type StatementType = RenderEngine.Statements.AbstractStatementType;
 type ContentProps = { scripts: StatementType[] };
@@ -14,6 +14,8 @@ const Content = (props: ContentProps) => {
   const [distanceToBottom, setDistanceToBottom] = React.useState<number>(0);
 
   const { contentBgColor, contentFontColor } = useTheme();
+  const { fontSize } = useSetting();
+
   const contentRef = React.useRef<HTMLDivElement>();
 
   React.useEffect(() => {
@@ -79,7 +81,11 @@ const Content = (props: ContentProps) => {
       id="content"
       onScroll={onScrollWrapper}
       ref={contentRef}
-      style={{ backgroundColor: contentBgColor, color: contentFontColor }}
+      style={{
+        backgroundColor: contentBgColor,
+        color: contentFontColor,
+        fontSize: fontSize,
+      }}
     >
       <div id="contentBody">{theStory}</div>
     </div>
