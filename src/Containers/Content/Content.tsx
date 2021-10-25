@@ -43,6 +43,7 @@ const Content = (props: ContentProps) => {
     const currentScripts = props.scripts;
     RenderEngine.Statements.Executor(currentScripts[statementCounter], {
       addReadingLogs,
+      setNextStatementById,
     });
     setStatementCounter(statementCounter + 1);
     setExecuteMore(false);
@@ -68,6 +69,15 @@ const Content = (props: ContentProps) => {
   const addReadingLogs = (statements: StatementType[]): void => {
     let newLogs = [...readingLogs, ...statements];
     setReadingLogs(newLogs);
+  };
+
+  const setNextStatementById = (id: string): void => {
+    let newCounter = props.scripts.findIndex((item) => item && item.id === id);
+    if (newCounter === -1) {
+      // exception
+    } else {
+      setStatementCounter(newCounter);
+    }
   };
 
   const onScrollWrapper = (e: React.UIEvent<HTMLDivElement>) => {

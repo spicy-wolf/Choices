@@ -3,10 +3,14 @@ import { ParagraphProps } from './Paragraph/Paragraph';
 import { SentenceProps } from './Sentence/Sentence';
 import { v4 as uuidv4 } from 'uuid';
 import { EndOfLineProps } from './EndOfLine/EndOfLine';
+import { JumpProps } from './Jump/Jump';
 
 export const Executor = (
   statement: AbstractStatementType,
-  hooks: { addReadingLogs: (statements: AbstractStatementType[]) => void }
+  hooks: {
+    addReadingLogs: (statements: AbstractStatementType[]) => void;
+    setNextStatementById: (id: string) => void;
+  }
 ) => {
   // TODO: check condition
 
@@ -14,6 +18,8 @@ export const Executor = (
   switch (componentType) {
     case 'endofline':
     case 'eol':
+      let eolStatement = statement as EndOfLineProps;
+      hooks.addReadingLogs && hooks.addReadingLogs([eolStatement]);
       break;
     case 'paragraph':
     case 'p':
@@ -48,7 +54,13 @@ export const Executor = (
       break;
     case 'jump':
     case 'j':
-      // TODO: replace next statement
+      let jStatement = statement as JumpProps;
+      let nextStatementId = jStatement.destination;
+      // TODO: check condition
+      // TODO: replace inline variables
+      if (nextStatementId) {
+        hooks.setNextStatementById(nextStatementId);
+      }
       break;
     case 'setter':
       // TODO: compute values
