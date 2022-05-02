@@ -8,11 +8,13 @@ import {
   SettingContext,
   ThemeContextType,
 } from '@src/Context';
-import { matchPath } from 'react-router-dom';
+import { matchPath, Redirect, useHistory, useLocation } from 'react-router-dom';
 import { request } from '@octokit/request';
 import { Endpoints } from '@octokit/types';
 import * as RenderEngine from '@src/ContentRenderEngine';
 import { Base64 } from 'js-base64';
+import axios from 'axios';
+import JSZip from 'jszip';
 
 type RepoRequestParam =
   Endpoints['GET /repos/{owner}/{repo}/git/trees/{tree_sha}']['parameters'];
@@ -20,29 +22,60 @@ type StatementType = RenderEngine.Statements.AbstractStatementType;
 type MainProps = {};
 
 const MainContainer = (props: MainProps) => {
+  let location = useLocation();
+  let history = useHistory();
+
   //#region query param
   const query = useQuery();
   const globalVersion = query.get('v');
+  const owner = query.get('owner');
+  const repo = query.get('repo');
+  const tree_sha = query.get('tree_sha');
   const src = query.get('src');
   const token = query.get('token');
-  const { owner, repo, tree_sha } = getSrcInfo(src);
-
-  if (!owner || !repo || !tree_sha) return <div>Error</div>;
   //#endregion
+
+  if (!owner || !repo || !tree_sha) {
+    return (
+      <Redirect
+        to={{
+          pathname: '/WelcomeModal',
+          state: { background: location },
+        }}
+      />
+    );
+  }
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [scripts, setScripts] = useState<StatementType[]>([]);
 
   useEffect(() => {
-    init(src);
-  }, [src]);
+    init();
+  }, [owner, repo, tree_sha, src]);
 
-  const init = async (_src: string) => {
+  const init = async () => {
     setIsLoading(true);
     // TODO: load from DB, or from src
     // TODO: decorate script if first time
     // TODO: load history / save data
+
+    if (src) {
+      try {
+        let response = await axios.get(src, {
+          responseType: 'blob', // important
+          // headers: {
+          //   Accept: `application/octet-stream`,
+          // },
+        });
+        let blob = new Blob([response.data]);
+        let zip = new JSZip();
+        let zipContents = await zip.loadAsync(blob);
+      } catch (ex) {
+        console.error(ex);
+      }
+    }
+    return;
 
     const response = await request(
       'GET /repos/{owner}/{repo}/git/trees/{tree_sha}',
@@ -115,24 +148,25 @@ const MainContainer = (props: MainProps) => {
 
 export default MainContainer;
 
-function getSrcInfo(src: string): RepoRequestParam {
-  try {
-    let url = new URL(src);
+// TODO: remove me
+// function getSrcInfo(src: string): RepoRequestParam {
+//   try {
+//     let url = new URL(src);
 
-    const match = matchPath<RepoRequestParam>(url.pathname ?? '', {
-      path: ['/:owner/:repo/tree/:tree_sha', '/:owner/:repo'],
-      exact: false,
-      strict: false,
-    });
+//     const match = matchPath<RepoRequestParam>(url.pathname ?? '', {
+//       path: ['/:owner/:repo/tree/:tree_sha', '/:owner/:repo'],
+//       exact: false,
+//       strict: false,
+//     });
 
-    const result = match.params;
+//     const result = match.params;
 
-    if (!result.tree_sha) {
-      result.tree_sha = 'master'; // default to master
-    }
-    return result;
-  } catch (ex) {
-    console.error(ex);
-    return { owner: '', repo: '', tree_sha: '' };
-  }
-}
+//     if (!result.tree_sha) {
+//       result.tree_sha = 'master'; // default to master
+//     }
+//     return result;
+//   } catch (ex) {
+//     console.error(ex);
+//     return { owner: '', repo: '', tree_sha: '' };
+//   }
+// }

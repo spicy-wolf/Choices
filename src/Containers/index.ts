@@ -3,3 +3,4 @@ import Main from './Main/Main';
 import SidePanel from './SidePanel/SidePanel';
 
 export { Main, SidePanel, Content };
+export * from './Modal';
