@@ -9,15 +9,10 @@ import {
   ThemeContextType,
 } from '@src/Context';
 import { matchPath, Redirect, useHistory, useLocation } from 'react-router-dom';
-import { request } from '@octokit/request';
-import { Endpoints } from '@octokit/types';
 import * as RenderEngine from '@src/ContentRenderEngine';
 import { Base64 } from 'js-base64';
-import axios from 'axios';
 import JSZip from 'jszip';
 
-type RepoRequestParam =
-  Endpoints['GET /repos/{owner}/{repo}/git/trees/{tree_sha}']['parameters'];
 type StatementType = RenderEngine.Statements.AbstractStatementType;
 type MainProps = {};
 
@@ -61,69 +56,10 @@ const MainContainer = (props: MainProps) => {
     // TODO: load history / save data
 
     if (src) {
-      try {
-        let response = await axios.get(src, {
-          responseType: 'blob', // important
-          // headers: {
-          //   Accept: `application/octet-stream`,
-          // },
-        });
-        let blob = new Blob([response.data]);
-        let zip = new JSZip();
-        let zipContents = await zip.loadAsync(blob);
-      } catch (ex) {
-        console.error(ex);
-      }
+      
     }
     return;
 
-    const response = await request(
-      'GET /repos/{owner}/{repo}/git/trees/{tree_sha}',
-      {
-        headers: {
-          authorization: token ? `token ${token}` : '',
-        },
-        repo: repo,
-        owner: owner,
-        tree_sha: tree_sha,
-      }
-    );
-
-    let fileListPromises = response.data.tree.map((item) =>
-      request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
-        repo: repo,
-        owner: owner,
-        file_sha: item.sha,
-      })
-    );
-
-    const fileBlobsResponse = await Promise.all(fileListPromises);
-
-    const scripts: StatementType[] = [];
-    fileBlobsResponse.forEach((file, idx) => {
-      const encoding = file.data.encoding;
-      if (encoding === 'base64') {
-        const raw = Base64.decode(file.data.content as string);
-        const jsonArray = JSON.parse(raw);
-        if (jsonArray instanceof Array) {
-          const statements = jsonArray as Array<any>;
-          statements.forEach((rawStatement, index) => {
-            // decorate and check raw statement
-            const statement = RenderEngine.Statements.CompileAndCheck(
-              rawStatement,
-              {
-                suggestId: `${file.data.sha}:${index}`,
-                scriptPath: file.data.url,
-                scriptSha: file.data.sha,
-              }
-            );
-            scripts.push(statement);
-          });
-        } else {
-          // throw exception
-        }
-      }
-    });
     setScripts(scripts);
 
     setIsLoading(false);
