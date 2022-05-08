@@ -37,7 +37,7 @@
     "bootstrap": "^5.1.1",
     "js-base64": "^3.7.1",
     "jszip": "^3.7.1",
-    "react-bootstrap": "^2.0.0-rc.0",
+    "react-bootstrap": "^2.3.1",
     "react-icons": "^4.2.0",
     "react-router-dom": "^5.3.0",
     "uuid": "^8.3.2"
