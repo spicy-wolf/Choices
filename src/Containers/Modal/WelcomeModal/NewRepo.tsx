@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 
 enum SourceFromEnum {
-  Branch = 1,
-  Url = 2,
-  File = 3,
+  RepoUrl = 1,
+  File = 2,
 }
 
 const NewRepo = () => {
   const [selectedSourceFrom, setSelectedSourceFrom] = useState<SourceFromEnum>(
-    SourceFromEnum.Branch
+    SourceFromEnum.RepoUrl
   );
   const [validated, setValidated] = useState(false);
 
@@ -45,20 +44,11 @@ const NewRepo = () => {
       <Form.Group className="mb-3">
         <Form.Check
           inline
-          label="Branch"
+          label="Repo Url"
           name="SourceFrom"
           type="radio"
-          value={SourceFromEnum.Branch}
-          checked={selectedSourceFrom === SourceFromEnum.Branch}
-          onChange={(e) => setSelectedSourceFrom(+e.currentTarget.value)}
-        />
-        <Form.Check
-          inline
-          label="File Url"
-          name="SourceFrom"
-          type="radio"
-          value={SourceFromEnum.Url}
-          checked={selectedSourceFrom === SourceFromEnum.Url}
+          value={SourceFromEnum.RepoUrl}
+          checked={selectedSourceFrom === SourceFromEnum.RepoUrl}
           onChange={(e) => setSelectedSourceFrom(+e.currentTarget.value)}
         />
         <Form.Check
@@ -72,22 +62,7 @@ const NewRepo = () => {
         />
       </Form.Group>
 
-      {selectedSourceFrom === SourceFromEnum.Branch && (
-        <>
-          <Form.Group className="mb-3 ">
-            <Form.Label>Branch / Tree sha</Form.Label>
-            <Form.Control type="text" required />
-            <Form.Control.Feedback type="invalid">
-              Required
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group className="mb-3 ">
-            <Form.Label>Token (optional)</Form.Label>
-            <Form.Control type="text" />
-          </Form.Group>
-        </>
-      )}
-      {selectedSourceFrom === SourceFromEnum.Url && (
+      {selectedSourceFrom === SourceFromEnum.RepoUrl && (
         <Form.Group className="mb-3 ">
           <Form.Label>Release Zip URL</Form.Label>
           <Form.Control type="text" required />
