@@ -19,6 +19,8 @@ export const DbContextProvider = (props: { children: React.ReactNode }) => {
   // init
   useEffect(() => {
     if (!dbContext) {
+      const _dbContext = new DB.DbContext();
+      setDbContext(_dbContext);
     }
   }, []);
 
