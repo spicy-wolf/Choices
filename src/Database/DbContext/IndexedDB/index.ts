@@ -1,1 +1,1 @@
-export * from './IndexedDbContext'
+export { IndexedDbContext as DbContext } from './IndexedDbContext'

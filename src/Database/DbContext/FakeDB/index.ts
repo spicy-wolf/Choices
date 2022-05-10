@@ -1,1 +1,1 @@
-export * from './FakeDbContext'
+export { FakeDbContext as DbContext } from './FakeDbContext'

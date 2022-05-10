@@ -6,38 +6,38 @@ export class IndexedDbContext extends DbContext {
     super();
   }
 
-  //#region MetaData
-  public async getAllMetaData(): Promise<Types.RepoMetadataType[]> {
+  //#region Metadata
+  public async getAllMetadata(): Promise<Types.RepoMetadataType[]> {
     throw 'Not Implemented';
   }
-  public async getMetaData(author: string, title: string): Promise<Types.RepoMetadataType> {
+  public async getMetadata(author: string, title: string): Promise<Types.RepoMetadataType> {
     throw 'Not Implemented';
   }
-  public async getMetaDataFromRepoId(repoId: string): Promise<Types.RepoMetadataType> {
+  public async getMetadataFromRepoId(repoId: string): Promise<Types.RepoMetadataType> {
     throw 'Not Implemented';
   }
-  public async addMetaData(metaData: Types.RepoMetadataType, script?: Types.ScriptType): Promise<string> {
+  public async addMetadata(metaData: Types.RepoMetadataType, script?: Types.ScriptType): Promise<string> {
     throw 'Not Implemented';
   }
-  public async deleteMetaDataFromRepoId(repoId: string): Promise<void> {
+  public async deleteMetadataFromRepoId(repoId: string): Promise<void> {
     throw 'Not Implemented';
   }
   //#endregion
 
   //#region Script
-  public async getScriptFromMetaDataId(metaDataId: string): Promise<Types.ScriptType> {
+  public async getScriptFromMetadataId(metaDataId: string): Promise<Types.ScriptType> {
     throw 'Not Implemented';
   }
   public async updateScript(metaDataId: string, script: Types.ScriptType): Promise<void> {
     throw 'Not Implemented';
   }
-  public async deleteScriptFromMetaDataId(metaDataId: string): Promise<void> {
+  public async deleteScriptFromMetadataId(metaDataId: string): Promise<void> {
     throw 'Not Implemented';
   }
   //#endregion
 
   //#region SaveData
-  public async getSaveDataAll(): Promise<Types.SaveDataType[]> {
+  public async getAllSaveData(): Promise<Types.SaveDataType[]> {
     throw 'Not Implemented';
   }
   public async getSaveDataFromId(saveDataId: string): Promise<Types.SaveDataType> {

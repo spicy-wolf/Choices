@@ -42,6 +42,7 @@ module.exports = (env) => ({
     alias: {
       '@src': resolve('src'),
       '@public': resolve('public'),
+      '@resources': resolve('resources'),
     },
   },
   plugins: [
