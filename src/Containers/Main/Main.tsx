@@ -22,6 +22,9 @@ const MainContainer = (props: MainProps) => {
   //#region query param
   const query = useQuery();
   const src = query.get(RouterPathStrings.MAIN_PAGE_SRC_PARAM);
+  const repoName = query.get(RouterPathStrings.MAIN_PAGE_REPO_PARAM);
+  const authorName = query.get(RouterPathStrings.MAIN_PAGE_AUTHOR_PARAM);
+  console.log(src, repoName, authorName);
   //#endregion
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -29,7 +32,7 @@ const MainContainer = (props: MainProps) => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [src, repoName, authorName]);
 
   const init = async () => {
     setIsLoading(true);
@@ -41,7 +44,7 @@ const MainContainer = (props: MainProps) => {
     setIsLoading(false);
   };
 
-  if (!src) {
+  if (!src && !repoName && !authorName) {
     return (
       <Redirect
         to={{

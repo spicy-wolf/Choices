@@ -1,6 +1,6 @@
 import * as Types from '@src/Types';
 
-export abstract class DbContext {
+export abstract class AbstractDbContext {
   public constructor() { }
 
   //#region Metadata

@@ -1,7 +1,7 @@
 import * as Types from '@src/Types';
-import { DbContext } from '../DbContext';
+import { AbstractDbContext } from '../DbContext';
 
-export class IndexedDbContext extends DbContext {
+export class IndexedDbContext extends AbstractDbContext {
   public constructor() {
     super();
   }

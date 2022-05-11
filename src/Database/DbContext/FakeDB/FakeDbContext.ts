@@ -1,12 +1,12 @@
 import { v4 as uuid } from 'uuid';
 import * as Types from '@src/Types';
-import { DbContext } from '../DbContext';
+import { AbstractDbContext } from '../DbContext';
 import FakeMetadata from '@resources/FakeMetadata.json';
 import FakeScript from '@resources/FakeScript.json';
 import FakeSaveData from '@resources/FakeSaveData.json';
 import FakeReadLog from '@resources/FakeReadLog.json';
 
-export class FakeDbContext extends DbContext {
+export class FakeDbContext extends AbstractDbContext {
   private metadataDb: Types.RepoMetadataType[] = [];
   private scriptDb: Types.ScriptType = [];
   private saveDataDb: Types.SaveDataType[] = [];

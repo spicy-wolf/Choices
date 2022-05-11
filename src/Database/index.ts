@@ -1,4 +1,4 @@
-import * as Interfaces from './Interfaces';
+import { AbstractDbContext } from "./DbContext/DbContext";
 
 /**
  * this part is tricky
@@ -10,4 +10,4 @@ import * as Interfaces from './Interfaces';
 declare var __USE_FAKE_DB__: boolean;
 const { DbContext } = require('./DbContext/' + (__USE_FAKE_DB__ ? 'FakeDB' : 'IndexedDB'));
 
-export { DbContext, Interfaces };
+export { DbContext, AbstractDbContext };
