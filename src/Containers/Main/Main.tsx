@@ -11,6 +11,8 @@ import {
 } from '@src/Context';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import * as RenderEngine from '@src/ContentRenderEngine';
+import { useScriptLoader } from './Hooks/useScriptLoader';
+import { Modal, Spinner } from 'react-bootstrap';
 
 type StatementType = RenderEngine.Statements.AbstractStatementType;
 type MainProps = {};
@@ -24,25 +26,21 @@ const MainContainer = (props: MainProps) => {
   const src = query.get(RouterPathStrings.MAIN_PAGE_SRC_PARAM);
   const repoName = query.get(RouterPathStrings.MAIN_PAGE_REPO_PARAM);
   const authorName = query.get(RouterPathStrings.MAIN_PAGE_AUTHOR_PARAM);
-  console.log(src, repoName, authorName);
   //#endregion
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [scripts, setScripts] = useState<StatementType[]>([]);
+  //#region hooks
+  let [scripts, scriptLoadingError] = useScriptLoader(src, repoName, authorName);
+  //#endregion
 
-  useEffect(() => {
-    init();
-  }, [src, repoName, authorName]);
+  const loadingLabelOrErrorMsg = React.useMemo(() => {
+    const errorMsg = scriptLoadingError;
+    let loadingMsg = '';
+    if (!scripts) {
+      loadingMsg = 'Loading script.'
+    }
 
-  const init = async () => {
-    setIsLoading(true);
-    // TODO: load from DB, prev reading; or from src
-    // TODO: decorate script if first time
-    // TODO: load history / save data
-
-    setScripts(scripts);
-    setIsLoading(false);
-  };
+    return loadingMsg || errorMsg;
+  }, [scripts, scriptLoadingError]);
 
   if (!src && !repoName && !authorName) {
     return (
@@ -57,8 +55,9 @@ const MainContainer = (props: MainProps) => {
 
   return (
     <SettingContext>
+      <LoadingIndicatorModal loadingLabel={loadingLabelOrErrorMsg} />
       <div id="main">
-        {!isLoading && (
+        {!loadingLabelOrErrorMsg && (
           <>
             <SidePanel />
             <Content scripts={scripts} />
@@ -72,25 +71,22 @@ const MainContainer = (props: MainProps) => {
 
 export default MainContainer;
 
-// TODO: remove me
-// function getSrcInfo(src: string): RepoRequestParam {
-//   try {
-//     let url = new URL(src);
+const LoadingIndicatorModal = (props: { loadingLabel: string }) => {
+  return (
+    <Modal show={!!props.loadingLabel} backdrop="static" size="lg" centered>
+      <Modal.Dialog>
+        <Modal.Header>
+          <Modal.Title>Loading</Modal.Title>
+        </Modal.Header>
 
-//     const match = matchPath<RepoRequestParam>(url.pathname ?? '', {
-//       path: ['/:owner/:repo/tree/:tree_sha', '/:owner/:repo'],
-//       exact: false,
-//       strict: false,
-//     });
+        <Modal.Body>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p>{props.loadingLabel}</p>
+        </Modal.Body>
 
-//     const result = match.params;
-
-//     if (!result.tree_sha) {
-//       result.tree_sha = 'master'; // default to master
-//     }
-//     return result;
-//   } catch (ex) {
-//     console.error(ex);
-//     return { owner: '', repo: '', tree_sha: '' };
-//   }
-// }
+      </Modal.Dialog>
+    </Modal>
+  );
+}

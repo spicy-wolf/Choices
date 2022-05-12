@@ -5,7 +5,7 @@ export abstract class AbstractDbContext {
 
   //#region Metadata
   public abstract getAllMetadata(): Promise<Types.RepoMetadataType[]>;
-  public abstract getMetadata(author: string, title: string): Promise<Types.RepoMetadataType>;
+  public abstract getMetadata(author: string, repoName: string): Promise<Types.RepoMetadataType>;
   public abstract getMetadataFromRepoId(repoId: string): Promise<Types.RepoMetadataType>;
   public abstract addMetadata(metaData: Types.RepoMetadataType, script?: Types.ScriptType): Promise<string>; // return metaData id
   public abstract deleteMetadataFromRepoId(repoId: string): Promise<void>;

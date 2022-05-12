@@ -34,8 +34,8 @@ export class FakeDbContext extends AbstractDbContext {
   public async getAllMetadata(): Promise<Types.RepoMetadataType[]> {
     return this.metadataDb;
   }
-  public async getMetadata(author: string, title: string): Promise<Types.RepoMetadataType> {
-    let result = this.metadataDb.find((value) => value?.author === author && value?.repoName === title);
+  public async getMetadata(author: string, repoName: string): Promise<Types.RepoMetadataType> {
+    let result = this.metadataDb.find((value) => value?.author === author && value?.repoName === repoName);
     return result;
   }
   public async getMetadataFromRepoId(repoId: string): Promise<Types.RepoMetadataType> {

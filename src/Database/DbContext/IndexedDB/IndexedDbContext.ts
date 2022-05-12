@@ -10,7 +10,7 @@ export class IndexedDbContext extends AbstractDbContext {
   public async getAllMetadata(): Promise<Types.RepoMetadataType[]> {
     throw 'Not Implemented';
   }
-  public async getMetadata(author: string, title: string): Promise<Types.RepoMetadataType> {
+  public async getMetadata(author: string, repoName: string): Promise<Types.RepoMetadataType> {
     throw 'Not Implemented';
   }
   public async getMetadataFromRepoId(repoId: string): Promise<Types.RepoMetadataType> {
