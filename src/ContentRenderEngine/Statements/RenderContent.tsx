@@ -29,8 +29,8 @@ export const RenderContent = (props: RenderContentProps) => {
     case 's':
       Component = Components.Sentence;
       break;
-    default:
-      Component = Fragment; // empty component
+    default: // empty component
+      Component = Fragment;
       break;
   }
 

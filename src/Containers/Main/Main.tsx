@@ -29,14 +29,18 @@ const MainContainer = (props: MainProps) => {
   //#endregion
 
   //#region hooks
-  let [scripts, scriptLoadingError] = useScriptLoader(src, repoName, authorName);
+  let [scripts, scriptLoadingError] = useScriptLoader(
+    src,
+    repoName,
+    authorName
+  );
   //#endregion
 
   const loadingLabelOrErrorMsg = React.useMemo(() => {
     const errorMsg = scriptLoadingError;
     let loadingMsg = '';
     if (!scripts) {
-      loadingMsg = 'Loading script.'
+      loadingMsg = 'Loading script.';
     }
 
     return loadingMsg || errorMsg;
@@ -85,8 +89,7 @@ const LoadingIndicatorModal = (props: { loadingLabel: string }) => {
           </Spinner>
           <p>{props.loadingLabel}</p>
         </Modal.Body>
-
       </Modal.Dialog>
     </Modal>
   );
-}
+};

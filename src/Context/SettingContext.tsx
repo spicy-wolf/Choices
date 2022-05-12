@@ -13,7 +13,7 @@ type SettingContextType = {
 const SettingContextDefault: SettingContextType = {
   themeName: 'light',
   fontSize: 20,
-  setSetting: () => { },
+  setSetting: () => {},
 };
 
 const ContextInstance = React.createContext<SettingContextType>(

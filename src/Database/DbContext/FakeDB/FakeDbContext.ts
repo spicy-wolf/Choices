@@ -22,8 +22,8 @@ export class FakeDbContext extends AbstractDbContext {
     for (let i = 0; i < FakeScript.length; i++) {
       this.scriptDb.push({
         ...FakeScript[i],
-        order: i
-      })
+        order: i,
+      });
     }
 
     this.saveDataDb = [...FakeSaveData];
@@ -34,15 +34,25 @@ export class FakeDbContext extends AbstractDbContext {
   public async getAllMetadata(): Promise<Types.RepoMetadataType[]> {
     return this.metadataDb;
   }
-  public async getMetadata(author: string, repoName: string): Promise<Types.RepoMetadataType> {
-    let result = this.metadataDb.find((value) => value?.author === author && value?.repoName === repoName);
+  public async getMetadata(
+    author: string,
+    repoName: string
+  ): Promise<Types.RepoMetadataType> {
+    let result = this.metadataDb.find(
+      (value) => value?.author === author && value?.repoName === repoName
+    );
     return result;
   }
-  public async getMetadataFromRepoId(repoId: string): Promise<Types.RepoMetadataType> {
+  public async getMetadataFromRepoId(
+    repoId: string
+  ): Promise<Types.RepoMetadataType> {
     let result = this.metadataDb.find((value) => value?.id === repoId);
     return result;
   }
-  public async addMetadata(metaData: Types.RepoMetadataType, script?: Types.ScriptType): Promise<string> {
+  public async addMetadata(
+    metaData: Types.RepoMetadataType,
+    script?: Types.ScriptType
+  ): Promise<string> {
     if (script) {
       this.scriptDb = this.scriptDb.concat(script);
     }
@@ -58,12 +68,17 @@ export class FakeDbContext extends AbstractDbContext {
   //#endregion
 
   //#region Script
-  public async getScriptFromMetadataId(metaDataId: string): Promise<Types.ScriptType> {
+  public async getScriptFromMetadataId(
+    metaDataId: string
+  ): Promise<Types.ScriptType> {
     return this.scriptDb
       .filter((item) => item.scriptId === metaDataId)
       .sort((item1, item2) => item1.order - item2.order);
   }
-  public async updateScript(metaDataId: string, script: Types.ScriptType): Promise<void> {
+  public async updateScript(
+    metaDataId: string,
+    script: Types.ScriptType
+  ): Promise<void> {
     throw 'Not Implemented';
   }
   public async deleteScriptFromMetadataId(metaDataId: string): Promise<void> {
@@ -75,13 +90,21 @@ export class FakeDbContext extends AbstractDbContext {
   public async getAllSaveData(): Promise<Types.SaveDataType[]> {
     throw 'Not Implemented';
   }
-  public async getSaveDataFromId(saveDataId: string): Promise<Types.SaveDataType> {
+  public async getSaveDataFromId(
+    saveDataId: string
+  ): Promise<Types.SaveDataType> {
     throw 'Not Implemented';
   }
-  public async addSaveData(saveData: Types.SaveDataType, readLogs?: Types.ReadLogType[]): Promise<void> {
+  public async addSaveData(
+    saveData: Types.SaveDataType,
+    readLogs?: Types.ReadLogType[]
+  ): Promise<void> {
     throw 'Not Implemented';
   }
-  public async putSaveData(saveData: Types.SaveDataType, readLogs?: Types.ReadLogType[]): Promise<void> {
+  public async putSaveData(
+    saveData: Types.SaveDataType,
+    readLogs?: Types.ReadLogType[]
+  ): Promise<void> {
     throw 'Not Implemented';
   }
   public async deleteSaveDataFromId(saveDataId: string): Promise<void> {
@@ -90,10 +113,15 @@ export class FakeDbContext extends AbstractDbContext {
   //#endregion
 
   //#region ReadLog
-  public async getReadLogsFromSaveDataId(saveDataId: string): Promise<Types.ReadLogType[]> {
+  public async getReadLogsFromSaveDataId(
+    saveDataId: string
+  ): Promise<Types.ReadLogType[]> {
     throw 'Not Implemented';
   }
-  public async pushReadLog(saveDataId: string, readLogs: Types.ReadLogType): Promise<void> {
+  public async pushReadLog(
+    saveDataId: string,
+    readLogs: Types.ReadLogType
+  ): Promise<void> {
     throw 'Not Implemented';
   }
   public async deleteReadLogsFromId(saveDataId: string): Promise<void> {

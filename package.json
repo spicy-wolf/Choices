@@ -6,6 +6,7 @@
   "homepage": "http://spicy-wolf.github.io/Choices",
   "scripts": {
     "ci": "npm ci",
+    "format": "npx prettier --write .",
     "start": "webpack serve --open --progress --config webpack.dev.js",
     "startWithFakeDB": "webpack serve --open --progress --config webpack.dev.js --env USE_FAKE_DB=true",
     "build": "webpack --progress --color --config webpack.prod.js",
@@ -20,6 +21,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.7.1",
     "gh-pages": "^3.2.3",
+    "prettier": "^2.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "sass": "^1.39.0",

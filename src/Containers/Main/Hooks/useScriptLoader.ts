@@ -3,19 +3,22 @@ import * as RenderEngine from '@src/ContentRenderEngine';
 import { useDbContext } from '@src/Context/DbContext';
 type StatementType = RenderEngine.Statements.AbstractStatementType;
 
-export const useScriptLoader = (src: string, repoName: string, authorName: string) => {
-
+export const useScriptLoader = (
+  src: string,
+  repoName: string,
+  authorName: string
+) => {
   const { dbContext } = useDbContext();
   const [scripts, setScripts] = useState<StatementType[]>([]);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     load();
 
     return () => {
       setScripts([]);
-      setError("");
-    }
+      setError('');
+    };
   }, [src, repoName, authorName, dbContext]);
 
   const load = async () => {
@@ -38,7 +41,7 @@ export const useScriptLoader = (src: string, repoName: string, authorName: strin
     } else {
       setScripts(_script);
     }
-  }
+  };
 
   return [scripts, error] as const;
-}
+};

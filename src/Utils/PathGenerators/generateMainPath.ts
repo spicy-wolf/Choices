@@ -1,6 +1,10 @@
-import { RouterPathStrings } from "@src/Constants"
+import { RouterPathStrings } from '@src/Constants';
 
-export const generateMainPath = (src?: string, repoName?: string, authorName?: string): string => {
+export const generateMainPath = (
+  src?: string,
+  repoName?: string,
+  authorName?: string
+): string => {
   let result = RouterPathStrings.MAIN_PAGE;
 
   if (src || repoName || authorName) {
@@ -9,10 +13,11 @@ export const generateMainPath = (src?: string, repoName?: string, authorName?: s
     let paramDic: { [key: string]: string } = {};
     if (src) paramDic[RouterPathStrings.MAIN_PAGE_SRC_PARAM] = src;
     if (repoName) paramDic[RouterPathStrings.MAIN_PAGE_REPO_PARAM] = repoName;
-    if (authorName) paramDic[RouterPathStrings.MAIN_PAGE_AUTHOR_PARAM] = authorName;
+    if (authorName)
+      paramDic[RouterPathStrings.MAIN_PAGE_AUTHOR_PARAM] = authorName;
 
-    result += new URLSearchParams(paramDic).toString()
+    result += new URLSearchParams(paramDic).toString();
   }
 
   return result;
-}
+};
