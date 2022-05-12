@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 
 enum SourceFromEnum {
-  RepoUrl = 1,
+  Url = 1,
   File = 2,
 }
 
 const NewRepo = () => {
   const [selectedSourceFrom, setSelectedSourceFrom] = useState<SourceFromEnum>(
-    SourceFromEnum.RepoUrl
+    SourceFromEnum.Url
   );
   const [validated, setValidated] = useState(false);
 
@@ -36,7 +36,7 @@ const NewRepo = () => {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Repo</Form.Label>
+        <Form.Label>Title</Form.Label>
         <Form.Control type="text" required />
         <Form.Control.Feedback type="invalid">Required</Form.Control.Feedback>
       </Form.Group>
@@ -44,11 +44,11 @@ const NewRepo = () => {
       <Form.Group className="mb-3">
         <Form.Check
           inline
-          label="Repo Url"
+          label="Url"
           name="SourceFrom"
           type="radio"
-          value={SourceFromEnum.RepoUrl}
-          checked={selectedSourceFrom === SourceFromEnum.RepoUrl}
+          value={SourceFromEnum.Url}
+          checked={selectedSourceFrom === SourceFromEnum.Url}
           onChange={(e) => setSelectedSourceFrom(+e.currentTarget.value)}
         />
         <Form.Check
@@ -62,7 +62,7 @@ const NewRepo = () => {
         />
       </Form.Group>
 
-      {selectedSourceFrom === SourceFromEnum.RepoUrl && (
+      {selectedSourceFrom === SourceFromEnum.Url && (
         <Form.Group className="mb-3 ">
           <Form.Label>Release Zip URL</Form.Label>
           <Form.Control type="text" required />

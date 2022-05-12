@@ -7,6 +7,7 @@ import {
   ThemeList,
 } from './SettingContext';
 import type { ThemeContextType } from './SettingContext';
+import { DbContextProvider } from './DbContext';
 
 export {
   MainContext,
@@ -16,4 +17,5 @@ export {
   ThemeContextType,
   ThemeList,
   useTheme,
+  DbContextProvider,
 };

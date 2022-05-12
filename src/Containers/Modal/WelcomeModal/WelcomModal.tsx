@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import NewRepo from './NewRepo';
+import { ReadHistory } from './ReadHistory';
 
 const WelcomeModal = (props: { closeModal: () => void }) => {
   const handleClose = () => props.closeModal && props.closeModal();
@@ -13,16 +14,12 @@ const WelcomeModal = (props: { closeModal: () => void }) => {
             <NewRepo />
           </Tab>
           <Tab eventKey="history" title="History">
-            <History />
+            <ReadHistory />
           </Tab>
         </Tabs>
       </Modal.Body>
     </Modal>
   );
-};
-
-const History = () => {
-  return <></>;
 };
 
 export default WelcomeModal;
