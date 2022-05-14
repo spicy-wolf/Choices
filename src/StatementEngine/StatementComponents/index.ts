@@ -1,6 +1,4 @@
-import type { AbstractStatementType } from './AbstractComponentType.type';
-import { CompileAndCheck } from './CompileAndCheck';
-import { Executor } from './Executor';
-import { RenderContent } from './RenderContent';
+import EndOfLine from './EndOfLine/EndOfLine';
+import Sentence from './Sentence/Sentence';
 
-export { AbstractStatementType, CompileAndCheck, Executor, RenderContent };
+export { EndOfLine, Sentence };

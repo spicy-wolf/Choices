@@ -1,15 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Statements } from '@src/Types';
 
-type AnyStatementType =
-  | Statements.EndOfLineStatementType
-  | Statements.ParagraphStatementType
-  | Statements.SentenceStatementType;
-
 export const Executor = (
-  statement: AnyStatementType,
+  statement: Statements.AnyStatementType,
   hooks: {
-    addReadingLogs: (statements: AnyStatementType[]) => void;
+    addReadingLogs: (statements: Statements.AnyStatementType[]) => void;
     setNextStatementById: (id: string) => void;
     // moveToNextStatement: () => void;
   }
@@ -45,7 +40,7 @@ export const Executor = (
       // https://stackoverflow.com/questions/12001953/javascript-and-regex-split-string-and-keep-the-separator
       let sentences: string[] = data.split(/(\n)/g);
       for (let i = 0; i < sentences.length; i++) {
-        let shorterSentences = sentences[i].match(/.{1,30}/g); // TODO: is 30 good?
+        let shorterSentences = sentences[i].match(/.{1,30}/g) ?? ''; // TODO: is 30 good?
         for (let ss of shorterSentences) {
           if (ss === '\n') {
             statementList.push({
@@ -55,7 +50,7 @@ export const Executor = (
           } else {
             statementList.push({
               id: uuidv4(),
-              type: 'p',
+              type: 's',
               data: ss,
             });
           }

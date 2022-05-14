@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import * as RenderEngine from '@src/ContentRenderEngine';
+import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
 import { useSetting, useTheme } from '@src/Context';
+import * as Types from '@src/Types';
 
-type StatementType = RenderEngine.Statements.AbstractStatementType;
-type ContentProps = { scripts: StatementType[] };
+type AnyStatementType = Types.Statements.AnyStatementType;
+type ContentProps = { scripts: AnyStatementType[] };
 
 const Content = (props: ContentProps) => {
   const [statementCounter, setStatementCounter] = React.useState<number>(0);
   const [executeMore, setExecuteMore] = React.useState<boolean>(false);
-  const [readingLogs, setReadingLogs] = React.useState<StatementType[]>([]); // TODO: load history
+  const [readingLogs, setReadingLogs] = React.useState<AnyStatementType[]>([]); // TODO: load history
 
   const [distanceToBottom, setDistanceToBottom] = React.useState<number>(0);
 
@@ -32,7 +33,7 @@ const Content = (props: ContentProps) => {
         setTimeout(() => setExecuteMore(true), 0);
       }
     }
-  }, [executeMore, distanceToBottom]);
+  }, [executeMore, distanceToBottom, statementCounter, props.scripts]);
 
   React.useEffect(() => {
     if (!executeMore) return;
@@ -41,7 +42,7 @@ const Content = (props: ContentProps) => {
      * Execute one statement
      */
     const currentScripts = props.scripts;
-    RenderEngine.Statements.Executor(currentScripts[statementCounter], {
+    StatementEngine.Executor(currentScripts[statementCounter], {
       addReadingLogs,
       setNextStatementById,
     });
@@ -58,16 +59,14 @@ const Content = (props: ContentProps) => {
   }, [readingLogs]);
 
   const theStory = React.useMemo(() => {
-    const result = readingLogs.map((statement, index) => (
-      <React.Fragment key={index}>
-        <RenderEngine.Statements.RenderContent statement={statement} />
-      </React.Fragment>
+    const result = readingLogs.map((statement) => (
+      <StatementEngine.RenderContent {...statement} />
     ));
     return result;
   }, [readingLogs]);
 
-  const addReadingLogs = (statements: StatementType[]): void => {
-    let newLogs = [...readingLogs, ...statements];
+  const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
+    let newLogs = [...readingLogs, ...pendingLogs];
     setReadingLogs(newLogs);
   };
 
