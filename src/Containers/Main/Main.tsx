@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './Main.scss';
 import { RouterPathStrings } from '@src/Constants';
 import { Content, SidePanel } from '..';
-import { combinePath, useQuery } from '@src/Utils';
-import {
-  MainContext,
-  MainContextType,
-  SettingContext,
-  ThemeContextType,
-} from '@src/Context';
+import { useQuery } from '@src/Utils';
+import { SettingContext } from '@src/Context';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
-import * as RenderEngine from '@src/ContentRenderEngine';
 import { useScriptLoader } from './Hooks/useScriptLoader';
 import { Modal, Spinner } from 'react-bootstrap';
 
-type StatementType = RenderEngine.Statements.AbstractStatementType;
 type MainProps = {};
 
 const MainContainer = (props: MainProps) => {

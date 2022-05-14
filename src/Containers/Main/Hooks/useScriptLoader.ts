@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import * as RenderEngine from '@src/ContentRenderEngine';
 import { useDbContext } from '@src/Context/DbContext';
-type StatementType = RenderEngine.Statements.AbstractStatementType;
+import * as Types from '@src/Types';
+
+type AnyStatementType = Types.Statements.AnyStatementType;
 
 export const useScriptLoader = (
   src: string,
@@ -9,7 +10,7 @@ export const useScriptLoader = (
   authorName: string
 ) => {
   const { dbContext } = useDbContext();
-  const [scripts, setScripts] = useState<StatementType[]>([]);
+  const [scripts, setScripts] = useState<AnyStatementType[]>([]);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export const useScriptLoader = (
   const load = async () => {
     if (!dbContext) return;
 
-    let _script: StatementType[] = undefined;
+    let _script: AnyStatementType[] = undefined;
     if (repoName && authorName) {
       const metadata = await dbContext.getMetadata(authorName, repoName);
       if (metadata && metadata.id) {

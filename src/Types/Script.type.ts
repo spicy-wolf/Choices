@@ -1,9 +1,3 @@
-export type ScriptType = Statement[];
+import { AbstractStatementType } from './Statements';
 
-export type Statement = {
-  id?: string;
-  order: number;
-  type: string;
-  scriptId: string;
-  [key: string]: any;
-};
+export type ScriptType = AbstractStatementType[];
