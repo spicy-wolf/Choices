@@ -1,6 +1,5 @@
-import Content from './Content/Content';
 import Main from './Main/Main';
-import SidePanel from './SidePanel/SidePanel';
+import Read from './Read/Read';
 
-export { Main, SidePanel, Content };
+export { Main, Read };
 export * from './Modal';

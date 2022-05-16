@@ -5,7 +5,7 @@ export const Executor = (
   statement: Statements.AnyStatementType,
   hooks: {
     addReadingLogs: (statements: Statements.AnyStatementType[]) => void;
-    setNextStatementById: (id: string) => void;
+    //setNextStatementById: (id: string) => void;
     // moveToNextStatement: () => void;
   }
 ) => {

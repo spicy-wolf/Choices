@@ -1,88 +1,99 @@
 import React from 'react';
 import './Main.scss';
 import { RouterPathStrings } from '@src/Constants';
-import { Content, SidePanel } from '..';
 import { useQuery } from '@src/Utils';
-import { SettingContext } from '@src/Context';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
-import { useScriptLoader } from './Hooks/useScriptLoader';
-import { Modal, Spinner } from 'react-bootstrap';
+import { useHistory, useLocation } from 'react-router-dom';
+import useMetadataList from './Hooks/useMetadataList';
+import { AddNewRepoModal, LoadingIndicatorModal } from '../Modal';
+import { Card, Col, Container, Row } from 'react-bootstrap';
 
-type MainProps = {};
-
-const MainContainer = (props: MainProps) => {
+const Main = () => {
   let location = useLocation();
   let history = useHistory();
 
   //#region query param
   const query = useQuery();
   const src = query.get(RouterPathStrings.MAIN_PAGE_SRC_PARAM);
-  const repoName = query.get(RouterPathStrings.MAIN_PAGE_REPO_PARAM);
-  const authorName = query.get(RouterPathStrings.MAIN_PAGE_AUTHOR_PARAM);
+  //#endregion
+
+  //#region state
+  const [showAddModal, setShowAddModal] = React.useState<boolean>();
   //#endregion
 
   //#region hooks
-  let [scripts, scriptLoadingError] = useScriptLoader(
-    src,
-    repoName,
-    authorName
-  );
+  const [metadataList, metadataListLoadingError] = useMetadataList();
   //#endregion
 
   const loadingLabelOrErrorMsg = React.useMemo(() => {
-    const errorMsg = scriptLoadingError;
+    const errorMsg = metadataListLoadingError;
     let loadingMsg = '';
-    if (!scripts) {
-      loadingMsg = 'Loading script.';
+    if (!metadataList) {
+      loadingMsg = 'Loading reading list.';
     }
 
-    return loadingMsg || errorMsg;
-  }, [scripts, scriptLoadingError]);
+    return errorMsg || loadingMsg;
+  }, [metadataList, metadataListLoadingError]);
 
-  if (!src && !repoName && !authorName) {
-    return (
-      <Redirect
-        to={{
-          pathname: RouterPathStrings.WELCOME_MODAL,
-          state: { background: location },
-        }}
-      />
+  const metadataElements: JSX.Element[] = React.useMemo(() => {
+    let result: JSX.Element[] = [];
+    if (metadataList) {
+      result = metadataList.map((item) => (
+        <Col key={item.id} className="pb-3 d-flex">
+          <Card className="w-100">
+            {/* <Card.Img variant="top" src="holder.js/100px180" /> */}
+            <Card.Body>
+              <Card.Title>{item.repoName}</Card.Title>
+              <Card.Text className="text-muted">{item.author}</Card.Text>
+              <Card.Text className="max-three-lines py-1">
+                {item.description}
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      ));
+    }
+    // add "Add button"
+    result.push(
+      <Col className="pb-3 d-flex">
+        <Card className="w-100 align-content-center align-items-center text-center">
+          <Card.Body>
+            <Card.Title>Add New</Card.Title>
+            <span>&#43;</span>
+          </Card.Body>
+        </Card>
+      </Col>
     );
-  }
+    return result;
+  }, [metadataList]);
+
+  const onLoadScript = async () => {
+    // TODO: loading indicator
+    // TODO: load from source
+    // TODO: update DB
+    // TODO: done, jump to url
+  };
 
   return (
-    <SettingContext>
+    <>
       <LoadingIndicatorModal loadingLabel={loadingLabelOrErrorMsg} />
+      {showAddModal && <AddNewRepoModal onLoad={onLoadScript} />}
       <div id="main">
         {!loadingLabelOrErrorMsg && (
-          <>
-            <SidePanel />
-            <Content scripts={scripts} />
-          </>
+          <Container>
+            <Row
+              xxl={5}
+              lg={4}
+              md={3}
+              xs={1}
+              className="d-flex flex-wrap align-items-stretch"
+            >
+              {metadataElements}
+            </Row>
+          </Container>
         )}
       </div>
-      {/* // TODO: add popup to paste URL */}
-    </SettingContext>
+    </>
   );
 };
 
-export default MainContainer;
-
-const LoadingIndicatorModal = (props: { loadingLabel: string }) => {
-  return (
-    <Modal show={!!props.loadingLabel} backdrop="static" size="lg" centered>
-      <Modal.Dialog>
-        <Modal.Header>
-          <Modal.Title>Loading</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-          <p>{props.loadingLabel}</p>
-        </Modal.Body>
-      </Modal.Dialog>
-    </Modal>
-  );
-};
+export default Main;

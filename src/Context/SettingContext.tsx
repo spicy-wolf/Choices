@@ -23,7 +23,7 @@ const ContextInstance = React.createContext<SettingContextType>(
 type SettingContextProps = {
   children: React.ReactNode;
 };
-export const SettingContext = (props: SettingContextProps) => {
+export const SettingContextProvider = (props: SettingContextProps) => {
   const [setting, setSetting] = React.useState<SettingContextType>(
     SettingContextDefault
   );

@@ -44,7 +44,7 @@ const Content = (props: ContentProps) => {
     const currentScripts = props.scripts;
     StatementEngine.Executor(currentScripts[statementCounter], {
       addReadingLogs,
-      setNextStatementById,
+      //setNextStatementById,
     });
     setStatementCounter(statementCounter + 1);
     setExecuteMore(false);

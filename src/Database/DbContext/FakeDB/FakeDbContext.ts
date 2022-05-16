@@ -87,13 +87,19 @@ export class FakeDbContext extends AbstractDbContext {
   //#endregion
 
   //#region SaveData
-  public async getAllSaveData(): Promise<Types.SaveDataType[]> {
-    throw 'Not Implemented';
+  public async getAllSaveDataFromMetadataId(
+    metadataId: string
+  ): Promise<Types.SaveDataType[]> {
+    const result = this.saveDataDb.filter(
+      (item) => item.scriptId === metadataId
+    );
+    return result;
   }
   public async getSaveDataFromId(
     saveDataId: string
   ): Promise<Types.SaveDataType> {
-    throw 'Not Implemented';
+    const result = this.saveDataDb.find((item) => item.id === saveDataId);
+    return result;
   }
   public async addSaveData(
     saveData: Types.SaveDataType,
@@ -116,7 +122,11 @@ export class FakeDbContext extends AbstractDbContext {
   public async getReadLogsFromSaveDataId(
     saveDataId: string
   ): Promise<Types.ReadLogType[]> {
-    throw 'Not Implemented';
+    const result = this.readLogDb.filter(
+      (item) => item.saveDataId === saveDataId
+    );
+    // TODO: order by
+    return result;
   }
   public async pushReadLog(
     saveDataId: string,
