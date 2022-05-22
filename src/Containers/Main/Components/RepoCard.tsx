@@ -3,10 +3,10 @@ import { Card, Col } from 'react-bootstrap';
 import * as Types from '@src/Types';
 import * as Utils from '@src/Utils';
 import './RepoCard.scss';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export const RepoCard = (props: { item: Types.RepoMetadataType }) => {
-  let history = useHistory();
+  let navigate = useNavigate();
 
   const thumbnailBgColor = React.useMemo(() => {
     return Utils.generateColorFromStr(
@@ -21,7 +21,7 @@ export const RepoCard = (props: { item: Types.RepoMetadataType }) => {
         props.item?.author
       );
       if (history) {
-        history.push(url);
+        navigate(url);
       }
     }
   };

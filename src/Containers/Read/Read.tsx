@@ -3,7 +3,7 @@ import './Read.scss';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
 import { useSetting } from '@src/Context';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Modal, Spinner } from 'react-bootstrap';
 import { useMetadata } from './Hooks/useMetadata';
 import { useScripts } from './Hooks/useScripts';
@@ -15,7 +15,7 @@ type ReadProps = {};
 
 const Read = (props: ReadProps) => {
   let location = useLocation();
-  let history = useHistory();
+  let navigate = useNavigate();
 
   //#region query param
   const query = useQuery();
