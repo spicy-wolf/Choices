@@ -1,34 +1,27 @@
 import React from 'react';
 import { RouterPathStrings } from '@src/Constants';
 import { Main, Read } from '@src/Containers';
-import {
-  Switch,
-  Route,
-  useLocation,
-  useHistory,
-  Redirect,
-} from 'react-router-dom';
+import { Routes, Route, Location, useLocation } from 'react-router-dom';
 
 const RootRouter = () => {
-  let history = useHistory();
-  let location = useLocation<{ background: ReturnType<typeof useLocation> }>();
+  let location = useLocation();
 
-  // https://reactrouter.com/web/example/modal-gallery
-  let background = location.state?.background;
+  // https://reactrouter.com/docs/en/v6/examples/modal
+  let state = location.state as {
+    backgroundLocation?: Location;
+  };
 
   return (
     <>
-      <Switch location={background || location}>
-        <Route path={RouterPathStrings.READ_PAGE}>
-          <Read />
-        </Route>
-        <Route path={RouterPathStrings.MAIN_PAGE}>
-          <Main />
-        </Route>
-      </Switch>
+      <Routes location={state?.backgroundLocation || location}>
+        <Route path={RouterPathStrings.READ_PAGE} element={<Read />} />
+        <Route path={RouterPathStrings.MAIN_PAGE} element={<Main />} />
+      </Routes>
 
       {/* Show the modal when a background page is set */}
-      {background && <></>}
+      {state?.backgroundLocation && (
+        <Routes>{/* place modal route here */}</Routes>
+      )}
     </>
   );
 };

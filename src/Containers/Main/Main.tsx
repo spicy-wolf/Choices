@@ -2,7 +2,7 @@ import React from 'react';
 import './Main.scss';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useMetadataList from './Hooks/useMetadataList';
 import { AddNewRepoModal, LoadingIndicatorModal } from '../Modal';
 import { Card, Col, Container, Row } from 'react-bootstrap';
@@ -10,7 +10,7 @@ import { RepoCard } from './Components/RepoCard';
 
 const Main = () => {
   let location = useLocation();
-  let history = useHistory();
+  let navigate = useNavigate();
 
   //#region query param
   const query = useQuery();
