@@ -31,7 +31,9 @@ export abstract class AbstractDbContext {
   //#endregion
 
   //#region SaveData
-  public abstract getAllSaveData(): Promise<Types.SaveDataType[]>;
+  public abstract getAllSaveDataFromMetadataId(
+    metadataId: string
+  ): Promise<Types.SaveDataType[]>;
   public abstract getSaveDataFromId(
     saveDataId: string
   ): Promise<Types.SaveDataType>;

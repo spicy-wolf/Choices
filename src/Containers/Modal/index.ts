@@ -1,3 +1,4 @@
-import WelcomeModal from './WelcomeModal/WelcomModal';
+import AddNewRepoModal from './AddNewRepoModal/AddNewRepoModal';
+import LoadingIndicatorModal from './LoadingIndicatorModal/LoadingIndicatorModal';
 
-export { WelcomeModal };
+export { AddNewRepoModal, LoadingIndicatorModal };

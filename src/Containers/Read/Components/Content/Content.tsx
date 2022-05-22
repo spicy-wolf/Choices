@@ -44,7 +44,7 @@ const Content = (props: ContentProps) => {
     const currentScripts = props.scripts;
     StatementEngine.Executor(currentScripts[statementCounter], {
       addReadingLogs,
-      setNextStatementById,
+      //setNextStatementById,
     });
     setStatementCounter(statementCounter + 1);
     setExecuteMore(false);
@@ -60,7 +60,7 @@ const Content = (props: ContentProps) => {
 
   const theStory = React.useMemo(() => {
     const result = readingLogs.map((statement) => (
-      <StatementEngine.RenderContent {...statement} />
+      <StatementEngine.RenderContent key={statement.id} {...statement} />
     ));
     return result;
   }, [readingLogs]);

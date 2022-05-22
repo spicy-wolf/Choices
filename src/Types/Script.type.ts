@@ -1,3 +1,3 @@
-import { AbstractStatementType } from './Statements';
+import { AnyStatementType } from './Statements';
 
-export type ScriptType = AbstractStatementType[];
+export type ScriptType = AnyStatementType[];

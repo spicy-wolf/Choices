@@ -6,13 +6,13 @@ enum SourceFromEnum {
   File = 2,
 }
 
-const NewRepo = () => {
+const AddNewRepoModal = (props: { onLoad: () => Promise<void> }) => {
   const [selectedSourceFrom, setSelectedSourceFrom] = useState<SourceFromEnum>(
     SourceFromEnum.Url
   );
   const [validated, setValidated] = useState(false);
 
-  const handleSubmit = (event: {
+  const handleSubmit = async (event: {
     currentTarget: any;
     preventDefault: () => void;
     stopPropagation: () => void;
@@ -21,6 +21,7 @@ const NewRepo = () => {
     const isValid = form.checkValidity();
     setValidated(isValid);
     if (isValid) {
+      await props.onLoad();
     }
 
     event.preventDefault();
@@ -29,18 +30,6 @@ const NewRepo = () => {
 
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
-      <Form.Group className="mb-3">
-        <Form.Label>Author</Form.Label>
-        <Form.Control type="text" required />
-        <Form.Control.Feedback type="invalid">Required</Form.Control.Feedback>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Title</Form.Label>
-        <Form.Control type="text" required />
-        <Form.Control.Feedback type="invalid">Required</Form.Control.Feedback>
-      </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Check
           inline
@@ -63,7 +52,7 @@ const NewRepo = () => {
       </Form.Group>
 
       {selectedSourceFrom === SourceFromEnum.Url && (
-        <Form.Group className="mb-3 ">
+        <Form.Group controlId="formSrc" className="mb-3 ">
           <Form.Label>Release Zip URL</Form.Label>
           <Form.Control type="text" required />
         </Form.Group>
@@ -81,4 +70,4 @@ const NewRepo = () => {
   );
 };
 
-export default NewRepo;
+export default AddNewRepoModal;

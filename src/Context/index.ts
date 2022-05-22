@@ -1,7 +1,7 @@
 import { MainContext } from './MainContext';
 import type { MainContextType } from './MainContext';
 import {
-  SettingContext,
+  SettingContextProvider,
   useSetting,
   useTheme,
   ThemeList,
@@ -12,7 +12,7 @@ import { DbContextProvider } from './DbContext';
 export {
   MainContext,
   MainContextType,
-  SettingContext,
+  SettingContextProvider,
   useSetting,
   ThemeContextType,
   ThemeList,

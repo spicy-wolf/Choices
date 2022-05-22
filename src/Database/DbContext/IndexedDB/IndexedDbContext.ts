@@ -50,7 +50,9 @@ export class IndexedDbContext extends AbstractDbContext {
   //#endregion
 
   //#region SaveData
-  public async getAllSaveData(): Promise<Types.SaveDataType[]> {
+  public async getAllSaveDataFromMetadataId(
+    metadataId: string
+  ): Promise<Types.SaveDataType[]> {
     throw 'Not Implemented';
   }
   public async getSaveDataFromId(
