@@ -25,7 +25,7 @@ module.exports = (env) => ({
         exclude: /node_modules/,
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.(sa|sc|c)ss$/,
         use: [
           // Creates `style` nodes from JS strings
           'style-loader',

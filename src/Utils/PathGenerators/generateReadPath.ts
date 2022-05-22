@@ -4,7 +4,7 @@ export const generateReadPath = (
   repoName?: string,
   authorName?: string
 ): string => {
-  let result = RouterPathStrings.MAIN_PAGE;
+  let result = RouterPathStrings.READ_PAGE;
 
   if (repoName || authorName) {
     result += '?';
