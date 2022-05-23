@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
 import { useSetting, useTheme } from '@src/Context';
 import * as Types from '@src/Types';
+import { VariableSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
 
 type AnyStatementType = Types.Statements.AnyStatementType;
 type ContentProps = { scripts: AnyStatementType[] };
@@ -19,76 +21,70 @@ const Content = (props: ContentProps) => {
 
   const contentRef = React.useRef<HTMLDivElement>();
 
-  React.useEffect(() => {
-    if (!executeMore) {
-      // TODO: more features on this condition
-      // pre-load some. TODO: hard code 100?
-      if (statementCounter < props.scripts.length && distanceToBottom < 100) {
-        /**
-         * The whole Content render is similar to a CPU instruction cycle.
-         * so, to avoid React "maximum update depth exceeded" error
-         * we use settimeout to push setExecuteMore into the macrotask queue.
-         * This can move the next React render cycle outside of the current "state update stack" (like a call stack)
-         */
-        setTimeout(() => setExecuteMore(true), 0);
+  const rowHeights = React.useRef<number[]>([]);
+
+  const readingLogsForRender = useMemo(() => {
+    const _groupedReadingLogs = [];
+    let group: Types.Statements.AnyStatementType[] = [];
+    for (let log of readingLogs) {
+      if (log.type === 'sentence' || log.type === 's') {
+        // group sentences together
+        group.push(log);
+      } else {
+        if (group.length > 0) {
+          _groupedReadingLogs.push(group.slice());
+          group = [];
+        }
+        _groupedReadingLogs.push([log]);
       }
     }
-  }, [executeMore, distanceToBottom, statementCounter, props.scripts]);
-
-  React.useEffect(() => {
-    if (!executeMore) return;
-
-    /**
-     * Execute one statement
-     */
-    const currentScripts = props.scripts;
-    StatementEngine.Executor(currentScripts[statementCounter], {
-      addReadingLogs,
-      //setNextStatementById,
-    });
-    setStatementCounter(statementCounter + 1);
-    setExecuteMore(false);
-  }, [executeMore]);
-
-  React.useEffect(() => {
-    if (!contentRef.current) return;
-
-    const element = contentRef.current;
-    const _distanceToBottom = getDistanceToBottom(element);
-    setDistanceToBottom(_distanceToBottom);
+    console.log(_groupedReadingLogs);
+    return _groupedReadingLogs;
   }, [readingLogs]);
 
-  const theStory = React.useMemo(() => {
-    const result = readingLogs.map((statement) => (
-      <StatementEngine.RenderContent key={statement.id} {...statement} />
-    ));
-    return result;
-  }, [readingLogs]);
+  const itemCount: number = useMemo(
+    () => (readingLogsForRender?.length || 0) + 1,
+    [readingLogsForRender]
+  );
+  console.log(itemCount);
+
+  const isItemLoaded = (index: number): boolean => {
+    return !!readingLogsForRender?.[index];
+  };
 
   const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
     let newLogs = [...readingLogs, ...pendingLogs];
+    console.log(newLogs);
     setReadingLogs(newLogs);
   };
 
-  const setNextStatementById = (id: string): void => {
-    let newCounter = props.scripts.findIndex((item) => item && item.id === id);
-    if (newCounter === -1) {
-      // exception
-    } else {
-      setStatementCounter(newCounter);
+  const loadMoreItems = async (
+    startIndex: number,
+    stopIndex: number
+  ): Promise<void> => {
+    const currentScripts = props.scripts;
+    for (let i = startIndex; i <= stopIndex && i < currentScripts.length; i++) {
+      StatementEngine.Executor(currentScripts[i], {
+        addReadingLogs,
+        //setNextStatementById,
+      });
     }
   };
 
-  const onScrollWrapper = (e: React.UIEvent<HTMLDivElement>) => {
-    let element = e.target as HTMLDivElement;
-    const _distanceToBottom = getDistanceToBottom(element);
-    setDistanceToBottom(_distanceToBottom);
+  const listRef = React.useRef<List<any>>();
+  const getItemSize = (index: number) => rowHeights.current[index] || 10;
+  const setItemSize = (index: number, newHeight: number) => {
+    const oldHeight = rowHeights.current[index];
+    rowHeights.current[index] = newHeight;
+    if (oldHeight !== newHeight) {
+      if (listRef.current) listRef.current.resetAfterIndex(index);
+    }
   };
 
   return (
     <div
       id="content"
-      onScroll={onScrollWrapper}
+      //onScroll={onScrollWrapper}
       ref={contentRef}
       style={{
         backgroundColor: contentBgColor,
@@ -96,19 +92,66 @@ const Content = (props: ContentProps) => {
         fontSize: fontSize,
       }}
     >
-      <div id="contentBody">{theStory}</div>
+      <div id="contentBody">
+        <InfiniteLoader
+          isItemLoaded={isItemLoaded}
+          itemCount={itemCount}
+          loadMoreItems={loadMoreItems}
+        >
+          {({ onItemsRendered, ref }) => (
+            <List
+              height={600}
+              width="100%"
+              itemCount={itemCount}
+              itemSize={getItemSize}
+              onItemsRendered={onItemsRendered}
+              ref={(list) => {
+                ref(list);
+                listRef.current = list;
+              }}
+            >
+              {({ data, index, style }) => (
+                <div style={style}>
+                  <Row
+                    data={readingLogsForRender[index]}
+                    index={index}
+                    setItemSize={setItemSize}
+                  />
+                </div>
+              )}
+            </List>
+          )}
+        </InfiniteLoader>
+      </div>
+    </div>
+  );
+};
+
+const Row = (props: {
+  data: AnyStatementType[];
+  index: number;
+  //style: React.CSSProperties;
+  setItemSize: (index: number, height: number) => void;
+}): JSX.Element => {
+  const theStory = React.useMemo(() => {
+    const result = props.data?.map((statement) => (
+      <StatementEngine.RenderContent key={statement.id} {...statement} />
+    ));
+    return result;
+  }, [props.data]);
+  return (
+    <div
+      ref={(ref) => {
+        if (ref) {
+          console.log(ref);
+          props.setItemSize(props.index, ref.getBoundingClientRect().height);
+        }
+      }}
+      //style={styles.row}
+    >
+      {theStory}
     </div>
   );
 };
 
 export default Content;
-
-//
-// helper functions
-//
-function getDistanceToBottom(element: HTMLElement): number {
-  if (!element) return 0;
-  const _distanceToBottom =
-    element.scrollHeight - element.scrollTop - element.clientHeight;
-  return _distanceToBottom;
-}

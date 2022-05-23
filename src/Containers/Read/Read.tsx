@@ -52,7 +52,7 @@ const Read = (props: ReadProps) => {
         {!loadingLabelOrErrorMsg && (
           <>
             <SidePanel />
-            <Content scripts={scripts} />
+            {scripts && scripts.length > 0 && <Content scripts={scripts} />}
           </>
         )}
       </div>
