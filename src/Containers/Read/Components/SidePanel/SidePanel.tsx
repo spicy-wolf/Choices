@@ -6,12 +6,14 @@ import { IoGitBranch, IoSettingsOutline } from 'react-icons/io5';
 import SidePanelControlBtn from './SidePanelControlBtn/SidePanelControlBtn';
 import { useTheme } from '@src/Context';
 import { SettingPanel } from './SettingPanel';
+import { useWindowSize } from '@src/Context/WindowSizeContext';
 
 type SidePanelProps = {};
 
 const SidePanel = (props: SidePanelProps) => {
   const { sidePanelBgColor, sidePanelSectionColor, sidePanelFontColor } =
     useTheme();
+  const windowSize = useWindowSize();
 
   const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(false);
   const toggleSidebar = (event: React.FormEvent<HTMLDivElement>) => {
@@ -24,7 +26,11 @@ const SidePanel = (props: SidePanelProps) => {
     <div
       id="sidePanel"
       className={sidePanelClassName}
-      style={{ color: sidePanelFontColor }}
+      style={{
+        color: sidePanelFontColor,
+        // Note: this is a dirty way to set the side panel height due to IOS 100vh capability
+        height: windowSize.innerHeight,
+      }}
     >
       <div id="sidePanelBody" className={sidePanelClassName}>
         <SidePanelControlBtn
