@@ -1,25 +1,25 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
 import { useSetting, useTheme } from '@src/Context';
 import * as Types from '@src/Types';
 import { VariableSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
+import { ContentRow } from '../ContentRow/ContentRow';
 
 type AnyStatementType = Types.Statements.AnyStatementType;
 type ContentProps = { scripts: AnyStatementType[] };
 
 const Content = (props: ContentProps) => {
   const [statementCounter, setStatementCounter] = React.useState<number>(0);
-  const [executeMore, setExecuteMore] = React.useState<boolean>(false);
   const [readingLogs, setReadingLogs] = React.useState<AnyStatementType[]>([]); // TODO: load history
-
-  const [distanceToBottom, setDistanceToBottom] = React.useState<number>(0);
 
   const { contentBgColor, contentFontColor } = useTheme();
   const { fontSize } = useSetting();
 
   const contentRef = React.useRef<HTMLDivElement>();
+  const infiniteLoaderRef = React.useRef<InfiniteLoader>();
+  const listRef = React.useRef<List<any>>();
 
   const rowHeights = React.useRef<number[]>([]);
 
@@ -38,47 +38,56 @@ const Content = (props: ContentProps) => {
         _groupedReadingLogs.push([log]);
       }
     }
-    console.log(_groupedReadingLogs);
+    // flush what is reminded in the group
+    if (group.length > 0) {
+      _groupedReadingLogs.push(group.slice());
+      group = [];
+    }
+
     return _groupedReadingLogs;
   }, [readingLogs]);
 
-  const itemCount: number = useMemo(
-    () => (readingLogsForRender?.length || 0) + 1,
-    [readingLogsForRender]
-  );
-  console.log(itemCount);
+  const itemCount: number = (readingLogsForRender?.length || 0) + 1;
 
   const isItemLoaded = (index: number): boolean => {
-    return !!readingLogsForRender?.[index];
+    const isLoaded = !!readingLogsForRender?.[index];
+    return isLoaded;
   };
+
+  useEffect(() => {}, []);
 
   const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
     let newLogs = [...readingLogs, ...pendingLogs];
-    console.log(newLogs);
     setReadingLogs(newLogs);
   };
 
+  /**
+   * startIndex & stopIndex are useless in this function because each log of readingLogsForRender
+   * is not one to one mapped to the scripts.
+   * Therefore, if this function is invoked, then execute scripts until at least
+   * on log is pushed to the readingLog
+   *
+   * @param startIndex useless in this case
+   * @param stopIndex useless in this case
+   */
   const loadMoreItems = async (
     startIndex: number,
     stopIndex: number
   ): Promise<void> => {
+    // execute one script each time
     const currentScripts = props.scripts;
-    for (let i = startIndex; i <= stopIndex && i < currentScripts.length; i++) {
-      StatementEngine.Executor(currentScripts[i], {
-        addReadingLogs,
-        //setNextStatementById,
-      });
-    }
+    StatementEngine.Executor(currentScripts[statementCounter], {
+      addReadingLogs,
+      //setNextStatementById,
+    });
+    setStatementCounter(statementCounter + 1);
   };
 
-  const listRef = React.useRef<List<any>>();
-  const getItemSize = (index: number) => rowHeights.current[index] || 10;
+  // init to a very large height 100, otherwise too many logs will be render as squished together
+  const getItemSize = (index: number) => rowHeights.current[index] || 100;
   const setItemSize = (index: number, newHeight: number) => {
-    const oldHeight = rowHeights.current[index];
     rowHeights.current[index] = newHeight;
-    if (oldHeight !== newHeight) {
-      if (listRef.current) listRef.current.resetAfterIndex(index);
-    }
+    if (listRef.current) listRef.current.resetAfterIndex(index);
   };
 
   return (
@@ -94,9 +103,12 @@ const Content = (props: ContentProps) => {
     >
       <div id="contentBody">
         <InfiniteLoader
+          ref={infiniteLoaderRef}
           isItemLoaded={isItemLoaded}
           itemCount={itemCount}
           loadMoreItems={loadMoreItems}
+          minimumBatchSize={1}
+          threshold={1} // increase retry bottom times
         >
           {({ onItemsRendered, ref }) => (
             <List
@@ -105,6 +117,7 @@ const Content = (props: ContentProps) => {
               itemCount={itemCount}
               itemSize={getItemSize}
               onItemsRendered={onItemsRendered}
+              onScroll={() => {}}
               ref={(list) => {
                 ref(list);
                 listRef.current = list;
@@ -112,7 +125,7 @@ const Content = (props: ContentProps) => {
             >
               {({ data, index, style }) => (
                 <div style={style}>
-                  <Row
+                  <ContentRow
                     data={readingLogsForRender[index]}
                     index={index}
                     setItemSize={setItemSize}
@@ -123,33 +136,6 @@ const Content = (props: ContentProps) => {
           )}
         </InfiniteLoader>
       </div>
-    </div>
-  );
-};
-
-const Row = (props: {
-  data: AnyStatementType[];
-  index: number;
-  //style: React.CSSProperties;
-  setItemSize: (index: number, height: number) => void;
-}): JSX.Element => {
-  const theStory = React.useMemo(() => {
-    const result = props.data?.map((statement) => (
-      <StatementEngine.RenderContent key={statement.id} {...statement} />
-    ));
-    return result;
-  }, [props.data]);
-  return (
-    <div
-      ref={(ref) => {
-        if (ref) {
-          console.log(ref);
-          props.setItemSize(props.index, ref.getBoundingClientRect().height);
-        }
-      }}
-      //style={styles.row}
-    >
-      {theStory}
     </div>
   );
 };

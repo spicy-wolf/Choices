@@ -28,8 +28,7 @@ const Read = (props: ReadProps) => {
   const [metadata, metadataLoadingError] = useMetadata(repoName, authorName);
   const [scripts, scriptLoadingError] = useScripts(metadata?.id);
   // const [readingLogs, readingLogsLoadingError] = useReadingLogsLoader(
-  //   repoName,
-  //   authorName
+  //   saveDataId?.id
   // );
   //#endregion
 
@@ -52,7 +51,7 @@ const Read = (props: ReadProps) => {
         {!loadingLabelOrErrorMsg && (
           <>
             <SidePanel />
-            {scripts && scripts.length > 0 && <Content scripts={scripts} />}
+            <Content scripts={scripts} />
           </>
         )}
       </div>

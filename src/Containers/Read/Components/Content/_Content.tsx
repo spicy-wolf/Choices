@@ -7,6 +7,10 @@ import * as Types from '@src/Types';
 type AnyStatementType = Types.Statements.AnyStatementType;
 type ContentProps = { scripts: AnyStatementType[] };
 
+// TODO: remove me
+/**
+ * @deprecated since use react-window
+ */
 const Content = (props: ContentProps) => {
   const [statementCounter, setStatementCounter] = React.useState<number>(0);
   const [executeMore, setExecuteMore] = React.useState<boolean>(false);
@@ -101,7 +105,7 @@ const Content = (props: ContentProps) => {
   );
 };
 
-export default Content;
+// export default Content;
 
 //
 // helper functions
