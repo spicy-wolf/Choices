@@ -1,94 +1,101 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
 import { useSetting, useTheme } from '@src/Context';
 import * as Types from '@src/Types';
+import { VariableSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
+import { ContentRow } from '../ContentRow/ContentRow';
+import { useWindowResize } from '@src/Utils';
 
 type AnyStatementType = Types.Statements.AnyStatementType;
 type ContentProps = { scripts: AnyStatementType[] };
 
 const Content = (props: ContentProps) => {
   const [statementCounter, setStatementCounter] = React.useState<number>(0);
-  const [executeMore, setExecuteMore] = React.useState<boolean>(false);
   const [readingLogs, setReadingLogs] = React.useState<AnyStatementType[]>([]); // TODO: load history
-
-  const [distanceToBottom, setDistanceToBottom] = React.useState<number>(0);
 
   const { contentBgColor, contentFontColor } = useTheme();
   const { fontSize } = useSetting();
+  const [screenX, screenY] = useWindowResize();
 
   const contentRef = React.useRef<HTMLDivElement>();
+  const infiniteLoaderRef = React.useRef<InfiniteLoader>();
+  const listRef = React.useRef<List<any>>();
 
-  React.useEffect(() => {
-    if (!executeMore) {
-      // TODO: more features on this condition
-      // pre-load some. TODO: hard code 100?
-      if (statementCounter < props.scripts.length && distanceToBottom < 100) {
-        /**
-         * The whole Content render is similar to a CPU instruction cycle.
-         * so, to avoid React "maximum update depth exceeded" error
-         * we use settimeout to push setExecuteMore into the macrotask queue.
-         * This can move the next React render cycle outside of the current "state update stack" (like a call stack)
-         */
-        setTimeout(() => setExecuteMore(true), 0);
+  const rowHeights = React.useRef<number[]>([]);
+
+  const readingLogsForRender = useMemo(() => {
+    const _groupedReadingLogs = [];
+    let group: Types.Statements.AnyStatementType[] = [];
+    for (let log of readingLogs) {
+      if (log.type === 'sentence' || log.type === 's') {
+        // group sentences together
+        group.push(log);
+      } else {
+        if (group.length > 0) {
+          _groupedReadingLogs.push(group.slice());
+          group = [];
+        }
+        _groupedReadingLogs.push([log]);
       }
     }
-  }, [executeMore, distanceToBottom, statementCounter, props.scripts]);
+    // flush what is reminded in the group
+    if (group.length > 0) {
+      _groupedReadingLogs.push(group.slice());
+      group = [];
+    }
 
-  React.useEffect(() => {
-    if (!executeMore) return;
-
-    /**
-     * Execute one statement
-     */
-    const currentScripts = props.scripts;
-    StatementEngine.Executor(currentScripts[statementCounter], {
-      addReadingLogs,
-      //setNextStatementById,
-    });
-    setStatementCounter(statementCounter + 1);
-    setExecuteMore(false);
-  }, [executeMore]);
-
-  React.useEffect(() => {
-    if (!contentRef.current) return;
-
-    const element = contentRef.current;
-    const _distanceToBottom = getDistanceToBottom(element);
-    setDistanceToBottom(_distanceToBottom);
+    return _groupedReadingLogs;
   }, [readingLogs]);
 
-  const theStory = React.useMemo(() => {
-    const result = readingLogs.map((statement) => (
-      <StatementEngine.RenderContent key={statement.id} {...statement} />
-    ));
-    return result;
-  }, [readingLogs]);
+  const itemCount: number = useMemo(
+    () => (readingLogsForRender?.length || 0) + 1,
+    [readingLogsForRender]
+  );
+
+  const isItemLoaded = (index: number): boolean => {
+    const isLoaded = !!readingLogsForRender?.[index];
+    return isLoaded;
+  };
 
   const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
     let newLogs = [...readingLogs, ...pendingLogs];
     setReadingLogs(newLogs);
   };
 
-  const setNextStatementById = (id: string): void => {
-    let newCounter = props.scripts.findIndex((item) => item && item.id === id);
-    if (newCounter === -1) {
-      // exception
-    } else {
-      setStatementCounter(newCounter);
-    }
+  /**
+   * startIndex & stopIndex are useless in this function because each log of readingLogsForRender
+   * is not one to one mapped to the scripts.
+   * Therefore, if this function is invoked, then execute scripts until at least
+   * on log is pushed to the readingLog
+   *
+   * @param startIndex useless in this case
+   * @param stopIndex useless in this case
+   */
+  const loadMoreItems = async (
+    startIndex: number,
+    stopIndex: number
+  ): Promise<void> => {
+    // execute one script each time / or execute to load at least 100 words
+    const currentScripts = props.scripts;
+    StatementEngine.Executor(currentScripts[statementCounter], {
+      addReadingLogs,
+      //setNextStatementById,
+    });
+    setStatementCounter(statementCounter + 1);
   };
 
-  const onScrollWrapper = (e: React.UIEvent<HTMLDivElement>) => {
-    let element = e.target as HTMLDivElement;
-    const _distanceToBottom = getDistanceToBottom(element);
-    setDistanceToBottom(_distanceToBottom);
+  // init to a very large height 100, otherwise too many logs will be render as squished together
+  const getItemSize = (index: number) => rowHeights.current[index] || 100;
+  const setItemSize = (index: number, newHeight: number) => {
+    rowHeights.current[index] = newHeight;
+    if (listRef.current) listRef.current.resetAfterIndex(index);
   };
 
   return (
     <div
       id="content"
-      onScroll={onScrollWrapper}
       ref={contentRef}
       style={{
         backgroundColor: contentBgColor,
@@ -96,19 +103,43 @@ const Content = (props: ContentProps) => {
         fontSize: fontSize,
       }}
     >
-      <div id="contentBody">{theStory}</div>
+      <div id="contentBody">
+        <InfiniteLoader
+          ref={infiniteLoaderRef}
+          isItemLoaded={isItemLoaded}
+          itemCount={itemCount}
+          loadMoreItems={loadMoreItems}
+          minimumBatchSize={1}
+          threshold={1} // increase retry bottom times
+        >
+          {({ onItemsRendered, ref }) => (
+            <List
+              height={screenY}
+              width="100%"
+              itemCount={itemCount}
+              itemSize={getItemSize}
+              onItemsRendered={onItemsRendered}
+              onScroll={() => {}}
+              ref={(list) => {
+                ref(list);
+                listRef.current = list;
+              }}
+            >
+              {({ index, style }) => (
+                <div style={style}>
+                  <ContentRow
+                    data={readingLogsForRender[index]}
+                    index={index}
+                    setItemSize={setItemSize}
+                  />
+                </div>
+              )}
+            </List>
+          )}
+        </InfiniteLoader>
+      </div>
     </div>
   );
 };
 
 export default Content;
-
-//
-// helper functions
-//
-function getDistanceToBottom(element: HTMLElement): number {
-  if (!element) return 0;
-  const _distanceToBottom =
-    element.scrollHeight - element.scrollTop - element.clientHeight;
-  return _distanceToBottom;
-}

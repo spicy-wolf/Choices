@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Statements } from '@src/Types';
 
+// TODO: return something to mention whether this round of execution added logs or not
 export const Executor = (
   statement: Statements.AnyStatementType,
   hooks: {

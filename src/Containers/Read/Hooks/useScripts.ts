@@ -6,14 +6,14 @@ type ScriptType = Types.ScriptType;
 
 export const useScripts = (metadataId: string) => {
   const { dbContext } = useDbContext();
-  const [scripts, setScripts] = useState<ScriptType>([]);
+  const [scripts, setScripts] = useState<ScriptType>();
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
     load();
 
     return () => {
-      setScripts([]);
+      setScripts(null);
       setError('');
     };
   }, [metadataId, dbContext]);
