@@ -6,6 +6,7 @@ import * as Types from '@src/Types';
 import { VariableSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { ContentRow } from '../ContentRow/ContentRow';
+import { useWindowResize } from '@src/Utils';
 
 type AnyStatementType = Types.Statements.AnyStatementType;
 type ContentProps = { scripts: AnyStatementType[] };
@@ -16,6 +17,7 @@ const Content = (props: ContentProps) => {
 
   const { contentBgColor, contentFontColor } = useTheme();
   const { fontSize } = useSetting();
+  const [screenX, screenY] = useWindowResize();
 
   const contentRef = React.useRef<HTMLDivElement>();
   const infiniteLoaderRef = React.useRef<InfiniteLoader>();
@@ -47,14 +49,15 @@ const Content = (props: ContentProps) => {
     return _groupedReadingLogs;
   }, [readingLogs]);
 
-  const itemCount: number = (readingLogsForRender?.length || 0) + 1;
+  const itemCount: number = useMemo(
+    () => (readingLogsForRender?.length || 0) + 1,
+    [readingLogsForRender]
+  );
 
   const isItemLoaded = (index: number): boolean => {
     const isLoaded = !!readingLogsForRender?.[index];
     return isLoaded;
   };
-
-  useEffect(() => {}, []);
 
   const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
     let newLogs = [...readingLogs, ...pendingLogs];
@@ -74,7 +77,7 @@ const Content = (props: ContentProps) => {
     startIndex: number,
     stopIndex: number
   ): Promise<void> => {
-    // execute one script each time
+    // execute one script each time / or execute to load at least 100 words
     const currentScripts = props.scripts;
     StatementEngine.Executor(currentScripts[statementCounter], {
       addReadingLogs,
@@ -93,7 +96,6 @@ const Content = (props: ContentProps) => {
   return (
     <div
       id="content"
-      //onScroll={onScrollWrapper}
       ref={contentRef}
       style={{
         backgroundColor: contentBgColor,
@@ -112,7 +114,7 @@ const Content = (props: ContentProps) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
-              height={600}
+              height={screenY}
               width="100%"
               itemCount={itemCount}
               itemSize={getItemSize}
@@ -123,7 +125,7 @@ const Content = (props: ContentProps) => {
                 listRef.current = list;
               }}
             >
-              {({ data, index, style }) => (
+              {({ index, style }) => (
                 <div style={style}>
                   <ContentRow
                     data={readingLogsForRender[index]}
