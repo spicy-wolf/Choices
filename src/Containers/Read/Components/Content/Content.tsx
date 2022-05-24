@@ -6,7 +6,7 @@ import * as Types from '@src/Types';
 import { VariableSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { ContentRow } from '../ContentRow/ContentRow';
-import { useWindowResize } from '@src/Utils';
+import { useWindowSize } from '@src/Context/WindowSizeContext';
 
 type AnyStatementType = Types.Statements.AnyStatementType;
 type ContentProps = { scripts: AnyStatementType[] };
@@ -17,7 +17,7 @@ const Content = (props: ContentProps) => {
 
   const { contentBgColor, contentFontColor } = useTheme();
   const { fontSize } = useSetting();
-  const [screenX, screenY] = useWindowResize();
+  const windowSize = useWindowSize();
 
   const contentRef = React.useRef<HTMLDivElement>();
   const infiniteLoaderRef = React.useRef<InfiniteLoader>();
@@ -114,7 +114,7 @@ const Content = (props: ContentProps) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
-              height={screenY}
+              height={windowSize.innerHeight}
               width="100%"
               itemCount={itemCount}
               itemSize={getItemSize}
