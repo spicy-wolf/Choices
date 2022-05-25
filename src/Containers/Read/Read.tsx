@@ -27,17 +27,24 @@ const Read = (props: ReadProps) => {
   const { themeName, fontSize } = useSetting();
   const [metadata, metadataLoadingError] = useMetadata(repoName, authorName);
   const [scripts, scriptLoadingError] = useScripts(metadata?.id);
-  const [saveData, saveDataFunc, autoSaveDataLoaderError] =
-    useAutoSaveDataLoader(metadata?.id);
+  const [
+    saveData,
+    saveDataFunc,
+    isAutoSaveDataLoaded,
+    autoSaveDataLoaderError,
+  ] = useAutoSaveDataLoader(metadata?.id);
   //#endregion
 
   const loadingLabelOrErrorMsg = React.useMemo(() => {
-    const errorMsg = metadataLoadingError || scriptLoadingError;
+    const errorMsg =
+      metadataLoadingError || scriptLoadingError || autoSaveDataLoaderError;
     let loadingMsg = '';
     if (!metadata) {
       loadingMsg = 'Loading metadata.';
     } else if (!scripts) {
       loadingMsg = 'Loading scripts.';
+    } else if (!isAutoSaveDataLoaded) {
+      loadingMsg = 'Loading save data.';
     }
 
     return errorMsg || loadingMsg;
