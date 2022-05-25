@@ -33,9 +33,11 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
         | { type: 'pushReadingLogs'; payload: Types.ReadLogType[] }
     ) => {
       if (action.type === 'setAll') {
+        if (action.payload === null) return null;
+
         const groupedReadingLogs = pushGroupedReadingLogs(
           null,
-          action.payload.readingLogs
+          action.payload?.readingLogs
         );
         return { ...action.payload, groupedReadingLogs };
       } else if (action.type === 'updateScriptCursorPos') {
@@ -105,6 +107,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
         readingLogIndex.current = _autoSaveData.readingLogs.length;
 
         saveDataDispatch({ type: 'setAll', payload: _autoSaveData });
+        setError('');
       } catch (err) {
         setError(err);
       }
@@ -118,9 +121,8 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
 
   const updateSaveDataDb = async () => {
     if (!dbContext) return;
-    if (!currentSaveDataId.current) {
-      setError('unknown save data id');
-    }
+    if (!currentSaveDataId.current) return;
+
     // build new save data, remove extra properties
     const _saveDate: Types.SaveDataType = {
       id: currentSaveDataId.current,
@@ -139,14 +141,16 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
   };
 
   //#region update wrapper
-  const updateScriptCursorPos = async (_scriptCursorPos: string) => {
+  const updateScriptCursorPos = async (
+    _scriptCursorPos: string
+  ): Promise<void> => {
     saveDataDispatch({
       type: 'updateScriptCursorPos',
       payload: _scriptCursorPos,
     });
   };
 
-  const updateLogCursorPos = async (_logCursorPos: string) => {
+  const updateLogCursorPos = async (_logCursorPos: string): Promise<void> => {
     saveDataDispatch({
       type: 'updateLogCursorPos',
       payload: _logCursorPos,
@@ -155,14 +159,16 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
 
   const updateSaveDataContext = async (
     _saveDataContext: Types.SaveDataContext
-  ) => {
+  ): Promise<void> => {
     saveDataDispatch({
       type: 'updateSaveDataContext',
       payload: _saveDataContext,
     });
   };
 
-  const pushReadingLogs = async (newLogs: Types.ReadLogType[]) => {
+  const pushReadingLogs = async (
+    newLogs: Types.ReadLogType[]
+  ): Promise<void> => {
     if (!currentSaveDataId.current) {
       setError('unknown save data id');
     }
@@ -190,7 +196,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
       scriptCursorPos: saveData?.scriptCursorPos,
       logCursorPos: saveData?.logCursorPos,
       saveDataContext: saveData?.context,
-      readingLogs: saveData?.groupedReadingLogs,
+      groupedReadingLogs: saveData?.groupedReadingLogs,
     }),
     [saveData]
   );
@@ -215,23 +221,24 @@ const pushGroupedReadingLogs = (
   let groupedReadingLogs = prevGroupedReadingLogs ?? [];
   groupedReadingLogs = groupedReadingLogs.slice(); // prepare a copy
 
-  for (let log of newReadingLogs) {
-    if (!log) continue;
+  if (newReadingLogs) {
+    for (let log of newReadingLogs) {
+      if (!log) continue;
 
-    const prevGrouped =
-      prevGroupedReadingLogs[prevGroupedReadingLogs.length - 1];
-    if (prevGrouped) {
-      const lastLogInPrevGrouped = prevGrouped[prevGrouped.length - 1];
-      if (
-        StatementEngine.isSentence(log) &&
-        StatementEngine.isSentence(lastLogInPrevGrouped)
-      ) {
-        prevGrouped.push(log);
+      const prevGrouped = groupedReadingLogs[groupedReadingLogs.length - 1];
+      if (prevGrouped) {
+        const lastLogInPrevGrouped = prevGrouped[prevGrouped.length - 1];
+        if (
+          StatementEngine.isSentence(log) &&
+          StatementEngine.isSentence(lastLogInPrevGrouped)
+        ) {
+          prevGrouped.push(log);
+        } else {
+          groupedReadingLogs.push([log]);
+        }
       } else {
         groupedReadingLogs.push([log]);
       }
-    } else {
-      groupedReadingLogs.push([log]);
     }
   }
 

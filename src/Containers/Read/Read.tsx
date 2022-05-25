@@ -14,9 +14,6 @@ import { useAutoSaveDataLoader } from './Hooks/useAutoSaveDataLoader';
 type ReadProps = {};
 
 const Read = (props: ReadProps) => {
-  let location = useLocation();
-  let navigate = useNavigate();
-
   //#region query param
   const query = useQuery();
   const repoName = query.get(RouterPathStrings.READ_PAGE_REPO_PARAM);
@@ -24,7 +21,6 @@ const Read = (props: ReadProps) => {
   //#endregion
 
   //#region hooks
-  const { themeName, fontSize } = useSetting();
   const [metadata, metadataLoadingError] = useMetadata(repoName, authorName);
   const [scripts, scriptLoadingError] = useScripts(metadata?.id);
   const [
@@ -48,7 +44,14 @@ const Read = (props: ReadProps) => {
     }
 
     return errorMsg || loadingMsg;
-  }, [scripts, scriptLoadingError]);
+  }, [
+    metadata,
+    scripts,
+    isAutoSaveDataLoaded,
+    metadataLoadingError,
+    scriptLoadingError,
+    autoSaveDataLoaderError,
+  ]);
 
   return (
     <>
@@ -57,7 +60,7 @@ const Read = (props: ReadProps) => {
         {!loadingLabelOrErrorMsg && (
           <>
             <SidePanel />
-            <Content scripts={scripts} />
+            <Content {...{ ...saveData, ...saveDataFunc }} scripts={scripts} />
           </>
         )}
       </div>
