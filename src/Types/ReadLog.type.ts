@@ -1,7 +1,7 @@
-export type ReadLogType = {
-  id?: string;
+import { AnyStatementType } from './Statements';
+
+export type ReadLogType = AnyStatementType & {
   saveDataId: string;
-  timestamp: number;
-  type: string;
-  data: string;
+  order: number;
+  timestamp: number; // timestamp cannot be used as order due to collision
 };

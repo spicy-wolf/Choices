@@ -1,15 +1,15 @@
 import React from 'react';
 import './Read.scss';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
 import { useSetting } from '@src/Context';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Modal, Spinner } from 'react-bootstrap';
-import { useMetadata } from './Hooks/useMetadata';
-import { useScripts } from './Hooks/useScripts';
-import { LoadingIndicatorModal } from '../Modal';
+import { LoadingIndicatorModal } from '@src/Containers/Modal';
 import SidePanel from './Components/SidePanel/SidePanel';
 import Content from './Components/Content/Content';
+import { useMetadata } from './Hooks/useMetadata';
+import { useScripts } from './Hooks/useScripts';
+import { useAutoSaveDataLoader } from './Hooks/useAutoSaveDataLoader';
 
 type ReadProps = {};
 
@@ -27,9 +27,8 @@ const Read = (props: ReadProps) => {
   const { themeName, fontSize } = useSetting();
   const [metadata, metadataLoadingError] = useMetadata(repoName, authorName);
   const [scripts, scriptLoadingError] = useScripts(metadata?.id);
-  // const [readingLogs, readingLogsLoadingError] = useReadingLogsLoader(
-  //   saveDataId?.id
-  // );
+  const [saveData, saveDataFunc, autoSaveDataLoaderError] =
+    useAutoSaveDataLoader(metadata?.id);
   //#endregion
 
   const loadingLabelOrErrorMsg = React.useMemo(() => {

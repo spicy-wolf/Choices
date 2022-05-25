@@ -44,52 +44,26 @@ export class IndexedDbContext extends AbstractDbContext {
   ): Promise<void> {
     throw 'Not Implemented';
   }
-  public async deleteScriptFromMetadataId(metaDataId: string): Promise<void> {
-    throw 'Not Implemented';
-  }
   //#endregion
 
-  //#region SaveData
+  //#region SaveData (included ReadLogs)
   public async getAllSaveDataFromMetadataId(
     metadataId: string
   ): Promise<Types.SaveDataType[]> {
     throw 'Not Implemented';
   }
-  public async getSaveDataFromId(
-    saveDataId: string
+  public async getAutoSaveDataFromMetadataId(
+    metadataId: string
   ): Promise<Types.SaveDataType> {
     throw 'Not Implemented';
   }
-  public async addSaveData(
-    saveData: Types.SaveDataType,
-    readLogs?: Types.ReadLogType[]
-  ): Promise<void> {
+  public async addSaveData(saveData: Types.SaveDataType): Promise<void> {
     throw 'Not Implemented';
   }
-  public async putSaveData(
-    saveData: Types.SaveDataType,
-    readLogs?: Types.ReadLogType[]
-  ): Promise<void> {
+  public async putSaveData(saveData: Types.SaveDataType): Promise<void> {
     throw 'Not Implemented';
   }
   public async deleteSaveDataFromId(saveDataId: string): Promise<void> {
-    throw 'Not Implemented';
-  }
-  //#endregion
-
-  //#region ReadLog
-  public async getReadLogsFromSaveDataId(
-    saveDataId: string
-  ): Promise<Types.ReadLogType[]> {
-    throw 'Not Implemented';
-  }
-  public async pushReadLog(
-    saveDataId: string,
-    readLogs: Types.ReadLogType
-  ): Promise<void> {
-    throw 'Not Implemented';
-  }
-  public async deleteReadLogsFromId(saveDataId: string): Promise<void> {
     throw 'Not Implemented';
   }
   //#endregion

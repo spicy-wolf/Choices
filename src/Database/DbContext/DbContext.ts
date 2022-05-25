@@ -27,35 +27,17 @@ export abstract class AbstractDbContext {
     metaDataId: string,
     script: Types.ScriptType
   ): Promise<void>;
-  public abstract deleteScriptFromMetadataId(metaDataId: string): Promise<void>;
   //#endregion
 
-  //#region SaveData
+  //#region SaveData (included ReadLogs)
   public abstract getAllSaveDataFromMetadataId(
     metadataId: string
   ): Promise<Types.SaveDataType[]>;
-  public abstract getSaveDataFromId(
-    saveDataId: string
+  public abstract getAutoSaveDataFromMetadataId(
+    metadataId: string
   ): Promise<Types.SaveDataType>;
-  public abstract addSaveData(
-    saveData: Types.SaveDataType,
-    readLogs?: Types.ReadLogType[]
-  ): Promise<void>;
-  public abstract putSaveData(
-    saveData: Types.SaveDataType,
-    readLogs?: Types.ReadLogType[]
-  ): Promise<void>;
+  public abstract addSaveData(saveData: Types.SaveDataType): Promise<void>;
+  public abstract putSaveData(saveData: Types.SaveDataType): Promise<void>;
   public abstract deleteSaveDataFromId(saveDataId: string): Promise<void>;
-  //#endregion
-
-  //#region ReadLog
-  public abstract getReadLogsFromSaveDataId(
-    saveDataId: string
-  ): Promise<Types.ReadLogType[]>;
-  public abstract pushReadLog(
-    saveDataId: string,
-    readLogs: Types.ReadLogType
-  ): Promise<void>;
-  public abstract deleteReadLogsFromId(saveDataId: string): Promise<void>;
   //#endregion
 }
