@@ -9,12 +9,21 @@ import { ContentRow } from '../ContentRow/ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
 
 type AnyStatementType = Types.Statements.AnyStatementType;
-type ContentProps = { scripts: AnyStatementType[] };
+type ContentProps = {
+  scripts: AnyStatementType[];
+  scriptCursorPos: string;
+  updateScriptCursorPos: (_scriptCursorPos: string) => Promise<void>;
+  logCursorPos: string;
+  updateLogCursorPos: (_logCursorPos: string) => Promise<void>;
+  saveDataContext: Types.SaveDataContext;
+  updateSaveDataContext: (
+    _saveDataContext: Types.SaveDataContext
+  ) => Promise<void>;
+  groupedReadingLogs: Types.ReadLogType[][];
+  pushReadingLogs: (newLogs: Types.ReadLogType[]) => Promise<void>;
+};
 
 const Content = (props: ContentProps) => {
-  const [statementCounter, setStatementCounter] = React.useState<number>(0);
-  const [readingLogs, setReadingLogs] = React.useState<AnyStatementType[]>([]); // TODO: load history
-
   const { contentBgColor, contentFontColor } = useTheme();
   const { fontSize } = useSetting();
   const windowSize = useWindowSize();
@@ -25,43 +34,33 @@ const Content = (props: ContentProps) => {
 
   const rowHeights = React.useRef<number[]>([]);
 
-  const readingLogsForRender = useMemo(() => {
-    const _groupedReadingLogs = [];
-    let group: Types.Statements.AnyStatementType[] = [];
-    for (let log of readingLogs) {
-      if (log.type === 'sentence' || log.type === 's') {
-        // group sentences together
-        group.push(log);
-      } else {
-        if (group.length > 0) {
-          _groupedReadingLogs.push(group.slice());
-          group = [];
-        }
-        _groupedReadingLogs.push([log]);
-      }
+  // TODO: move me to a better place
+  const scriptIdIndexDic: { [key: string]: number } = useMemo(() => {
+    let result = {};
+    if (props.scripts && props.scripts.length > 0) {
+      result = props.scripts.reduce<{ [key: string]: number }>(
+        (dic, current, index) => {
+          dic[current.id] = index;
+          return dic;
+        },
+        {}
+      );
     }
-    // flush what is reminded in the group
-    if (group.length > 0) {
-      _groupedReadingLogs.push(group.slice());
-      group = [];
-    }
-
-    return _groupedReadingLogs;
-  }, [readingLogs]);
+    return result;
+  }, [props.scripts]);
 
   const itemCount: number = useMemo(
-    () => (readingLogsForRender?.length || 0) + 1,
-    [readingLogsForRender]
+    () => (props.groupedReadingLogs?.length || 0) + 1,
+    [props.groupedReadingLogs]
   );
 
   const isItemLoaded = (index: number): boolean => {
-    const isLoaded = !!readingLogsForRender?.[index];
+    const isLoaded = !!props.groupedReadingLogs?.[index];
     return isLoaded;
   };
 
   const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
-    let newLogs = [...readingLogs, ...pendingLogs];
-    setReadingLogs(newLogs);
+    props.pushReadingLogs(pendingLogs);
   };
 
   /**
@@ -79,11 +78,21 @@ const Content = (props: ContentProps) => {
   ): Promise<void> => {
     // execute one script each time / or execute to load at least 100 words
     const currentScripts = props.scripts;
-    StatementEngine.Executor(currentScripts[statementCounter], {
+    if (currentScripts.length === 0) return;
+
+    let currentScript: AnyStatementType = null;
+    if (props.scriptCursorPos) {
+      const currentScriptCursorIndex =
+        scriptIdIndexDic[props.scriptCursorPos] + 1; // move to next script
+      currentScript = currentScripts[currentScriptCursorIndex];
+    }
+    currentScript = currentScript ?? currentScripts[0];
+
+    StatementEngine.Executor(currentScript, {
       addReadingLogs,
       //setNextStatementById,
     });
-    setStatementCounter(statementCounter + 1);
+    props.updateScriptCursorPos(currentScript.id);
   };
 
   // init to a very large height 100, otherwise too many logs will be render as squished together
@@ -128,7 +137,7 @@ const Content = (props: ContentProps) => {
               {({ index, style }) => (
                 <div style={style}>
                   <ContentRow
-                    data={readingLogsForRender[index]}
+                    data={props.groupedReadingLogs[index]}
                     index={index}
                     setItemSize={setItemSize}
                   />

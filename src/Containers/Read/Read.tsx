@@ -1,22 +1,19 @@
 import React from 'react';
 import './Read.scss';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
 import { useSetting } from '@src/Context';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Modal, Spinner } from 'react-bootstrap';
-import { useMetadata } from './Hooks/useMetadata';
-import { useScripts } from './Hooks/useScripts';
-import { LoadingIndicatorModal } from '../Modal';
+import { LoadingIndicatorModal } from '@src/Containers/Modal';
 import SidePanel from './Components/SidePanel/SidePanel';
 import Content from './Components/Content/Content';
+import { useMetadata } from './Hooks/useMetadata';
+import { useScripts } from './Hooks/useScripts';
+import { useAutoSaveDataLoader } from './Hooks/useAutoSaveDataLoader';
 
 type ReadProps = {};
 
 const Read = (props: ReadProps) => {
-  let location = useLocation();
-  let navigate = useNavigate();
-
   //#region query param
   const query = useQuery();
   const repoName = query.get(RouterPathStrings.READ_PAGE_REPO_PARAM);
@@ -24,25 +21,37 @@ const Read = (props: ReadProps) => {
   //#endregion
 
   //#region hooks
-  const { themeName, fontSize } = useSetting();
   const [metadata, metadataLoadingError] = useMetadata(repoName, authorName);
   const [scripts, scriptLoadingError] = useScripts(metadata?.id);
-  // const [readingLogs, readingLogsLoadingError] = useReadingLogsLoader(
-  //   saveDataId?.id
-  // );
+  const [
+    saveData,
+    saveDataFunc,
+    isAutoSaveDataLoaded,
+    autoSaveDataLoaderError,
+  ] = useAutoSaveDataLoader(metadata?.id);
   //#endregion
 
   const loadingLabelOrErrorMsg = React.useMemo(() => {
-    const errorMsg = metadataLoadingError || scriptLoadingError;
+    const errorMsg =
+      metadataLoadingError || scriptLoadingError || autoSaveDataLoaderError;
     let loadingMsg = '';
     if (!metadata) {
       loadingMsg = 'Loading metadata.';
     } else if (!scripts) {
       loadingMsg = 'Loading scripts.';
+    } else if (!isAutoSaveDataLoaded) {
+      loadingMsg = 'Loading save data.';
     }
 
     return errorMsg || loadingMsg;
-  }, [scripts, scriptLoadingError]);
+  }, [
+    metadata,
+    scripts,
+    isAutoSaveDataLoaded,
+    metadataLoadingError,
+    scriptLoadingError,
+    autoSaveDataLoaderError,
+  ]);
 
   return (
     <>
@@ -51,7 +60,7 @@ const Read = (props: ReadProps) => {
         {!loadingLabelOrErrorMsg && (
           <>
             <SidePanel />
-            <Content scripts={scripts} />
+            <Content {...{ ...saveData, ...saveDataFunc }} scripts={scripts} />
           </>
         )}
       </div>

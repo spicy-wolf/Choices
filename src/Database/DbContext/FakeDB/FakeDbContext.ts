@@ -81,60 +81,54 @@ export class FakeDbContext extends AbstractDbContext {
   ): Promise<void> {
     throw 'Not Implemented';
   }
-  public async deleteScriptFromMetadataId(metaDataId: string): Promise<void> {
-    throw 'Not Implemented';
-  }
   //#endregion
 
-  //#region SaveData
+  //#region SaveData (included ReadLogs)
   public async getAllSaveDataFromMetadataId(
     metadataId: string
   ): Promise<Types.SaveDataType[]> {
     const result = this.saveDataDb.filter(
-      (item) => item.scriptId === metadataId
+      (item) => item.metadataId === metadataId
     );
     return result;
   }
-  public async getSaveDataFromId(
-    saveDataId: string
+  public async getAutoSaveDataFromMetadataId(
+    metadataId: string
   ): Promise<Types.SaveDataType> {
-    const result = this.saveDataDb.find((item) => item.id === saveDataId);
-    return result;
+    const autoSaveData = this.saveDataDb.find(
+      (item) => item.metadataId === metadataId && item.description === ''
+    );
+    // find related reading logs
+    if (autoSaveData && autoSaveData.id) {
+      const readingLogs = this.readLogDb.filter(
+        (item) => item.saveDataId === autoSaveData.id
+      );
+      autoSaveData.readingLogs = readingLogs;
+    }
+    return autoSaveData;
   }
-  public async addSaveData(
-    saveData: Types.SaveDataType,
-    readLogs?: Types.ReadLogType[]
-  ): Promise<void> {
-    throw 'Not Implemented';
+  public async addSaveData(saveData: Types.SaveDataType): Promise<void> {
+    await this.putSaveData(saveData);
   }
-  public async putSaveData(
-    saveData: Types.SaveDataType,
-    readLogs?: Types.ReadLogType[]
-  ): Promise<void> {
-    throw 'Not Implemented';
+  public async putSaveData(saveData: Types.SaveDataType): Promise<void> {
+    const { readingLogs, ...otherSaveData } = saveData;
+
+    // check if existed
+    const index = this.saveDataDb.findIndex(
+      (item) => item.id === otherSaveData.id
+    );
+    if (index === -1) {
+      // Add
+      this.saveDataDb.push(otherSaveData);
+    } else {
+      // Put
+      this.saveDataDb[index] = otherSaveData;
+    }
+    // reading log update
+    // TODO: be better
+    this.readLogDb = readingLogs;
   }
   public async deleteSaveDataFromId(saveDataId: string): Promise<void> {
-    throw 'Not Implemented';
-  }
-  //#endregion
-
-  //#region ReadLog
-  public async getReadLogsFromSaveDataId(
-    saveDataId: string
-  ): Promise<Types.ReadLogType[]> {
-    const result = this.readLogDb.filter(
-      (item) => item.saveDataId === saveDataId
-    );
-    // TODO: order by
-    return result;
-  }
-  public async pushReadLog(
-    saveDataId: string,
-    readLogs: Types.ReadLogType
-  ): Promise<void> {
-    throw 'Not Implemented';
-  }
-  public async deleteReadLogsFromId(saveDataId: string): Promise<void> {
     throw 'Not Implemented';
   }
   //#endregion

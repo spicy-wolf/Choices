@@ -27,11 +27,10 @@ export const useScripts = (metadataId: string) => {
       );
       if (_scripts) {
         setScripts(_scripts);
+        setError('');
       } else {
         setError(`Unknown metadata id: ${metadataId}`);
       }
-    } else {
-      setError(`Missing metadata id: ${metadataId}`);
     }
   };
 
