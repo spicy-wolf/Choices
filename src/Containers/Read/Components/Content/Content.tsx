@@ -3,7 +3,10 @@ import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
 import { useSetting, useTheme } from '@src/Context';
 import * as Types from '@src/Types';
-import { VariableSizeList as List } from 'react-window';
+import {
+  ListOnItemsRenderedProps,
+  VariableSizeList as List,
+} from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { ContentRow } from '../ContentRow/ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
@@ -26,13 +29,9 @@ type ContentProps = {
 const Content = (props: ContentProps) => {
   const { contentBgColor, contentFontColor } = useTheme();
   const { fontSize } = useSetting();
-  const windowSize = useWindowSize();
 
   const contentRef = React.useRef<HTMLDivElement>();
   const infiniteLoaderRef = React.useRef<InfiniteLoader>();
-  const listRef = React.useRef<List<any>>();
-
-  const rowHeights = React.useRef<number[]>([]);
 
   // TODO: move me to a better place
   const scriptIdIndexDic: { [key: string]: number } = useMemo(() => {
@@ -95,13 +94,6 @@ const Content = (props: ContentProps) => {
     props.updateScriptCursorPos(currentScript.id);
   };
 
-  // init to a very large height 100, otherwise too many logs will be render as squished together
-  const getItemSize = (index: number) => rowHeights.current[index] || 100;
-  const setItemSize = (index: number, newHeight: number) => {
-    rowHeights.current[index] = newHeight;
-    if (listRef.current) listRef.current.resetAfterIndex(index);
-  };
-
   return (
     <div
       id="content"
@@ -122,32 +114,75 @@ const Content = (props: ContentProps) => {
           threshold={1} // increase retry bottom times
         >
           {({ onItemsRendered, ref }) => (
-            <List
-              height={windowSize.innerHeight}
-              width="100%"
+            <ContextInnerList
+              itemData={props.groupedReadingLogs}
               itemCount={itemCount}
-              itemSize={getItemSize}
               onItemsRendered={onItemsRendered}
-              onScroll={() => {}}
-              ref={(list) => {
-                ref(list);
-                listRef.current = list;
-              }}
-            >
-              {({ index, style }) => (
-                <div style={style}>
-                  <ContentRow
-                    data={props.groupedReadingLogs[index]}
-                    index={index}
-                    setItemSize={setItemSize}
-                  />
-                </div>
-              )}
-            </List>
+              listRef={ref}
+            />
           )}
         </InfiniteLoader>
       </div>
     </div>
+  );
+};
+
+const ContextInnerList = (props: {
+  onItemsRendered: (props: ListOnItemsRenderedProps) => any;
+  listRef: (ref: any) => void;
+  itemData: Types.ReadLogType[][];
+  itemCount: number;
+}) => {
+  const windowSize = useWindowSize();
+  const listRef = React.useRef<List<any>>();
+  const listInnerRef = React.useRef<HTMLDivElement>();
+  const rowHeights = React.useRef<number[]>([]);
+
+  useEffect(() => {
+    if (listRef.current) {
+      console.log(listRef.current);
+      listRef.current.scrollToItem(5, 'start');
+    }
+  }, []);
+
+  const onScroll = () => {
+    // find the sentence which is on the top
+    if (listInnerRef.current) {
+    }
+  };
+
+  // init to a very large height 100, otherwise too many logs will be render as squished together
+  const getItemSize = (index: number) => rowHeights.current[index] || 100;
+  const setItemSize = (index: number, newHeight: number) => {
+    rowHeights.current[index] = newHeight;
+    if (listRef.current) listRef.current.resetAfterIndex(index);
+  };
+
+  return (
+    <List
+      height={windowSize.innerHeight}
+      width="100%"
+      itemCount={props.itemCount}
+      itemSize={getItemSize}
+      onItemsRendered={props.onItemsRendered}
+      onScroll={onScroll}
+      innerRef={listInnerRef}
+      itemData={props.itemData}
+      ref={(list) => {
+        props.listRef(list);
+        listRef.current = list;
+      }}
+    >
+      {({ index, style, data }) => (
+        <div style={style}>
+          <ContentRow
+            data={data[index]}
+            index={index}
+            setItemSize={setItemSize}
+          />
+        </div>
+      )}
+    </List>
   );
 };
 
