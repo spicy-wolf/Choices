@@ -128,18 +128,20 @@ const Content = (props: ContentProps) => {
               itemCount={itemCount}
               itemSize={getItemSize}
               onItemsRendered={onItemsRendered}
-              onScroll={() => {}}
+              useIsScrolling={true}
               ref={(list) => {
                 ref(list);
                 listRef.current = list;
               }}
             >
-              {({ index, style }) => (
+              {({ index, style, isScrolling }) => (
                 <div style={style}>
                   <ContentRow
                     data={props.groupedReadingLogs[index]}
                     index={index}
+                    isScrolling={isScrolling}
                     setItemSize={setItemSize}
+                    setReadingLogCursorPos={props.updateLogCursorPos}
                   />
                 </div>
               )}

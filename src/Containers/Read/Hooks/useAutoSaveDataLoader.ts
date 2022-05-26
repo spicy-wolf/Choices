@@ -32,33 +32,42 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
         | { type: 'updateSaveDataContext'; payload: Types.SaveDataContext }
         | { type: 'pushReadingLogs'; payload: Types.ReadLogType[] }
     ) => {
+      let newState = state;
       if (action.type === 'setAll') {
-        if (action.payload === null) return null;
-
-        const groupedReadingLogs = pushGroupedReadingLogs(
-          null,
-          action.payload?.readingLogs
-        );
-        return { ...action.payload, groupedReadingLogs };
+        if (action.payload === null) {
+          newState = null;
+        } else {
+          const groupedReadingLogs = pushGroupedReadingLogs(
+            null,
+            action.payload?.readingLogs
+          );
+          newState = { ...action.payload, groupedReadingLogs };
+        }
       } else if (action.type === 'updateScriptCursorPos') {
-        return { ...state, scriptCursorPos: action.payload };
+        if (action.payload !== state.scriptCursorPos) {
+          newState = { ...state, scriptCursorPos: action.payload };
+        }
       } else if (action.type === 'updateLogCursorPos') {
-        return { ...state, logCursorPos: action.payload };
+        if (action.payload !== state.logCursorPos) {
+          newState = { ...state, logCursorPos: action.payload };
+        }
       } else if (action.type === 'updateSaveDataContext') {
-        return { ...state, context: action.payload };
+        newState = { ...state, context: action.payload };
       } else if (action.type === 'pushReadingLogs') {
-        const groupedReadingLogs = pushGroupedReadingLogs(
-          state.groupedReadingLogs,
-          action.payload
-        );
-        return {
-          ...state,
-          readingLogs: state.readingLogs.concat(action.payload),
-          groupedReadingLogs: groupedReadingLogs,
-        };
-      } else {
-        return state;
+        if (action.payload && action.payload.length > 0) {
+          const groupedReadingLogs = pushGroupedReadingLogs(
+            state.groupedReadingLogs,
+            action.payload
+          );
+          newState = {
+            ...state,
+            readingLogs: state.readingLogs.concat(action.payload),
+            groupedReadingLogs: groupedReadingLogs,
+          };
+        }
       }
+
+      return newState;
     },
     []
   );
