@@ -31,8 +31,22 @@ const Content = (props: ContentProps) => {
   const contentRef = React.useRef<HTMLDivElement>();
   const infiniteLoaderRef = React.useRef<InfiniteLoader>();
   const listRef = React.useRef<List<any>>();
+  const listInnerRef = React.useRef<HTMLDivElement>();
 
   const rowHeights = React.useRef<number[]>([]);
+
+  const [initScrollToLogCursorPos, setInitScrollToLogCursorPos] =
+    React.useState(props.logCursorPos);
+
+  useEffect(() => {
+    if (listRef.current && listInnerRef.current && initScrollToLogCursorPos) {
+      const index = props.groupedReadingLogs.findIndex(
+        (item) =>
+          !!item.find((subItem) => subItem.id === initScrollToLogCursorPos)
+      );
+      listRef.current.scrollToItem(index, 'start');
+    }
+  }, []);
 
   // TODO: move me to a better place
   const scriptIdIndexDic: { [key: string]: number } = useMemo(() => {
@@ -95,8 +109,8 @@ const Content = (props: ContentProps) => {
     props.updateScriptCursorPos(currentScript.id);
   };
 
-  // init to a very large height 100, otherwise too many logs will be render as squished together
-  const getItemSize = (index: number) => rowHeights.current[index] || 100;
+  // init to one line height, otherwise too many logs will be render as squished together
+  const getItemSize = (index: number) => rowHeights.current[index] || 30;
   const setItemSize = (index: number, newHeight: number) => {
     rowHeights.current[index] = newHeight;
     if (listRef.current) listRef.current.resetAfterIndex(index);
@@ -123,12 +137,34 @@ const Content = (props: ContentProps) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
+              // style={{
+              //   overflow: 'hidden',
+              // }}
               height={windowSize.innerHeight}
               width="100%"
               itemCount={itemCount}
               itemSize={getItemSize}
               onItemsRendered={onItemsRendered}
+              onScroll={() => {
+                if (
+                  listInnerRef.current &&
+                  listRef.current &&
+                  initScrollToLogCursorPos
+                ) {
+                  const targetElement = document.getElementById(
+                    initScrollToLogCursorPos
+                  );
+                  if (targetElement) {
+                    const offset = targetElement.getBoundingClientRect().top;
+                    const domRect =
+                      listInnerRef.current.getBoundingClientRect();
+                    listRef.current.scrollTo(Math.abs(domRect.y) + offset);
+                    setInitScrollToLogCursorPos(null);
+                  }
+                }
+              }}
               useIsScrolling={true}
+              innerRef={listInnerRef}
               ref={(list) => {
                 ref(list);
                 listRef.current = list;
