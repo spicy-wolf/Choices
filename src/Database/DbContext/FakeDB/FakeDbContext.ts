@@ -72,7 +72,7 @@ export class FakeDbContext extends AbstractDbContext {
     metaDataId: string
   ): Promise<Types.ScriptType> {
     return this.scriptDb
-      .filter((item) => item.scriptId === metaDataId)
+      .filter((item) => item.metadataId === metaDataId)
       .sort((item1, item2) => item1.order - item2.order);
   }
   public async updateScript(

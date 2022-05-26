@@ -187,7 +187,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
 
     // decorate before saving
     for (const log of newLogs) {
-      log.scriptId = currentSaveDataId.current;
+      log.saveDataId = currentSaveDataId.current;
       log.order = readingLogIndex.current;
       log.timestamp = Date.now();
       readingLogIndex.current++;
