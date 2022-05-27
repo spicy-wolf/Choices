@@ -1,3 +1,3 @@
 import { AnyStatementType } from './Statements';
 
-export type ScriptType = AnyStatementType[];
+export type ScriptType = (AnyStatementType & { metadataId: string })[];

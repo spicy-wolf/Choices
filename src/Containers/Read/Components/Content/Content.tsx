@@ -31,8 +31,37 @@ const Content = (props: ContentProps) => {
   const contentRef = React.useRef<HTMLDivElement>();
   const infiniteLoaderRef = React.useRef<InfiniteLoader>();
   const listRef = React.useRef<List<any>>();
+  const listInnerRef = React.useRef<HTMLDivElement>();
 
   const rowHeights = React.useRef<number[]>([]);
+
+  // this value is a copy of initial logCursorPos, for restore prev reading position
+  const initScrollToLogCursorPos = React.useRef<string>(props.logCursorPos);
+
+  useEffect(() => {
+    //#region scrolling to prev saved position -> 1st step -> scroll to the paragraph
+    if (
+      listRef.current &&
+      listInnerRef.current &&
+      initScrollToLogCursorPos.current
+    ) {
+      // find the group index which contains initScrollToLogCursorPos
+      const index = props.groupedReadingLogs.findIndex(
+        (item) =>
+          !!item.find(
+            (subItem) => subItem.id === initScrollToLogCursorPos.current
+          )
+      );
+      if (index === -1) {
+        // edge case, if cannot find the position, discard the value due to broken data
+        initScrollToLogCursorPos.current = null;
+      } else {
+        listRef.current.scrollToItem(index, 'start');
+        // Note: onScroll will be invoked next
+      }
+    }
+    //#endregion
+  }, []);
 
   // TODO: move me to a better place
   const scriptIdIndexDic: { [key: string]: number } = useMemo(() => {
@@ -95,11 +124,32 @@ const Content = (props: ContentProps) => {
     props.updateScriptCursorPos(currentScript.id);
   };
 
-  // init to a very large height 100, otherwise too many logs will be render as squished together
-  const getItemSize = (index: number) => rowHeights.current[index] || 100;
+  // init to one line height, otherwise too many logs will be render as squished together
+  const getItemSize = (index: number) => rowHeights.current[index] || 30;
   const setItemSize = (index: number, newHeight: number) => {
     rowHeights.current[index] = newHeight;
     if (listRef.current) listRef.current.resetAfterIndex(index);
+  };
+
+  const onScroll = () => {
+    //#region scrolling to prev saved position -> 2nd step -> scroll to sub sentense
+    if (
+      listInnerRef.current &&
+      listRef.current &&
+      initScrollToLogCursorPos.current
+    ) {
+      const targetElement = document.getElementById(
+        initScrollToLogCursorPos.current
+      );
+      if (targetElement) {
+        const offset = targetElement.getBoundingClientRect().top;
+        const domRect = listInnerRef.current.getBoundingClientRect();
+        listRef.current.scrollTo(Math.abs(domRect.y) + offset);
+        // scrolling done, clear the value
+        initScrollToLogCursorPos.current = null;
+      }
+    }
+    //#endregion
   };
 
   return (
@@ -128,7 +178,9 @@ const Content = (props: ContentProps) => {
               itemCount={itemCount}
               itemSize={getItemSize}
               onItemsRendered={onItemsRendered}
+              onScroll={onScroll}
               useIsScrolling={true}
+              innerRef={listInnerRef}
               ref={(list) => {
                 ref(list);
                 listRef.current = list;
