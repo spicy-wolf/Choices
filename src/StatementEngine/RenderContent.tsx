@@ -21,6 +21,10 @@ export const RenderContent = (
     case 's':
       Component = Components.Sentence;
       break;
+    case 'fin':
+    case 'end':
+      Component = Components.Fin;
+      break;
     default: // empty component
       Component = () => <></>;
       break;

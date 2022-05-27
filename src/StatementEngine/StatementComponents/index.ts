@@ -1,4 +1,5 @@
 import EndOfLine from './EndOfLine/EndOfLine';
+import Fin from './Fin/Fin';
 import Sentence from './Sentence/Sentence';
 
-export { EndOfLine, Sentence };
+export { EndOfLine, Fin, Sentence };
