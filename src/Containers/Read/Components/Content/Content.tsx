@@ -35,17 +35,32 @@ const Content = (props: ContentProps) => {
 
   const rowHeights = React.useRef<number[]>([]);
 
-  const [initScrollToLogCursorPos, setInitScrollToLogCursorPos] =
-    React.useState(props.logCursorPos);
+  // this value is a copy of initial logCursorPos, for restore prev reading position
+  const initScrollToLogCursorPos = React.useRef<string>(props.logCursorPos);
 
   useEffect(() => {
-    if (listRef.current && listInnerRef.current && initScrollToLogCursorPos) {
+    //#region scrolling to prev saved position -> 1st step -> scroll to the paragraph
+    if (
+      listRef.current &&
+      listInnerRef.current &&
+      initScrollToLogCursorPos.current
+    ) {
+      // find the group index which contains initScrollToLogCursorPos
       const index = props.groupedReadingLogs.findIndex(
         (item) =>
-          !!item.find((subItem) => subItem.id === initScrollToLogCursorPos)
+          !!item.find(
+            (subItem) => subItem.id === initScrollToLogCursorPos.current
+          )
       );
-      listRef.current.scrollToItem(index, 'start');
+      if (index === -1) {
+        // edge case, if cannot find the position, discard the value due to broken data
+        initScrollToLogCursorPos.current = null;
+      } else {
+        listRef.current.scrollToItem(index, 'start');
+        // Note: onScroll will be invoked next
+      }
     }
+    //#endregion
   }, []);
 
   // TODO: move me to a better place
@@ -116,6 +131,27 @@ const Content = (props: ContentProps) => {
     if (listRef.current) listRef.current.resetAfterIndex(index);
   };
 
+  const onScroll = () => {
+    //#region scrolling to prev saved position -> 2nd step -> scroll to sub sentense
+    if (
+      listInnerRef.current &&
+      listRef.current &&
+      initScrollToLogCursorPos.current
+    ) {
+      const targetElement = document.getElementById(
+        initScrollToLogCursorPos.current
+      );
+      if (targetElement) {
+        const offset = targetElement.getBoundingClientRect().top;
+        const domRect = listInnerRef.current.getBoundingClientRect();
+        listRef.current.scrollTo(Math.abs(domRect.y) + offset);
+        // scrolling done, clear the value
+        initScrollToLogCursorPos.current = null;
+      }
+    }
+    //#endregion
+  };
+
   return (
     <div
       id="content"
@@ -137,32 +173,12 @@ const Content = (props: ContentProps) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
-              // style={{
-              //   overflow: 'hidden',
-              // }}
               height={windowSize.innerHeight}
               width="100%"
               itemCount={itemCount}
               itemSize={getItemSize}
               onItemsRendered={onItemsRendered}
-              onScroll={() => {
-                if (
-                  listInnerRef.current &&
-                  listRef.current &&
-                  initScrollToLogCursorPos
-                ) {
-                  const targetElement = document.getElementById(
-                    initScrollToLogCursorPos
-                  );
-                  if (targetElement) {
-                    const offset = targetElement.getBoundingClientRect().top;
-                    const domRect =
-                      listInnerRef.current.getBoundingClientRect();
-                    listRef.current.scrollTo(Math.abs(domRect.y) + offset);
-                    setInitScrollToLogCursorPos(null);
-                  }
-                }
-              }}
+              onScroll={onScroll}
               useIsScrolling={true}
               innerRef={listInnerRef}
               ref={(list) => {
