@@ -1,3 +1,4 @@
 export * from './Executor';
-export * from './RenderContent';
+export * from './Render';
 export * from './Helper';
+export * as Types from './Types';

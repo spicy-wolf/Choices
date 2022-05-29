@@ -1,8 +1,7 @@
 import React from 'react';
-import * as Types from '@src/Types';
 import * as StatementEngine from '@src/StatementEngine';
 
-type AnyStatementType = Types.Statements.AnyStatementType;
+type AnyStatementType = StatementEngine.Types.AnyStatementType;
 
 const ContentRow = (props: {
   data: AnyStatementType[];
@@ -44,7 +43,7 @@ const ContentRow = (props: {
 
   const theStory = React.useMemo(() => {
     const result = props.data?.map((statement) => (
-      <StatementEngine.RenderContent key={statement.id} {...statement} />
+      <StatementEngine.render key={statement.id} {...statement} />
     ));
     return result;
   }, [props.data]);

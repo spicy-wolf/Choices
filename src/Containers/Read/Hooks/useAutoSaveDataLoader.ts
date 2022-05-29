@@ -238,8 +238,8 @@ const pushGroupedReadingLogs = (
       if (prevGrouped) {
         const lastLogInPrevGrouped = prevGrouped[prevGrouped.length - 1];
         if (
-          StatementEngine.isSentence(log) &&
-          StatementEngine.isSentence(lastLogInPrevGrouped)
+          StatementEngine.CheckStatementType.isSentence(log) &&
+          StatementEngine.CheckStatementType.isSentence(lastLogInPrevGrouped)
         ) {
           prevGrouped.push(log);
         } else {

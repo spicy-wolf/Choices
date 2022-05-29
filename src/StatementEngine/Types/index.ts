@@ -1,4 +1,3 @@
-import { AbstractStatementType } from './AbstractStatement.type';
 import { EndOfLineStatementType } from './EndOfLineStatement.type';
 import { FinStatementType } from './FinStatement.type';
 import { ParagraphStatementType } from './ParagraphStatement.type';
@@ -16,7 +15,6 @@ type AnyStatementType =
 type PendingStatementType = FinStatementType;
 
 export {
-  AbstractStatementType,
   EndOfLineStatementType,
   FinStatementType,
   ParagraphStatementType,
