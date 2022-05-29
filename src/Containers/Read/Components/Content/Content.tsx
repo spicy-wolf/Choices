@@ -9,6 +9,7 @@ import { ContentRow } from '../ContentRow/ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
 
 type AnyStatementType = Types.Statements.AnyStatementType;
+type PendingStatementType = Types.Statements.PendingStatementType;
 type ContentProps = {
   scripts: AnyStatementType[];
   scriptCursorPos: string;
@@ -27,6 +28,9 @@ const Content = (props: ContentProps) => {
   const { contentBgColor, contentFontColor } = useTheme();
   const { fontSize } = useSetting();
   const windowSize = useWindowSize();
+
+  const [pendingStatement, setPendingStatement] =
+    useState<PendingStatementType>();
 
   const contentRef = React.useRef<HTMLDivElement>();
   const infiniteLoaderRef = React.useRef<InfiniteLoader>();
@@ -78,18 +82,30 @@ const Content = (props: ContentProps) => {
     return result;
   }, [props.scripts]);
 
+  // this "+1" has two use cases
+  // 1. always assume there are some more statements to execute
+  // 2. if there is a pending statement, then the itemCount == length of groupedReadingLogs + one pending statement
+  //    which means the loadMoreItem will not be triggered
   const itemCount: number = useMemo(
     () => (props.groupedReadingLogs?.length || 0) + 1,
     [props.groupedReadingLogs]
   );
 
   const isItemLoaded = (index: number): boolean => {
-    const isLoaded = !!props.groupedReadingLogs?.[index];
+    let isLoaded = !!props.groupedReadingLogs?.[index];
+    if (props.groupedReadingLogs?.length === index && !!pendingStatement) {
+      isLoaded = true;
+    }
     return isLoaded;
   };
 
-  const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
-    props.pushReadingLogs(pendingLogs);
+  const getRowData = (index: number): AnyStatementType[] => {
+    // pendingStatement is always show at the end
+    if (props.groupedReadingLogs?.length === index && !!pendingStatement) {
+      return [pendingStatement];
+    } else {
+      return props.groupedReadingLogs[index];
+    }
   };
 
   /**
@@ -106,29 +122,29 @@ const Content = (props: ContentProps) => {
     stopIndex: number
   ): Promise<void> => {
     // execute one script each time / or execute to load at least 100 words
-    const currentScripts = props.scripts;
-    if (currentScripts.length === 0) return;
+    const scripts = props.scripts;
+    if (scripts.length === 0) return;
 
-    let currentScript: AnyStatementType = null;
-    if (props.scriptCursorPos) {
-      const currentScriptCursorIndex =
-        scriptIdIndexDic[props.scriptCursorPos] + 1; // move to next script
-      currentScript = currentScripts[currentScriptCursorIndex];
-    }
-    currentScript = currentScript ?? currentScripts[0];
+    const currentStatementId = props.scriptCursorPos;
+    const currentStatementCursorIndex =
+      scriptIdIndexDic[currentStatementId] ?? 0;
+    let currentStatement: AnyStatementType =
+      scripts[currentStatementCursorIndex];
 
-    StatementEngine.Executor(currentScript, {
+    StatementEngine.Executor(currentStatement, {
       addReadingLogs,
-      //setNextStatementById,
+      moveScriptCursor,
+      setPendingStatement: setPendingStatementWrapper,
     });
-    props.updateScriptCursorPos(currentScript.id);
   };
 
   // init to one line height, otherwise too many logs will be render as squished together
   const getItemSize = (index: number) => rowHeights.current[index] || 30;
   const setItemSize = (index: number, newHeight: number) => {
+    const oldHeight = rowHeights.current[index];
     rowHeights.current[index] = newHeight;
-    if (listRef.current) listRef.current.resetAfterIndex(index);
+    if (listRef.current && oldHeight !== newHeight)
+      listRef.current.resetAfterIndex(index);
   };
 
   const onScroll = () => {
@@ -151,6 +167,34 @@ const Content = (props: ContentProps) => {
     }
     //#endregion
   };
+
+  //#region statement executor control callback methods
+  const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
+    props.pushReadingLogs(pendingLogs);
+  };
+
+  const moveScriptCursor = (statementId?: string): void => {
+    if (statementId) {
+      props.updateScriptCursorPos(statementId);
+    } else {
+      // if statementId is not given, then move to next
+      const currentStatementId = props.scriptCursorPos;
+      const nextStatementCursorIndex =
+        scriptIdIndexDic[currentStatementId] >= 0
+          ? scriptIdIndexDic[currentStatementId] + 1
+          : 0;
+      let nextStatement: AnyStatementType =
+        props.scripts[nextStatementCursorIndex];
+      props.updateScriptCursorPos(nextStatement?.id);
+    }
+  };
+
+  const setPendingStatementWrapper = (
+    pendingStatement: PendingStatementType
+  ) => {
+    setPendingStatement(pendingStatement);
+  };
+  //#endregion
 
   return (
     <div
@@ -189,7 +233,7 @@ const Content = (props: ContentProps) => {
               {({ index, style, isScrolling }) => (
                 <div style={style}>
                   <ContentRow
-                    data={props.groupedReadingLogs[index]}
+                    data={getRowData(index)}
                     index={index}
                     isScrolling={isScrolling}
                     setItemSize={setItemSize}

@@ -6,10 +6,13 @@ export const Executor = (
   statement: Statements.AnyStatementType,
   hooks: {
     addReadingLogs: (statements: Statements.AnyStatementType[]) => void;
-    //setNextStatementById: (id: string) => void;
-    // moveToNextStatement: () => void;
+    moveScriptCursor: (statementId?: string) => void;
+    setPendingStatement: (
+      pendingStatement: Statements.PendingStatementType
+    ) => void;
   }
 ) => {
+  if (!statement) return;
   // TODO: check condition
 
   const componentType = statement?.type?.toLowerCase() ?? '';
@@ -17,7 +20,10 @@ export const Executor = (
     case 'endofline':
     case 'eol':
       let eolStatement = statement as Statements.EndOfLineStatementType;
+      // update reading log
       hooks.addReadingLogs && hooks.addReadingLogs([eolStatement]);
+      // move to next statement
+      hooks.moveScriptCursor && hooks.moveScriptCursor();
       break;
     case 'paragraph':
     case 'p':
@@ -65,7 +71,16 @@ export const Executor = (
           });
         }
       }
+      // update reading log
       hooks.addReadingLogs && hooks.addReadingLogs(statementList);
+      // move to next statement
+      hooks.moveScriptCursor && hooks.moveScriptCursor();
+      break;
+    case 'fin':
+    case 'end':
+      const pendingStatement = statement as Statements.PendingStatementType;
+      hooks.setPendingStatement(pendingStatement);
+      // dont move to next statement since the pending statement pauses execution
       break;
     case 'selection':
       // TODO: replace options' inline variables
