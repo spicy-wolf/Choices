@@ -1,3 +1,5 @@
-import { AnyStatementType } from './Statements';
+import { Types } from '@src/StatementEngine';
 
-export type ScriptType = (AnyStatementType & { metadataId: string })[];
+export type ScriptType = (Types.AnyStatementType & {
+  metadataId: string;
+})[];

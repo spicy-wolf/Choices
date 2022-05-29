@@ -21,13 +21,13 @@ export class FakeDbContext extends AbstractDbContext {
     this.scriptDb = [];
     for (let i = 0; i < FakeScript.length; i++) {
       this.scriptDb.push({
-        ...FakeScript[i],
+        ...(FakeScript as Types.ScriptType)[i],
         order: i,
       });
     }
 
     this.saveDataDb = [...FakeSaveData];
-    this.readLogDb = [...FakeReadLog];
+    this.readLogDb = [...(FakeReadLog as Types.ReadLogType[])];
   }
 
   //#region Metadata

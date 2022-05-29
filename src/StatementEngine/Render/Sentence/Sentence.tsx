@@ -1,9 +1,7 @@
 import React from 'react';
-import * as Types from '@src/Types';
+import { SentenceStatementType } from '../../Types';
 
-const Sentence = (
-  props: Types.Statements.SentenceStatementType
-): JSX.Element => {
+const Sentence = (props: SentenceStatementType): JSX.Element => {
   // Note: no need to worry pre-space &nbsp, it resolved automatically
   let text = props.data?.toString();
 

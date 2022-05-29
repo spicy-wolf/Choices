@@ -8,8 +8,8 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import { ContentRow } from '../ContentRow/ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
 
-type AnyStatementType = Types.Statements.AnyStatementType;
-type PendingStatementType = Types.Statements.PendingStatementType;
+type AnyStatementType = StatementEngine.Types.AnyStatementType;
+type PendingStatementType = StatementEngine.Types.PendingStatementType;
 type ContentProps = {
   scripts: AnyStatementType[];
   scriptCursorPos: string;
@@ -131,7 +131,7 @@ const Content = (props: ContentProps) => {
     let currentStatement: AnyStatementType =
       scripts[currentStatementCursorIndex];
 
-    StatementEngine.Executor(currentStatement, {
+    StatementEngine.execute(currentStatement, {
       addReadingLogs,
       moveScriptCursor,
       setPendingStatement: setPendingStatementWrapper,
