@@ -1,11 +1,11 @@
 import React from 'react';
 import { Card, Col } from 'react-bootstrap';
-import * as Types from '@src/Types';
+import * as Database from '@src/Database';
 import * as Utils from '@src/Utils';
 import './RepoCard.scss';
 import { useNavigate } from 'react-router-dom';
 
-export const RepoCard = (props: { item: Types.RepoMetadataType }) => {
+export const RepoCard = (props: { item: Database.Types.RepoMetadataType }) => {
   let navigate = useNavigate();
 
   const thumbnailBgColor = React.useMemo(() => {

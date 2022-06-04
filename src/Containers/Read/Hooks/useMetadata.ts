@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useDbContext } from '@src/Context/DbContext';
-import * as Types from '@src/Types';
+import * as Database from '@src/Database';
 
-type RepoMetadataType = Types.RepoMetadataType;
+type RepoMetadataType = Database.Types.RepoMetadataType;
 
 export const useMetadata = (repoName: string, authorName: string) => {
   const { dbContext } = useDbContext();

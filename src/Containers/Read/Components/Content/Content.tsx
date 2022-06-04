@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
 import { useSetting, useTheme } from '@src/Context';
-import * as Types from '@src/Types';
+import * as Database from '@src/Database';
 import { VariableSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { ContentRow } from '../ContentRow/ContentRow';
@@ -16,12 +16,12 @@ type ContentProps = {
   updateScriptCursorPos: (_scriptCursorPos: string) => Promise<void>;
   logCursorPos: string;
   updateLogCursorPos: (_logCursorPos: string) => Promise<void>;
-  saveDataContext: Types.SaveDataContext;
+  saveDataContext: Database.Types.SaveDataContext;
   updateSaveDataContext: (
-    _saveDataContext: Types.SaveDataContext
+    _saveDataContext: Database.Types.SaveDataContext
   ) => Promise<void>;
-  groupedReadingLogs: Types.ReadLogType[][];
-  pushReadingLogs: (newLogs: Types.ReadLogType[]) => Promise<void>;
+  groupedReadingLogs: Database.Types.ReadLogType[][];
+  pushReadingLogs: (newLogs: Database.Types.ReadLogType[]) => Promise<void>;
 };
 
 const Content = (props: ContentProps) => {

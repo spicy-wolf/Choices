@@ -18,11 +18,16 @@ export const DbContextProvider = (props: { children: React.ReactNode }) => {
 
   // init
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
     if (!dbContext) {
       const _dbContext: DB.AbstractDbContext = new DB.DbContext();
+      await _dbContext.init();
       setDbContext(_dbContext);
     }
-  }, []);
+  };
 
   return (
     <>

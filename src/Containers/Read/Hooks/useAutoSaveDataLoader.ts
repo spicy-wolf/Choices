@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useDbContext } from '@src/Context/DbContext';
-import * as Types from '@src/Types';
+import * as Database from '@src/Database';
 import * as StatementEngine from '@src/StatementEngine';
 
 export const useAutoSaveDataLoader = (metadataId: string) => {
@@ -24,13 +24,18 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
 
   const reducer = useCallback(
     (
-      state: Types.SaveDataType & { groupedReadingLogs: Types.ReadLogType[][] },
+      state: Database.Types.SaveDataType & {
+        groupedReadingLogs: Database.Types.ReadLogType[][];
+      },
       action:
-        | { type: 'setAll'; payload: Types.SaveDataType }
+        | { type: 'setAll'; payload: Database.Types.SaveDataType }
         | { type: 'updateScriptCursorPos'; payload: string }
         | { type: 'updateLogCursorPos'; payload: string }
-        | { type: 'updateSaveDataContext'; payload: Types.SaveDataContext }
-        | { type: 'pushReadingLogs'; payload: Types.ReadLogType[] }
+        | {
+            type: 'updateSaveDataContext';
+            payload: Database.Types.SaveDataContext;
+          }
+        | { type: 'pushReadingLogs'; payload: Database.Types.ReadLogType[] }
     ) => {
       let newState = state;
       if (action.type === 'setAll') {
@@ -90,7 +95,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
     if (metadataId) {
       try {
         // load all save data into a list
-        let _autoSaveData: Types.SaveDataType =
+        let _autoSaveData: Database.Types.SaveDataType =
           await dbContext.getAutoSaveDataFromMetadataId(metadataId);
         // if did not find one, then init one
         if (!_autoSaveData) {
@@ -133,7 +138,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
     if (!currentSaveDataId.current) return;
 
     // build new save data, remove extra properties
-    const _saveDate: Types.SaveDataType = {
+    const _saveDate: Database.Types.SaveDataType = {
       id: currentSaveDataId.current,
       metadataId: metadataId, // parent id
       description: '', // empty string means this is 'auto save data'
@@ -167,7 +172,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
   };
 
   const updateSaveDataContext = async (
-    _saveDataContext: Types.SaveDataContext
+    _saveDataContext: Database.Types.SaveDataContext
   ): Promise<void> => {
     saveDataDispatch({
       type: 'updateSaveDataContext',
@@ -176,7 +181,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
   };
 
   const pushReadingLogs = async (
-    newLogs: Types.ReadLogType[]
+    newLogs: Database.Types.ReadLogType[]
   ): Promise<void> => {
     if (!currentSaveDataId.current) {
       setError('unknown save data id');
@@ -224,9 +229,9 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
 };
 
 const pushGroupedReadingLogs = (
-  prevGroupedReadingLogs: Types.ReadLogType[][],
-  newReadingLogs: Types.ReadLogType[]
-): Types.ReadLogType[][] => {
+  prevGroupedReadingLogs: Database.Types.ReadLogType[][],
+  newReadingLogs: Database.Types.ReadLogType[]
+): Database.Types.ReadLogType[][] => {
   let groupedReadingLogs = prevGroupedReadingLogs ?? [];
   groupedReadingLogs = groupedReadingLogs.slice(); // prepare a copy
 

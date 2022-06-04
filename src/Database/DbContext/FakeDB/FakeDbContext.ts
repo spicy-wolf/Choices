@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import * as Types from '@src/Types';
+import * as Types from '../Types';
 import { AbstractDbContext } from '../DbContext';
 import FakeMetadata from '@resources/FakeMetadata.json';
 import FakeScript from '@resources/FakeScript.json';
@@ -14,7 +14,8 @@ export class FakeDbContext extends AbstractDbContext {
 
   public constructor() {
     super();
-
+  }
+  public async init(): Promise<void> {
     // mock read DB
     this.metadataDb = [...FakeMetadata];
 
@@ -43,10 +44,8 @@ export class FakeDbContext extends AbstractDbContext {
     );
     return result;
   }
-  public async getMetadataFromRepoId(
-    repoId: string
-  ): Promise<Types.RepoMetadataType> {
-    let result = this.metadataDb.find((value) => value?.id === repoId);
+  public async getMetadataFromId(id: string): Promise<Types.RepoMetadataType> {
+    let result = this.metadataDb.find((value) => value?.id === id);
     return result;
   }
   public async addMetadata(
@@ -62,7 +61,7 @@ export class FakeDbContext extends AbstractDbContext {
 
     return metaData.id;
   }
-  public async deleteMetadataFromRepoId(repoId: string): Promise<void> {
+  public async deleteMetadataFromId(metadataId: string): Promise<void> {
     throw 'Not Implemented';
   }
   //#endregion
@@ -74,12 +73,6 @@ export class FakeDbContext extends AbstractDbContext {
     return this.scriptDb
       .filter((item) => item.metadataId === metaDataId)
       .sort((item1, item2) => item1.order - item2.order);
-  }
-  public async updateScript(
-    metaDataId: string,
-    script: Types.ScriptType
-  ): Promise<void> {
-    throw 'Not Implemented';
   }
   //#endregion
 
@@ -107,8 +100,9 @@ export class FakeDbContext extends AbstractDbContext {
     }
     return autoSaveData;
   }
-  public async addSaveData(saveData: Types.SaveDataType): Promise<void> {
+  public async addSaveData(saveData: Types.SaveDataType): Promise<string> {
     await this.putSaveData(saveData);
+    return saveData.id;
   }
   public async putSaveData(saveData: Types.SaveDataType): Promise<void> {
     const { readingLogs, ...otherSaveData } = saveData;
