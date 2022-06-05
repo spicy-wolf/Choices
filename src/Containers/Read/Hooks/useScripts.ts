@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useDbContext } from '@src/Context/DbContext';
-import * as Types from '@src/Types';
+import * as Database from '@src/Database';
 
-type ScriptType = Types.ScriptType;
+type ScriptType = Database.Types.ScriptType;
 
 export const useScripts = (metadataId: string) => {
   const { dbContext } = useDbContext();
