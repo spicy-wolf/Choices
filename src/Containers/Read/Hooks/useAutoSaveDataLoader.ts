@@ -30,7 +30,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
       action:
         | { type: 'setAll'; payload: Database.Types.SaveDataType }
         | { type: 'updateScriptCursorPos'; payload: string }
-        | { type: 'updateLogCursorPos'; payload: string }
+        | { type: 'updateLogCursorPos'; payload: number }
         | {
             type: 'updateSaveDataContext';
             payload: Database.Types.SaveDataContext;
@@ -106,15 +106,13 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
             timestamp: Date.now(),
 
             scriptCursorPos: '',
-            logCursorPos: '',
+            logCursorPos: null,
 
             context: {},
             readingLogs: [],
           };
-          // TODO: call DB add
         } else {
           if (!_autoSaveData.readingLogs) _autoSaveData.readingLogs = [];
-          // TODO: call DB put to update the date
           // TODO: maybe also update the metadata date? e.g. last read repo
         }
         currentSaveDataId.current = _autoSaveData.id;
@@ -164,7 +162,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
     });
   };
 
-  const updateLogCursorPos = async (_logCursorPos: string): Promise<void> => {
+  const updateLogCursorPos = async (_logCursorPos: number): Promise<void> => {
     saveDataDispatch({
       type: 'updateLogCursorPos',
       payload: _logCursorPos,

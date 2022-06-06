@@ -8,7 +8,7 @@ export type SaveDataType = {
   timestamp: number;
 
   scriptCursorPos: string;
-  logCursorPos: string;
+  logCursorPos: number;
 
   context: SaveDataContext;
   readingLogs?: ReadLogType[];

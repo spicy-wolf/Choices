@@ -1,11 +1,13 @@
 import React from 'react';
-import { AnyStatementType } from '../Types';
+import * as Types from '../Types';
 import { CheckStatementType } from '../Helper';
 import EndOfLine from './EndOfLine/EndOfLine';
 import Sentence from './Sentence/Sentence';
 import Fin from './Fin/Fin';
 
-export const render = (props: AnyStatementType): JSX.Element => {
+export const render = (
+  props: Types.LogComponentType | Types.PauseComponentType
+): JSX.Element => {
   if (!props) {
     // run time error
     return <></>;

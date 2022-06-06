@@ -5,16 +5,17 @@ import { StatementTypeNames } from '../Constants';
 export const executeSentence = (
   statement: StatementTypes.SentenceStatementType,
   controlMethods: {
-    addReadingLogs: (statements: StatementTypes.AnyStatementType[]) => void;
+    addReadingLogs: (statements: StatementTypes.LogComponentType[]) => void;
     moveScriptCursor: (statementId?: string) => void;
   }
 ) => {
   if (!statement) return;
 
-  const statementList = splitLongStatement(statement);
+  const components: StatementTypes.LogComponentType[] =
+    splitLongStatement(statement);
 
   // update reading log
-  controlMethods.addReadingLogs && controlMethods.addReadingLogs(statementList);
+  controlMethods.addReadingLogs && controlMethods.addReadingLogs(components);
   // move to next statement
   controlMethods.moveScriptCursor && controlMethods.moveScriptCursor();
 };
@@ -22,22 +23,24 @@ export const executeSentence = (
 export const executeParagraph = (
   statement: StatementTypes.ParagraphStatementType,
   hooks: {
-    addReadingLogs: (statements: StatementTypes.AnyStatementType[]) => void;
+    addReadingLogs: (statements: StatementTypes.LogComponentType[]) => void;
     moveScriptCursor: (statementId?: string) => void;
   }
 ) => {
   if (!statement) return;
 
-  const statementList = splitLongStatement(statement);
+  const components: StatementTypes.LogComponentType[] =
+    splitLongStatement(statement);
 
   // paragraph needs one more eol
-  statementList.push({
-    id: uuidv4(),
+  components.push({
+    sourceStatementId: statement.id,
+    order: null,
     type: StatementTypeNames.END_OF_LINE[0],
   });
 
   // update reading log
-  hooks.addReadingLogs && hooks.addReadingLogs(statementList);
+  hooks.addReadingLogs && hooks.addReadingLogs(components);
   // move to next statement
   hooks.moveScriptCursor && hooks.moveScriptCursor();
 };
@@ -47,13 +50,13 @@ const splitLongStatement = (
     | StatementTypes.SentenceStatementType
     | StatementTypes.ParagraphStatementType
 ): Array<
-  StatementTypes.SentenceStatementType | StatementTypes.EndOfLineStatementType
+  StatementTypes.SentenceComponentType | StatementTypes.EndOfLineComponentType
 > => {
-  let statementList: Array<
-    StatementTypes.SentenceStatementType | StatementTypes.EndOfLineStatementType
+  let components: Array<
+    StatementTypes.SentenceComponentType | StatementTypes.EndOfLineComponentType
   > = [];
 
-  if (!statement) return statementList;
+  if (!statement) return components;
 
   /**
    * Split a big paragraph into small pieces
@@ -68,14 +71,17 @@ const splitLongStatement = (
   for (let i = 0; i < sentences.length; i++) {
     let shorterSentences = sentences[i].match(/.{1,30}/g) ?? ''; // TODO: is 30 good?
     for (let ss of shorterSentences) {
+      // convert statement to log
       if (ss === '\n') {
-        statementList.push({
-          id: uuidv4(),
+        components.push({
+          sourceStatementId: statement.id,
+          order: null,
           type: StatementTypeNames.END_OF_LINE[0],
         });
       } else {
-        statementList.push({
-          id: uuidv4(),
+        components.push({
+          sourceStatementId: statement.id,
+          order: null,
           type: StatementTypeNames.SENTENCE[0],
           data: ss,
         });
@@ -83,5 +89,5 @@ const splitLongStatement = (
     }
   }
 
-  return statementList;
+  return components;
 };

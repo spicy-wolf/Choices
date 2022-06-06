@@ -1,7 +1,16 @@
-import { EndOfLineStatementType } from './EndOfLineStatement.type';
-import { FinStatementType } from './FinStatement.type';
-import { ParagraphStatementType } from './ParagraphStatement.type';
-import { SentenceStatementType } from './SentenceStatement.type';
+import {
+  EndOfLineComponentType,
+  EndOfLineStatementType,
+} from './EndOfLineStatement.type';
+import { FinComponentType, FinStatementType } from './FinStatement.type';
+import {
+  ParagraphComponentType,
+  ParagraphStatementType,
+} from './ParagraphStatement.type';
+import {
+  SentenceComponentType,
+  SentenceStatementType,
+} from './SentenceStatement.type';
 
 type AnyStatementType =
   | EndOfLineStatementType
@@ -9,16 +18,28 @@ type AnyStatementType =
   | ParagraphStatementType
   | SentenceStatementType;
 
+type LogComponentType =
+  | EndOfLineComponentType
+  | ParagraphComponentType
+  | SentenceComponentType;
+
 // the type of statement which can pause statement execution
 // these statements will never be stored in reading logs since they can replaced
 // e.g. choices
-type PendingStatementType = FinStatementType;
+type PauseComponentType = FinComponentType;
 
 export {
   EndOfLineStatementType,
   FinStatementType,
   ParagraphStatementType,
   SentenceStatementType,
+  // log types
+  EndOfLineComponentType,
+  FinComponentType,
+  ParagraphComponentType,
+  SentenceComponentType,
+  //
   AnyStatementType,
-  PendingStatementType,
+  LogComponentType,
+  PauseComponentType,
 };

@@ -11,10 +11,10 @@ import {
 export const execute = (
   statement: StatementTypes.AnyStatementType,
   controlMethods: {
-    addReadingLogs: (statements: StatementTypes.AnyStatementType[]) => void;
+    addReadingLogs: (statements: StatementTypes.LogComponentType[]) => void;
     moveScriptCursor: (statementId?: string) => void;
-    setPendingStatement: (
-      pendingStatement: StatementTypes.PendingStatementType
+    setPauseComponent: (
+      pauseComponent: StatementTypes.PauseComponentType
     ) => void;
   }
 ) => {
@@ -25,8 +25,8 @@ export const execute = (
     let eolStatement = statement as StatementTypes.EndOfLineStatementType;
     executeEndOfLine(eolStatement, controlMethods);
   } else if (CheckStatementType.isFin(statement)) {
-    const pendingStatement = statement as StatementTypes.FinStatementType;
-    executeFin(pendingStatement, controlMethods);
+    const finStatement = statement as StatementTypes.FinStatementType;
+    executeFin(finStatement, controlMethods);
   } else if (CheckStatementType.isParagraph(statement)) {
     const paragraphStatement =
       statement as StatementTypes.ParagraphStatementType;

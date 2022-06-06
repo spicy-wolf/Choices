@@ -1,8 +1,14 @@
 import React from 'react';
-import { EndOfLineStatementType } from '../../Types';
+import { HtmlElementAttribute } from '../../Constants';
+import { EndOfLineComponentType } from '../../Types';
 
-const EndOfLine = (props: EndOfLineStatementType): JSX.Element => {
-  return <br id={props.id} />;
+const EndOfLine = (props: EndOfLineComponentType): JSX.Element => {
+  const elementProps = {
+    [HtmlElementAttribute.LOG_ORDER_ATTRIBUTE]: props.order,
+    [HtmlElementAttribute.SOURCE_STATEMENT_ID_ATTRIBUTE]:
+      props.sourceStatementId,
+  };
+  return <br {...elementProps} />;
 };
 
 export default EndOfLine;
