@@ -7,5 +7,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 const body = document.getElementById('body');
 if (body) {
-  ReactDOM.render(<App />, body);
+  ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    body
+  );
 }
