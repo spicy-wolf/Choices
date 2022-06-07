@@ -1,6 +1,11 @@
 import { StatementTypeNames } from '../Constants';
-import { AbstractStatementType } from './AbstractStatement.type';
+import {
+  AbstractComponentType,
+  AbstractStatementType,
+} from './AbstractStatement.type';
 
-export type FinStatementType = AbstractStatementType & {
+type BaseType = {
   type: typeof StatementTypeNames.FIN[number];
 };
+export type FinStatementType = AbstractStatementType & BaseType;
+export type FinComponentType = AbstractComponentType & BaseType;

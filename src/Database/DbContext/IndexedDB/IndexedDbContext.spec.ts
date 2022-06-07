@@ -14,16 +14,19 @@ const initScript: Types.ScriptType = [
   {
     id: '7bc98165-91ce-42a0-a126-e0ff16648f4b',
     metadataId: '',
+    order: 0,
     type: 's',
     data: 'test data #1',
   },
   {
     id: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
+    order: 1,
     metadataId: '',
     type: 'eol',
   },
   {
     id: '9b02c2bb-041b-4901-b874-4ca5a4236873',
+    order: 2,
     metadataId: '',
     type: 'end',
   },
@@ -40,23 +43,27 @@ const altScript: Types.ScriptType = [
   {
     id: '7bc98165-91ce-42a0-a126-e0ff16648f4b',
     metadataId: '',
+    order: 0,
     type: 's',
     data: 'test data #1',
   },
   {
     id: '1554beff-faa8-4bd9-8721-ba0d9e06a936',
     metadataId: '',
+    order: 1,
     type: 's',
     data: 'test data #2',
   },
   {
     id: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
     metadataId: '',
+    order: 2,
     type: 'eol',
   },
   {
     id: '9b02c2bb-041b-4901-b874-4ca5a4236873',
     metadataId: '',
+    order: 3,
     type: 'end',
   },
 ];
@@ -68,7 +75,7 @@ const initSaveData: Types.SaveDataType = {
   timestamp: 1654405690298,
 
   scriptCursorPos: '',
-  logCursorPos: '',
+  logCursorPos: 0,
 
   context: {},
   readingLogs: [],
@@ -204,6 +211,7 @@ describe('indexed db test', () => {
             {
               id: '', // missing id
               metadataId: '',
+              order: 0,
               type: 'end',
             },
           ]);
@@ -244,18 +252,18 @@ describe('indexed db test', () => {
         ...initSaveData,
         id: newSaveDataId,
         scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
-        logCursorPos: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+        logCursorPos: 0,
 
         readingLogs: [
           {
-            id: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+            sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
             saveDataId: newSaveDataId,
             type: 's',
             data: 'test data #1',
             order: 0,
           },
           {
-            id: '80a9019d-22b1-4de3-8503-9f61d05ba435',
+            sourceStatementId: '80a9019d-22b1-4de3-8503-9f61d05ba435',
             saveDataId: newSaveDataId,
             type: 's',
             data: 'test data #2',
@@ -280,11 +288,11 @@ describe('indexed db test', () => {
         ...initSaveData,
         id: '',
         scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
-        logCursorPos: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+        logCursorPos: 0,
 
         readingLogs: [
           {
-            id: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+            sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
             saveDataId: '',
             type: 's',
             data: 'test data #1',
@@ -307,7 +315,7 @@ describe('indexed db test', () => {
           },
           // extra reading log here
           {
-            id: '80a9019d-22b1-4de3-8503-9f61d05ba435',
+            sourceStatementId: '80a9019d-22b1-4de3-8503-9f61d05ba435',
             saveDataId: newSaveDataId,
             type: 's',
             data: 'test data #2',
@@ -350,10 +358,10 @@ describe('indexed db test', () => {
         ...initSaveData,
         metadataId: metadataId,
         scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
-        logCursorPos: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+        logCursorPos: 0,
         readingLogs: [
           {
-            id: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+            sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
             saveDataId: '',
             type: 's',
             data: 'test data #1',
@@ -394,18 +402,18 @@ describe('indexed db test', () => {
             ...initSaveData,
             id: 'im test id',
             scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
-            logCursorPos: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+            logCursorPos: 0,
 
             readingLogs: [
               {
-                id: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+                sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
                 saveDataId: 'im test id',
                 type: 's',
                 data: 'test data #1',
                 order: 1, // it is 1
               },
               {
-                id: '80a9019d-22b1-4de3-8503-9f61d05ba435',
+                sourceStatementId: '80a9019d-22b1-4de3-8503-9f61d05ba435',
                 saveDataId: 'im test id',
                 type: 's',
                 data: 'test data #2',
@@ -425,15 +433,15 @@ describe('indexed db test', () => {
             ...initSaveData,
             id: 'im test id',
             scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
-            logCursorPos: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+            logCursorPos: 0,
 
             readingLogs: [
               {
-                id: '6ff9fa61-1288-40dd-a0e3-00189218860e',
+                sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
                 saveDataId: 'im test id',
+                order: null, // miss order
                 type: 's',
                 data: 'test data #1',
-                // order: undefined, // miss order
               },
             ],
           };

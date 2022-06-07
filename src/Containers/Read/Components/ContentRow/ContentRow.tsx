@@ -1,14 +1,15 @@
 import React from 'react';
 import * as StatementEngine from '@src/StatementEngine';
 
-type AnyStatementType = StatementEngine.Types.AnyStatementType;
+type LogComponentType = StatementEngine.Types.LogComponentType;
+type PauseComponentType = StatementEngine.Types.PauseComponentType;
 
 const ContentRow = (props: {
-  data: AnyStatementType[];
+  data: LogComponentType[] | PauseComponentType[];
   index: number;
   isScrolling: boolean;
   setItemSize: (index: number, height: number) => void;
-  setReadingLogCursorPos?: (topScreenItemId: string) => void;
+  setReadingLogCursorPos?: (topScreenItemId: number) => void;
 }): JSX.Element => {
   const rowRef = React.useRef<HTMLDivElement>();
 
@@ -30,10 +31,14 @@ const ContentRow = (props: {
       if (domRect.top <= 0 && domRect.bottom >= 0) {
         const childElements = rowRef.current.children;
         for (const child of childElements) {
+          const order = StatementEngine.getLogOrderFromElement(child);
           const childDomRect = child.getBoundingClientRect();
-          if (childDomRect.top <= 0 && childDomRect.bottom >= 0) {
-            props.setReadingLogCursorPos &&
-              props.setReadingLogCursorPos(child.id);
+          if (
+            childDomRect.top <= 0 &&
+            childDomRect.bottom >= 0 &&
+            order !== null
+          ) {
+            props.setReadingLogCursorPos && props.setReadingLogCursorPos(order);
             break;
           }
         }
@@ -42,8 +47,11 @@ const ContentRow = (props: {
   }, [props.isScrolling]);
 
   const theStory = React.useMemo(() => {
-    const result = props.data?.map((statement) => (
-      <StatementEngine.render key={statement.id} {...statement} />
+    const result = props.data?.map((component, index) => (
+      <StatementEngine.render
+        key={component.order ?? `index-${index}`}
+        {...component}
+      />
     ));
     return result;
   }, [props.data]);

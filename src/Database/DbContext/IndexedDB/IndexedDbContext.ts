@@ -506,14 +506,14 @@ export class IndexedDbContext extends AbstractDbContext {
     readlogRequest.onsuccess = (event: any) => {
       const cursor = event.target.result as IDBCursorWithValue;
       const lastOrderNumber = cursor?.value?.order;
-      let pendingReadingLogs = readingLogs;
+      let newReadingLogs = readingLogs;
 
       if (lastOrderNumber >= 0) {
-        pendingReadingLogs = readingLogs.filter(
+        newReadingLogs = readingLogs.filter(
           (item) => item.order > lastOrderNumber
         );
       }
-      for (const readingLog of pendingReadingLogs) {
+      for (const readingLog of newReadingLogs) {
         const readingLogRequest = transaction
           .objectStore(this.READ_LOG_TB_NAME)
           // note: we should not give a new id since the readLogIndicator in savedata should match reading log

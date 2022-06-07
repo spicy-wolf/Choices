@@ -1,8 +1,13 @@
 import React from 'react';
-import { FinStatementType } from '../../Types';
+import { HtmlElementAttribute } from '../../Constants';
+import { FinComponentType } from '../../Types';
 
-const Fin = (props: FinStatementType): JSX.Element => {
-  return <div id={props.id} className="d-none"></div>;
+const Fin = (props: FinComponentType): JSX.Element => {
+  const elementProps = {
+    [HtmlElementAttribute.SOURCE_STATEMENT_ID_ATTRIBUTE]:
+      props.sourceStatementId,
+  };
+  return <div {...elementProps} className="d-none"></div>;
 };
 
 export default Fin;

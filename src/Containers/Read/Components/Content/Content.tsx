@@ -9,13 +9,14 @@ import { ContentRow } from '../ContentRow/ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
 
 type AnyStatementType = StatementEngine.Types.AnyStatementType;
-type PendingStatementType = StatementEngine.Types.PendingStatementType;
+type LogComponentType = StatementEngine.Types.LogComponentType;
+type PauseComponentType = StatementEngine.Types.PauseComponentType;
 type ContentProps = {
   scripts: AnyStatementType[];
   scriptCursorPos: string;
   updateScriptCursorPos: (_scriptCursorPos: string) => Promise<void>;
-  logCursorPos: string;
-  updateLogCursorPos: (_logCursorPos: string) => Promise<void>;
+  logCursorPos: number;
+  updateLogCursorPos: (_logCursorPos: number) => Promise<void>;
   saveDataContext: Database.Types.SaveDataContext;
   updateSaveDataContext: (
     _saveDataContext: Database.Types.SaveDataContext
@@ -29,8 +30,7 @@ const Content = (props: ContentProps) => {
   const { fontSize } = useSetting();
   const windowSize = useWindowSize();
 
-  const [pendingStatement, setPendingStatement] =
-    useState<PendingStatementType>();
+  const [pauseComponent, setPauseComponent] = useState<PauseComponentType>();
 
   const contentRef = React.useRef<HTMLDivElement>();
   const infiniteLoaderRef = React.useRef<InfiniteLoader>();
@@ -40,20 +40,21 @@ const Content = (props: ContentProps) => {
   const rowHeights = React.useRef<number[]>([]);
 
   // this value is a copy of initial logCursorPos, for restore prev reading position
-  const initScrollToLogCursorPos = React.useRef<string>(props.logCursorPos);
+  const initScrollToLogCursorPos = React.useRef<number>(props.logCursorPos);
 
   useEffect(() => {
     //#region scrolling to prev saved position -> 1st step -> scroll to the paragraph
     if (
       listRef.current &&
       listInnerRef.current &&
-      initScrollToLogCursorPos.current
+      initScrollToLogCursorPos.current !== null &&
+      initScrollToLogCursorPos.current !== undefined
     ) {
       // find the group index which contains initScrollToLogCursorPos
       const index = props.groupedReadingLogs.findIndex(
         (item) =>
           !!item.find(
-            (subItem) => subItem.id === initScrollToLogCursorPos.current
+            (subItem) => subItem.order === initScrollToLogCursorPos.current
           )
       );
       if (index === -1) {
@@ -84,7 +85,7 @@ const Content = (props: ContentProps) => {
 
   // this "+1" has two use cases
   // 1. always assume there are some more statements to execute
-  // 2. if there is a pending statement, then the itemCount == length of groupedReadingLogs + one pending statement
+  // 2. if there is a pause component, then the itemCount == length of groupedReadingLogs + one pause component
   //    which means the loadMoreItem will not be triggered
   const itemCount: number = useMemo(
     () => (props.groupedReadingLogs?.length || 0) + 1,
@@ -93,16 +94,18 @@ const Content = (props: ContentProps) => {
 
   const isItemLoaded = (index: number): boolean => {
     let isLoaded = !!props.groupedReadingLogs?.[index];
-    if (props.groupedReadingLogs?.length === index && !!pendingStatement) {
+    if (props.groupedReadingLogs?.length === index && !!pauseComponent) {
       isLoaded = true;
     }
     return isLoaded;
   };
 
-  const getRowData = (index: number): AnyStatementType[] => {
-    // pendingStatement is always show at the end
-    if (props.groupedReadingLogs?.length === index && !!pendingStatement) {
-      return [pendingStatement];
+  const getRowData = (
+    index: number
+  ): LogComponentType[] | PauseComponentType[] => {
+    // pauseComponent is always show at the end
+    if (props.groupedReadingLogs?.length === index && !!pauseComponent) {
+      return [pauseComponent];
     } else {
       return props.groupedReadingLogs[index];
     }
@@ -134,12 +137,12 @@ const Content = (props: ContentProps) => {
     StatementEngine.execute(currentStatement, {
       addReadingLogs,
       moveScriptCursor,
-      setPendingStatement: setPendingStatementWrapper,
+      setPauseComponent: setPauseComponentWrapper,
     });
   };
 
   // init to one line height, otherwise too many logs will be render as squished together
-  const getItemSize = (index: number) => rowHeights.current[index] || 30;
+  const getItemSize = (index: number) => rowHeights.current[index] || 100;
   const setItemSize = (index: number, newHeight: number) => {
     const oldHeight = rowHeights.current[index];
     rowHeights.current[index] = newHeight;
@@ -154,7 +157,7 @@ const Content = (props: ContentProps) => {
       listRef.current &&
       initScrollToLogCursorPos.current
     ) {
-      const targetElement = document.getElementById(
+      const targetElement = StatementEngine.getElementfromLogOrder(
         initScrollToLogCursorPos.current
       );
       if (targetElement) {
@@ -169,8 +172,12 @@ const Content = (props: ContentProps) => {
   };
 
   //#region statement executor control callback methods
-  const addReadingLogs = (pendingLogs: AnyStatementType[]): void => {
-    props.pushReadingLogs(pendingLogs);
+  const addReadingLogs = (newLogs: LogComponentType[]): void => {
+    const _newLogs: Database.Types.ReadLogType[] = newLogs.map((item) => ({
+      ...item,
+      saveDataId: null, // the saveDataId will be assigned when store to DB
+    }));
+    props.pushReadingLogs(_newLogs);
   };
 
   const moveScriptCursor = (statementId?: string): void => {
@@ -189,10 +196,8 @@ const Content = (props: ContentProps) => {
     }
   };
 
-  const setPendingStatementWrapper = (
-    pendingStatement: PendingStatementType
-  ) => {
-    setPendingStatement(pendingStatement);
+  const setPauseComponentWrapper = (pauseComponent: PauseComponentType) => {
+    setPauseComponent(pauseComponent);
   };
   //#endregion
 

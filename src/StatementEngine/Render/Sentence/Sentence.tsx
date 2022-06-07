@@ -1,11 +1,16 @@
 import React from 'react';
-import { SentenceStatementType } from '../../Types';
+import { SentenceComponentType } from '../../Types';
+import { HtmlElementAttribute } from '../../Constants';
 
-const Sentence = (props: SentenceStatementType): JSX.Element => {
+const Sentence = (props: SentenceComponentType): JSX.Element => {
   // Note: no need to worry pre-space &nbsp, it resolved automatically
   let text = props.data?.toString();
-
-  return <p id={props.id}>{text}</p>;
+  const elementProps = {
+    [HtmlElementAttribute.LOG_ORDER_ATTRIBUTE]: props.order,
+    [HtmlElementAttribute.SOURCE_STATEMENT_ID_ATTRIBUTE]:
+      props.sourceStatementId,
+  };
+  return <p {...elementProps}>{text}</p>;
 };
 
 export default Sentence;
