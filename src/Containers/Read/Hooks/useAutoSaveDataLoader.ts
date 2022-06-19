@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useDbContext } from '@src/Context/DbContext';
 import * as Database from '@src/Database';
 import * as StatementEngine from '@src/StatementEngine';
+import { useDebounce } from '@src/Utils';
 
 export const useAutoSaveDataLoader = (metadataId: string) => {
   const { dbContext } = useDbContext();
@@ -77,6 +78,8 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
     []
   );
   const [saveData, saveDataDispatch] = useReducer(reducer, null);
+  // since save data changed very frequently, debounced the value to reduce db access
+  const debouncedSaveData = useDebounce(saveData, 500);
 
   useEffect(() => {
     init();
@@ -129,7 +132,7 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
   // while update each part, also trigger DB update
   useEffect(() => {
     updateSaveDataDb();
-  }, [saveData, dbContext]);
+  }, [debouncedSaveData, dbContext]);
 
   const updateSaveDataDb = async () => {
     if (!dbContext) return;
@@ -142,11 +145,11 @@ export const useAutoSaveDataLoader = (metadataId: string) => {
       description: '', // empty string means this is 'auto save data'
       timestamp: Date.now(),
 
-      scriptCursorPos: saveData.scriptCursorPos,
-      logCursorPos: saveData.logCursorPos,
+      scriptCursorPos: debouncedSaveData.scriptCursorPos,
+      logCursorPos: debouncedSaveData.logCursorPos,
 
-      context: saveData.context,
-      readingLogs: saveData.readingLogs,
+      context: debouncedSaveData.context,
+      readingLogs: debouncedSaveData.readingLogs,
     };
 
     dbContext.putSaveData(_saveDate);
