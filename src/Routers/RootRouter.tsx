@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouterPathStrings } from '@src/Constants';
-import { Main, Read } from '@src/Containers';
+import { File2ScriptConverter, Main, Read } from '@src/Containers';
 import { Routes, Route, Location, useLocation } from 'react-router-dom';
 
 const RootRouter = () => {
@@ -16,6 +16,10 @@ const RootRouter = () => {
       <Routes location={state?.backgroundLocation || location}>
         <Route path={RouterPathStrings.READ_PAGE} element={<Read />} />
         <Route path={RouterPathStrings.MAIN_PAGE} element={<Main />} />
+        <Route
+          path={RouterPathStrings.FILE_2_SCRIPT_PAGE}
+          element={<File2ScriptConverter />}
+        />
       </Routes>
 
       {/* Show the modal when a background page is set */}
