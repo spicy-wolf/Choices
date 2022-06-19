@@ -436,8 +436,12 @@ export class IndexedDbContext extends AbstractDbContext {
             };
           }
           cursor.continue();
+        } else {
+          // did not find auto save, then return null
+          resolve(null);
         }
       };
+      transaction.oncomplete = (event: any) => {};
       transaction.onerror = (event: any) => {
         reject();
       };

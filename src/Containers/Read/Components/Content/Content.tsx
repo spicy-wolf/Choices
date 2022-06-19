@@ -142,7 +142,7 @@ const Content = (props: ContentProps) => {
   };
 
   // init to one line height, otherwise too many logs will be render as squished together
-  const getItemSize = (index: number) => rowHeights.current[index] || 100;
+  const getItemSize = (index: number) => rowHeights.current[index] || 30;
   const setItemSize = (index: number, newHeight: number) => {
     const oldHeight = rowHeights.current[index];
     rowHeights.current[index] = newHeight;

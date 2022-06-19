@@ -224,6 +224,13 @@ describe('indexed db test', () => {
   });
 
   describe('test script and reading log', () => {
+    test('test no auto save data at init', async () => {
+      const autoSaveData = await dbContext.getAutoSaveDataFromMetadataId(
+        initSaveData.metadataId
+      );
+      expect(autoSaveData).toEqual(null);
+    });
+
     test('test add save data', async () => {
       jest.useFakeTimers().setSystemTime(initSaveData.timestamp);
       const newSaveDataId = await dbContext.addSaveData(initSaveData);
