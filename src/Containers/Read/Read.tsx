@@ -1,15 +1,14 @@
-import React from 'react';
-import './Read.scss';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
-import { useSetting } from '@src/Context';
-import { LoadingIndicatorModal } from '@src/Containers/Modal';
-import SidePanel from './Components/SidePanel/SidePanel';
-import Content from './Components/Content/Content';
+import LoadingIndicatorModal from '@src/Containers/LoadingIndicatorModal/LoadingIndicatorModal';
+import SidePanel from './Components/SidePanel';
+import Content from './Components/Content';
 import { useMetadata } from './Hooks/useMetadata';
 import { useScripts } from './Hooks/useScripts';
 import { useAutoSaveDataLoader } from './Hooks/useAutoSaveDataLoader';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
 
 type ReadProps = {};
 
@@ -21,6 +20,8 @@ const Read = (props: ReadProps) => {
   //#endregion
 
   //#region hooks
+  const [showLoadingModal, setShowLoadingModal] =
+    React.useState<boolean>(false);
   const [metadata, metadataLoadingError] = useMetadata(repoName, authorName);
   const [scripts, scriptLoadingError] = useScripts(metadata?.id);
   const [
@@ -31,9 +32,7 @@ const Read = (props: ReadProps) => {
   ] = useAutoSaveDataLoader(metadata?.id);
   //#endregion
 
-  const loadingLabelOrErrorMsg = React.useMemo(() => {
-    const errorMsg =
-      metadataLoadingError || scriptLoadingError || autoSaveDataLoaderError;
+  const loadingLabel = React.useMemo(() => {
     let loadingMsg = '';
     if (!metadata) {
       loadingMsg = 'Loading metadata.';
@@ -43,27 +42,40 @@ const Read = (props: ReadProps) => {
       loadingMsg = 'Loading save data.';
     }
 
-    return errorMsg || loadingMsg;
-  }, [
-    metadata,
-    scripts,
-    isAutoSaveDataLoaded,
-    metadataLoadingError,
-    scriptLoadingError,
-    autoSaveDataLoaderError,
-  ]);
+    return loadingMsg;
+  }, [metadata, scripts, isAutoSaveDataLoaded]);
+
+  const loadingError = React.useMemo(() => {
+    const errorMsg =
+      metadataLoadingError || scriptLoadingError || autoSaveDataLoaderError;
+    return errorMsg;
+  }, [metadataLoadingError, scriptLoadingError, autoSaveDataLoaderError]);
+
+  useEffect(() => {
+    if (!!loadingLabel || !!loadingError) {
+      setShowLoadingModal(true);
+    } else {
+      setShowLoadingModal(false);
+    }
+  }, [loadingLabel, loadingError]);
 
   return (
     <>
-      <LoadingIndicatorModal loadingLabel={loadingLabelOrErrorMsg} />
-      <div id="main">
-        {!loadingLabelOrErrorMsg && (
+      <CssBaseline />
+      <LoadingIndicatorModal
+        open={showLoadingModal}
+        handleClose={() => setShowLoadingModal(false)}
+        loadingLabel={loadingLabel}
+        error={loadingError}
+      />
+      <Container>
+        {!loadingLabel && !loadingError && (
           <>
             <SidePanel />
             <Content {...{ ...saveData, ...saveDataFunc }} scripts={scripts} />
           </>
         )}
-      </div>
+      </Container>
     </>
   );
 };

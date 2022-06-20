@@ -1,23 +1,19 @@
-import React from 'react';
-import './Main.scss';
+import React, { useEffect } from 'react';
 import { RouterPathStrings } from '@src/Constants';
 import * as Utils from '@src/Utils';
-import { useNavigate, useLocation } from 'react-router-dom';
 import useMetadataList from './Hooks/useMetadataList';
-import { AddNewRepoModal, LoadingIndicatorModal } from '../Modal';
-import { Card, Col, Container, Row } from 'react-bootstrap';
 import { RepoCard } from './Components/RepoCard';
-import {
-  FloatingButtonEnum,
-  FloatingButtonGroup,
-} from './Components/FloatingButtonGroup';
-import { Types } from '@src/Database';
 import { useDbContext } from '@src/Context/DbContext';
+import CssBaseline from '@mui/material/CssBaseline/CssBaseline';
+import Container from '@mui/material/Container/Container';
+import Grid from '@mui/material/Grid/Grid';
+import Fab from '@mui/material/Fab/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import LoadingIndicatorModal from '@src/Containers/LoadingIndicatorModal/LoadingIndicatorModal';
+import AddNewRepoModal from './Components/AddNewRepoModal';
 
 const Main = () => {
   const { dbContext } = useDbContext();
-  let location = useLocation();
-  let navigate = useNavigate();
 
   //#region query param
   const query = Utils.useQuery();
@@ -26,6 +22,8 @@ const Main = () => {
 
   //#region state
   const [showAddModal, setShowAddModal] = React.useState<boolean>();
+  const [showLoadingModal, setShowLoadingModal] =
+    React.useState<boolean>(false);
   const [repoLoadingMsg, setRepoLoadingMsg] = React.useState<string>();
   const [repoLoadingErrorMsg, setRepoLoadingErrorMsg] =
     React.useState<string>();
@@ -35,25 +33,27 @@ const Main = () => {
   const [metadataList, metadataListLoadingError] = useMetadataList();
   //#endregion
 
-  const loadingLabelOrErrorMsg = React.useMemo(() => {
-    const errorMsg = metadataListLoadingError;
-    let loadingMsg = '' || repoLoadingMsg;
+  const loadingLabel = React.useMemo(() => {
+    let loadingMsg = repoLoadingMsg || '';
     if (!metadataList) {
       loadingMsg = 'Loading reading list.';
     }
 
-    return errorMsg || loadingMsg;
-  }, [metadataList, metadataListLoadingError, repoLoadingMsg]);
+    return loadingMsg;
+  }, [metadataList, repoLoadingMsg]);
 
-  const metadataElements: JSX.Element[] = React.useMemo(() => {
-    let result: JSX.Element[] = [];
-    if (metadataList) {
-      result = metadataList.map((item) => (
-        <RepoCard key={item.id} item={item} />
-      ));
+  const loadingError = React.useMemo(() => {
+    const errorMsg = metadataListLoadingError || repoLoadingErrorMsg || '';
+    return errorMsg;
+  }, [metadataListLoadingError, repoLoadingErrorMsg]);
+
+  useEffect(() => {
+    if (!!loadingLabel || !!loadingError) {
+      setShowLoadingModal(true);
+    } else {
+      setShowLoadingModal(false);
     }
-    return result;
-  }, [metadataList]);
+  }, [loadingLabel, loadingError]);
 
   const onLoadFromUrl = async (urlStr: string, urlAccessToken: string) => {
     // hide add modal
@@ -127,41 +127,51 @@ const Main = () => {
     dbContext.addMetadata(metadata, script);
   };
 
-  const onFloatingButtonClick = (buttonName: FloatingButtonEnum) => {
-    switch (buttonName) {
-      case FloatingButtonEnum.AddButton:
-        // show add repo modal
-        setShowAddModal(true);
-        break;
-      case FloatingButtonEnum.SettingButton:
-        // show setting modal
-        break;
-      default:
-        break;
+  const metadataElements: JSX.Element[] = React.useMemo(() => {
+    let result: JSX.Element[] = [];
+    if (metadataList) {
+      result = metadataList.map((item) => (
+        <Grid key={item.id} item xs={12} md={4}>
+          <RepoCard item={item} />
+        </Grid>
+      ));
     }
-  };
+    return result;
+  }, [metadataList]);
 
   return (
     <>
-      <LoadingIndicatorModal loadingLabel={loadingLabelOrErrorMsg} />
+      <CssBaseline />
+      <LoadingIndicatorModal
+        loadingLabel={loadingLabel}
+        error={loadingError}
+        open={!!showLoadingModal}
+        handleClose={() => setShowLoadingModal(false)}
+      />
       <AddNewRepoModal
-        show={showAddModal}
-        onHide={() => setShowAddModal(false)}
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
         onLoadFromUrl={onLoadFromUrl}
         onLoadFromFile={onLoadFromFile}
       />
-      <div id="main">
-        {!loadingLabelOrErrorMsg && (
-          <>
-            <Container>
-              <Row className="d-flex align-items-stretch">
-                {metadataElements}
-              </Row>
-            </Container>
-            <FloatingButtonGroup onClick={onFloatingButtonClick} />
-          </>
-        )}
-      </div>
+      <Container sx={{ pt: 1 }}>
+        <Grid container spacing={2} direction="row" alignItems="stretch">
+          {metadataElements}
+        </Grid>
+      </Container>
+      <Fab
+        sx={{
+          position: 'absolute',
+          bottom: 16,
+          right: 16,
+        }}
+        size="small"
+        color="secondary"
+        aria-label="add"
+        onClick={() => setShowAddModal(true)}
+      >
+        <AddIcon />
+      </Fab>
     </>
   );
 };
