@@ -5,7 +5,7 @@ import { useSetting, useTheme } from '@src/Context';
 import * as Database from '@src/Database';
 import { VariableSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { ContentRow } from '../ContentRow/ContentRow';
+import { ContentRow } from './ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
 
 type AnyStatementType = StatementEngine.Types.AnyStatementType;
