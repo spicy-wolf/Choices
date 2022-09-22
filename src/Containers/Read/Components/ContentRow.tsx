@@ -34,8 +34,8 @@ const ContentRow = (props: {
           const order = StatementEngine.getLogOrderFromElement(child);
           const childDomRect = child.getBoundingClientRect();
           if (
-            childDomRect.top <= 0 &&
-            childDomRect.bottom >= 0 &&
+            childDomRect.top <= 5 && // there is a slight gap between div and inner p, so use the baseline at y=5 instead if y=0
+            childDomRect.bottom >= 5 &&
             order !== null
           ) {
             props.setReadingLogCursorPos && props.setReadingLogCursorPos(order);
