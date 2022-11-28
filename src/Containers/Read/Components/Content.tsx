@@ -3,10 +3,9 @@ import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
 import { useSetting, useTheme } from '@src/Context';
 import * as Database from '@src/Database';
-import { VariableSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
 import { ContentRow } from './ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
+import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual';
 
 type AnyStatementType = StatementEngine.Types.AnyStatementType;
 type LogComponentType = StatementEngine.Types.LogComponentType;
@@ -30,45 +29,27 @@ const Content = (props: ContentProps) => {
   const { fontSize } = useSetting();
   const windowSize = useWindowSize();
 
-  const [pauseComponent, setPauseComponent] = useState<PauseComponentType>();
-
-  const contentRef = React.useRef<HTMLDivElement>();
-  const infiniteLoaderRef = React.useRef<InfiniteLoader>();
-  const listRef = React.useRef<List<any>>();
-  const listInnerRef = React.useRef<HTMLDivElement>();
-
-  const rowHeights = React.useRef<number[]>([]);
-
   // this value is a copy of initial logCursorPos, for restore prev reading position
   const initScrollToLogCursorPos = React.useRef<number>(props.logCursorPos);
+  const contentRef = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    //#region scrolling to prev saved position -> 1st step -> scroll to the paragraph
-    if (
-      listRef.current &&
-      listInnerRef.current &&
-      initScrollToLogCursorPos.current !== null &&
-      initScrollToLogCursorPos.current !== undefined
-    ) {
-      // find the group index which contains initScrollToLogCursorPos
-      const index = props.groupedReadingLogs.findIndex(
-        (item) =>
-          !!item.find(
-            (subItem) => subItem.order === initScrollToLogCursorPos.current
-          )
-      );
-      if (index === -1) {
-        // edge case, if cannot find the position, discard the value due to broken data
-        initScrollToLogCursorPos.current = null;
-      } else {
-        listRef.current.scrollToItem(index, 'start');
-        // Note: onScroll will be invoked next
-      }
-    }
-    //#endregion
-  }, []);
+  const [isExecutingStatement, setIsExecutingStatement] =
+    useState<boolean>(false);
 
-  // TODO: move me to a better place
+  const [pauseComponent, setPauseComponent] = useState<PauseComponentType>();
+
+  const [isScrolling, setIsScrolling] = useState<boolean>(false);
+
+  // this "+1" has two use cases
+  // 1. always assume there are some more statements to execute
+  // 2. if there is a pause component, then the itemCount == length of groupedReadingLogs + one pause component
+  //    which means the loadMoreItem will not be triggered
+  const itemCount: number = useMemo(
+    () => (props.groupedReadingLogs?.length || 0) + 1,
+    [props.groupedReadingLogs]
+  );
+
+  // create a script dic base on script array to speed up search by id
   const scriptIdIndexDic: { [key: string]: number } = useMemo(() => {
     let result = {};
     if (props.scripts && props.scripts.length > 0) {
@@ -83,21 +64,94 @@ const Content = (props: ContentProps) => {
     return result;
   }, [props.scripts]);
 
-  // this "+1" has two use cases
-  // 1. always assume there are some more statements to execute
-  // 2. if there is a pause component, then the itemCount == length of groupedReadingLogs + one pause component
-  //    which means the loadMoreItem will not be triggered
-  const itemCount: number = useMemo(
-    () => (props.groupedReadingLogs?.length || 0) + 1,
-    [props.groupedReadingLogs]
+  // init react virtual
+  const virtualizer = useVirtualizer({
+    count: itemCount,
+    getScrollElement: () => contentRef.current,
+    estimateSize: () => 100,
+    overscan: 1,
+  });
+
+  const [virtualItems, setVirtualItems] = useState<VirtualItem[]>(
+    virtualizer.getVirtualItems()
   );
 
-  const isItemLoaded = (index: number): boolean => {
-    let isLoaded = !!props.groupedReadingLogs?.[index];
-    if (props.groupedReadingLogs?.length === index && !!pauseComponent) {
-      isLoaded = true;
+  //#region scrolling to prev saved position -> get the paragraph index by sentence id -> scroll to index
+  useEffect(() => {
+    if (
+      virtualizer &&
+      initScrollToLogCursorPos.current !== null &&
+      initScrollToLogCursorPos.current !== undefined
+    ) {
+      // find the group index which contains initScrollToLogCursorPos
+      const index = props.groupedReadingLogs.findIndex(
+        (item) =>
+          !!item.find(
+            (subItem) => subItem.order === initScrollToLogCursorPos.current
+          )
+      );
+      if (index !== -1) {
+        scrollToIndex(index);
+      }
+
+      // clear scroll to position as this is one off variable
+      initScrollToLogCursorPos.current = null;
     }
-    return isLoaded;
+  }, []);
+  //#endregion
+
+  // Note: virtualItems is diff everytime call "getVirtualItems", keep an cache to reduce update times
+  useEffect(() => {
+    const newVirtualItems = virtualizer.getVirtualItems();
+    if (JSON.stringify(newVirtualItems) !== JSON.stringify(virtualItems)) {
+      setVirtualItems(newVirtualItems);
+    }
+  }, [virtualizer.getVirtualItems()]);
+
+  useEffect(() => {
+    setIsScrolling(virtualizer.isScrolling);
+  }, [virtualizer.isScrolling]);
+
+  React.useEffect(() => {
+    const [lastItem] = [...virtualItems].reverse();
+
+    if (!lastItem) {
+      return;
+    }
+    if (lastItem.index >= itemCount - 1 && !pauseComponent) {
+      setIsExecutingStatement(true);
+      // execute scripts
+      const scripts = props.scripts;
+      if (scripts.length === 0) return;
+
+      const currentStatementId = props.scriptCursorPos;
+      const currentStatementCursorIndex =
+        scriptIdIndexDic[currentStatementId] ?? 0;
+      let currentStatement: AnyStatementType =
+        scripts[currentStatementCursorIndex];
+
+      StatementEngine.execute(currentStatement, {
+        addReadingLogs,
+        moveScriptCursor,
+        setPauseComponent: setPauseComponentWrapper,
+      });
+    }
+  }, [itemCount, virtualItems, pauseComponent]);
+
+  React.useEffect(() => {
+    if (isExecutingStatement) setIsExecutingStatement(false);
+  }, [isExecutingStatement]);
+
+  const scrollToIndex = (index: number) => {
+    if (index < 0) return; // edge case checking
+
+    const options = { smoothScroll: false, align: 'start' } as const;
+    virtualizer.scrollToIndex(index, options);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        virtualizer.scrollToIndex(index, options);
+      });
+    });
   };
 
   const getRowData = (
@@ -109,66 +163,6 @@ const Content = (props: ContentProps) => {
     } else {
       return props.groupedReadingLogs[index];
     }
-  };
-
-  /**
-   * startIndex & stopIndex are useless in this function because each log of readingLogsForRender
-   * is not one to one mapped to the scripts.
-   * Therefore, if this function is invoked, then execute scripts until at least
-   * on log is pushed to the readingLog
-   *
-   * @param startIndex useless in this case
-   * @param stopIndex useless in this case
-   */
-  const loadMoreItems = async (
-    startIndex: number,
-    stopIndex: number
-  ): Promise<void> => {
-    // execute one script each time / or execute to load at least 100 words
-    const scripts = props.scripts;
-    if (scripts.length === 0) return;
-
-    const currentStatementId = props.scriptCursorPos;
-    const currentStatementCursorIndex =
-      scriptIdIndexDic[currentStatementId] ?? 0;
-    let currentStatement: AnyStatementType =
-      scripts[currentStatementCursorIndex];
-
-    StatementEngine.execute(currentStatement, {
-      addReadingLogs,
-      moveScriptCursor,
-      setPauseComponent: setPauseComponentWrapper,
-    });
-  };
-
-  // init to one line height, otherwise too many logs will be render as squished together
-  const getItemSize = (index: number) => rowHeights.current[index] || 30;
-  const setItemSize = (index: number, newHeight: number) => {
-    const oldHeight = rowHeights.current[index];
-    rowHeights.current[index] = newHeight;
-    if (listRef.current && oldHeight !== newHeight)
-      listRef.current.resetAfterIndex(index);
-  };
-
-  const onScroll = () => {
-    //#region scrolling to prev saved position -> 2nd step -> scroll to sub sentense
-    if (
-      listInnerRef.current &&
-      listRef.current &&
-      initScrollToLogCursorPos.current
-    ) {
-      const targetElement = StatementEngine.getElementfromLogOrder(
-        initScrollToLogCursorPos.current
-      );
-      if (targetElement) {
-        const offset = targetElement.getBoundingClientRect().top;
-        const domRect = listInnerRef.current.getBoundingClientRect();
-        listRef.current.scrollTo(Math.abs(domRect.y) + offset);
-        // scrolling done, clear the value
-        initScrollToLogCursorPos.current = null;
-      }
-    }
-    //#endregion
   };
 
   //#region statement executor control callback methods
@@ -186,10 +180,9 @@ const Content = (props: ContentProps) => {
     } else {
       // if statementId is not given, then move to next
       const currentStatementId = props.scriptCursorPos;
-      const nextStatementCursorIndex =
-        scriptIdIndexDic[currentStatementId] >= 0
-          ? scriptIdIndexDic[currentStatementId] + 1
-          : 0;
+      const currentStatementCursorIndex =
+        scriptIdIndexDic[currentStatementId] ?? 0;
+      const nextStatementCursorIndex = currentStatementCursorIndex + 1;
       let nextStatement: AnyStatementType =
         props.scripts[nextStatementCursorIndex];
       props.updateScriptCursorPos(nextStatement?.id);
@@ -206,49 +199,42 @@ const Content = (props: ContentProps) => {
       id="content"
       ref={contentRef}
       style={{
+        height: windowSize.innerHeight,
+        width: '100%',
+        overflowX: 'auto',
+        fontSize: fontSize,
         backgroundColor: contentBgColor,
         color: contentFontColor,
-        fontSize: fontSize,
       }}
     >
-      <div id="contentBody">
-        <InfiniteLoader
-          ref={infiniteLoaderRef}
-          isItemLoaded={isItemLoaded}
-          itemCount={itemCount}
-          loadMoreItems={loadMoreItems}
-          minimumBatchSize={1}
-          threshold={1} // increase retry bottom times
-        >
-          {({ onItemsRendered, ref }) => (
-            <List
-              height={windowSize.innerHeight}
-              width="100%"
-              itemCount={itemCount}
-              itemSize={getItemSize}
-              onItemsRendered={onItemsRendered}
-              onScroll={onScroll}
-              useIsScrolling={true}
-              innerRef={listInnerRef}
-              ref={(list) => {
-                ref(list);
-                listRef.current = list;
-              }}
-            >
-              {({ index, style, isScrolling }) => (
-                <div style={style}>
-                  <ContentRow
-                    data={getRowData(index)}
-                    index={index}
-                    isScrolling={isScrolling}
-                    setItemSize={setItemSize}
-                    setReadingLogCursorPos={props.updateLogCursorPos}
-                  />
-                </div>
-              )}
-            </List>
-          )}
-        </InfiniteLoader>
+      <div
+        id="contentBody"
+        style={{
+          height: virtualizer.getTotalSize(),
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => (
+          <div
+            key={virtualRow.key}
+            data-index={virtualRow.index}
+            ref={virtualizer.measureElement}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              transform: `translateY(${virtualRow.start}px)`,
+            }}
+          >
+            <ContentRow
+              data={getRowData(virtualRow.index)}
+              isScrolling={isScrolling}
+              setReadingLogCursorPos={props.updateLogCursorPos}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

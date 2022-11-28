@@ -5,6 +5,12 @@
   height: 100vh;
   overflow: auto;
 
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+
   #contentBody {
     box-sizing: border-box;
     height: 100vh;
@@ -16,16 +22,6 @@
     @media (orientation: landscape) {
       width: min(70vw, 50rem);
     }
-
-    //#region hide scroll bar
-    div {
-      -ms-overflow-style: none; /* Internet Explorer 10+ */
-      scrollbar-width: none; /* Firefox */
-    }
-    div::-webkit-scrollbar {
-      display: none; /* Safari and Chrome */
-    }
-    //#endregion
 
     p {
       display: inline;
