@@ -4,6 +4,7 @@
   "description": "",
   "author": "Spicy Wolf",
   "homepage": "http://spicy-wolf.github.io/Choices",
+  "private": true,
   "scripts": {
     "ci": "npm ci",
     "format": "npx prettier --write .",
