@@ -6,19 +6,10 @@ type PauseComponentType = StatementEngine.Types.PauseComponentType;
 
 const ContentRow = (props: {
   data: LogComponentType[] | PauseComponentType[];
-  index: number;
-  isScrolling: boolean;
-  setItemSize: (index: number, height: number) => void;
+  isScrolling?: boolean;
   setReadingLogCursorPos?: (topScreenItemId: number) => void;
 }): JSX.Element => {
   const rowRef = React.useRef<HTMLDivElement>();
-
-  React.useEffect(() => {
-    if (rowRef.current) {
-      const domRect = rowRef.current.getBoundingClientRect();
-      props.setItemSize(props.index, domRect.height);
-    }
-  }, [props.data, props.setItemSize, props.index]);
 
   React.useEffect(() => {
     if (props.isScrolling) return; // still scrolling, wait unit scrolling stoped
@@ -39,6 +30,7 @@ const ContentRow = (props: {
             order !== null
           ) {
             props.setReadingLogCursorPos && props.setReadingLogCursorPos(order);
+            console.log(order);
             break;
           }
         }
