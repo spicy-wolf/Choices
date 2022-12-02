@@ -9,6 +9,7 @@ import { useScripts } from './Hooks/useScripts';
 import { useAutoSaveDataLoader } from './Hooks/useAutoSaveDataLoader';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
+import { useSetting } from '@src/Context';
 
 type ReadProps = {};
 
@@ -30,6 +31,7 @@ const Read = (props: ReadProps) => {
     isAutoSaveDataLoaded,
     autoSaveDataLoaderError,
   ] = useAutoSaveDataLoader(metadata?.id);
+  const { contentStyles } = useSetting();
   //#endregion
 
   const loadingLabel = React.useMemo(() => {
@@ -60,7 +62,7 @@ const Read = (props: ReadProps) => {
   }, [loadingLabel, loadingError]);
 
   return (
-    <>
+    <div style={{ backgroundColor: contentStyles.backgroundColor }}>
       <CssBaseline />
       <LoadingIndicatorModal
         open={showLoadingModal}
@@ -76,7 +78,7 @@ const Read = (props: ReadProps) => {
           </>
         )}
       </Container>
-    </>
+    </div>
   );
 };
 

@@ -1,85 +1,124 @@
 import React from 'react';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
+import createTheme, { ThemeOptions } from '@mui/material/styles/createTheme';
+import { PaletteMode, Theme } from '@mui/material';
+import { ContentThemePalette, UiThemePalette } from '@src/Constants';
 
-type SettingContextType = {
-  themeName: string; // selected theme name
+// TODO: move SettingDbType to DbContext
+type SettingDbType = {
+  themeMode: PaletteMode;
+  uiThemeName: string;
+  contentThemeName: string;
+  /**
+   * unit in rem, e.g. 1.5rem
+   */
   fontSize: number;
-} & {
+  /**
+   * unit in scale, e.g. 150%
+   */
+  lineHeight: number;
+};
+
+type ContentStyles = React.CSSProperties;
+type SettingContextType = {
+  contentStyles: ContentStyles;
+  setting: SettingDbType;
   setSetting: (
-    fieldName: keyof SettingContextType,
+    fieldName: keyof SettingDbType,
     value: any
   ) => Promise<void> | void;
 };
 
-const SettingContextDefault: SettingContextType = {
-  themeName: 'light',
-  fontSize: 20,
+const DefaultSettingContext: SettingContextType = {
+  contentStyles: {},
+  setting: {
+    themeMode: 'light',
+    uiThemeName: 'brown',
+    contentThemeName: 'lightGrey',
+    fontSize: 1.5,
+    lineHeight: 150,
+  },
   setSetting: () => {},
 };
 
-const ContextInstance = React.createContext<SettingContextType>(
-  SettingContextDefault
+const SettingContext = React.createContext<SettingContextType>(
+  DefaultSettingContext
 );
 
 type SettingContextProps = {
   children: React.ReactNode;
 };
 export const SettingContextProvider = (props: SettingContextProps) => {
-  const [setting, setSetting] = React.useState<SettingContextType>(
-    SettingContextDefault
+  const [setting, setSetting] = React.useState<SettingDbType>(
+    DefaultSettingContext.setting
   );
 
+  // TODO: load from DB
+  // TODO: store to DB with debounce
+
   const setSettingWrapper = async (
-    fieldName: keyof SettingContextType,
+    fieldName: keyof SettingDbType,
     value: any
   ): Promise<void> => {
-    const newSetting: SettingContextType = { ...setting, [fieldName]: value };
-    // TODO: update DB
+    const newSetting: SettingDbType = { ...setting, [fieldName]: value };
     setSetting(newSetting);
   };
 
+  // UI theme
+  const uiTheme: Theme = React.useMemo(() => {
+    const uiThemePalette =
+      UiThemePalette[setting?.uiThemeName] ?? UiThemePalette.brown;
+    const uiThemeOptions: ThemeOptions = {
+      palette: {
+        mode: setting?.themeMode,
+        ...uiThemePalette,
+      },
+    };
+
+    return createTheme(uiThemeOptions);
+  }, [setting?.uiThemeName, setting?.themeMode]);
+
+  // content theme / reading page theme
+  const contentStyles: ContentStyles = React.useMemo(() => {
+    const baseStyles = {
+      fontSize: `${setting.fontSize ?? 1.5}rem`,
+      lineHeight: `${setting.lineHeight ?? 150}%`,
+    };
+
+    if (setting?.themeMode === 'dark') {
+      return {
+        ...ContentThemePalette.dark,
+        ...baseStyles,
+      };
+    } else {
+      const contentThemePalette =
+        ContentThemePalette[setting?.contentThemeName] ??
+        ContentThemePalette.lightGrey;
+      return {
+        ...contentThemePalette,
+        ...baseStyles,
+      };
+    }
+  }, [
+    setting?.contentThemeName,
+    setting?.themeMode,
+    setting?.fontSize,
+    setting?.lineHeight,
+  ]);
+
   return (
-    <ContextInstance.Provider
-      value={{ ...setting, setSetting: setSettingWrapper }}
+    <SettingContext.Provider
+      value={{
+        contentStyles: contentStyles,
+        setting: setting,
+        setSetting: setSettingWrapper,
+      }}
     >
-      {props.children}
-    </ContextInstance.Provider>
+      <ThemeProvider theme={uiTheme}>{props.children}</ThemeProvider>
+    </SettingContext.Provider>
   );
 };
 
 export const useSetting = () => {
-  return React.useContext<SettingContextType>(ContextInstance);
+  return React.useContext<SettingContextType>(SettingContext);
 };
-
-//#region theme
-export type ThemeContextType = {
-  contentBgColor: string;
-  contentFontColor: string;
-  sidePanelBgColor: string;
-  sidePanelSectionColor: string;
-  sidePanelFontColor: string;
-};
-
-export const ThemeList: { [key: string]: ThemeContextType } = {
-  light: {
-    contentBgColor: '#f9f9f9',
-    contentFontColor: 'rgb(51, 51, 51)',
-    sidePanelBgColor: '#ebebeb',
-    sidePanelSectionColor: 'rgb(248, 249, 250)',
-    sidePanelFontColor: '#212529',
-  },
-  dark: {
-    contentBgColor: 'rgb(29, 31, 33)',
-    contentFontColor: 'rgb(197, 200, 198)',
-    sidePanelBgColor: '#121212',
-    sidePanelSectionColor: '#262626',
-    sidePanelFontColor: '#FFFFFF',
-  },
-};
-
-export const useTheme = () => {
-  const context = React.useContext<SettingContextType>(ContextInstance);
-  const themeName: string = context?.themeName ?? 'light';
-  const selectedTheme = ThemeList[themeName];
-  return selectedTheme;
-};
-//#endregion
