@@ -30,7 +30,6 @@ const ContentRow = (props: {
             order !== null
           ) {
             props.setReadingLogCursorPos && props.setReadingLogCursorPos(order);
-            console.log(order);
             break;
           }
         }
