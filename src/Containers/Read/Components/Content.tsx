@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import * as StatementEngine from '@src/StatementEngine';
 import './Content.scss';
-import { useSetting, useTheme } from '@src/Context';
 import * as Database from '@src/Database';
 import { ContentRow } from './ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
 import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual';
+import { useSetting } from '@src/Context';
 
 type AnyStatementType = StatementEngine.Types.AnyStatementType;
 type LogComponentType = StatementEngine.Types.LogComponentType;
@@ -25,8 +25,7 @@ type ContentProps = {
 };
 
 const Content = (props: ContentProps) => {
-  const { contentBgColor, contentFontColor } = useTheme();
-  const { fontSize } = useSetting();
+  const { contentStyles } = useSetting();
   const windowSize = useWindowSize();
 
   // this value is a copy of initial logCursorPos, for restore prev reading position
@@ -199,12 +198,10 @@ const Content = (props: ContentProps) => {
       id="content"
       ref={contentRef}
       style={{
+        ...contentStyles,
         height: windowSize.innerHeight,
         width: '100%',
         overflowX: 'auto',
-        fontSize: fontSize,
-        backgroundColor: contentBgColor,
-        color: contentFontColor,
       }}
     >
       <div

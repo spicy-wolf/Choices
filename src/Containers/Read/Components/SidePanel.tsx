@@ -9,6 +9,7 @@ import Grid from '@mui/material/Grid';
 import AltRouteIcon from '@mui/icons-material/AltRoute';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { Setting } from '@src/Containers/components';
 
 enum SidePanelOptions {
   Branch = 'branch',
@@ -56,7 +57,7 @@ const SidePanel = (props: SidePanelProps) => {
             Save
           </Grid>
           <Grid item xs hidden={selectedPanel !== SidePanelOptions.Setting}>
-            Setting
+            <Setting />
           </Grid>
 
           <Grid item xs="auto" sx={{ borderTop: 1, borderColor: 'divider' }}>
@@ -88,17 +89,17 @@ const SidePanel = (props: SidePanelProps) => {
         sx={{
           zIndex: 100,
           position: 'absolute',
-          width: '2rem',
-          height: '3.2rem',
+          width: '1.5rem',
+          height: '3rem',
           left: 0,
-          top: `calc(${windowSize.innerHeight}px - 3.2rem)`,
-          bgcolor: '#FFFFFF',
+          top: `calc(${windowSize.innerHeight}px - 3rem)`,
+          bgcolor: '#00000017',
           lineHeight: 0,
         }}
         onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
       >
         <ChevronRightIcon
-          sx={{ fontSize: '2rem', height: '100%', marginY: 'auto' }}
+          sx={{ ml: '-4px', fontSize: '2rem', height: '100%', marginY: 'auto' }}
         />
       </Box>
     </>
