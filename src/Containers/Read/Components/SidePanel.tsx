@@ -93,6 +93,7 @@ const SidePanel = (props: SidePanelProps) => {
           left: 0,
           top: `calc(${windowSize.innerHeight}px - 3.2rem)`,
           bgcolor: '#FFFFFF',
+          lineHeight: 0,
         }}
         onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
       >
