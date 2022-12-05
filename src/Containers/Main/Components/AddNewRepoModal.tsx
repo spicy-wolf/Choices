@@ -12,6 +12,7 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack/Stack';
 import FormHelperText from '@mui/material/FormHelperText';
 import Link from '@mui/material/Link';
+import { Trans } from 'react-i18next';
 
 enum SourceFromEnum {
   Url = 1,
@@ -68,14 +69,22 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
 
   return (
     <Dialog open={!!props.open} onClose={props.onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add New</DialogTitle>
+      <DialogTitle>
+        <Trans i18nKey="addNewRepoModal.label" />
+      </DialogTitle>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={selectedSourceFrom}
           onChange={(event, newValue) => setSelectedSourceFrom(newValue)}
         >
-          <Tab label="Url" value={SourceFromEnum.Url} />
-          <Tab label="Upload File" value={SourceFromEnum.File} />
+          <Tab
+            label={<Trans i18nKey="addNewRepoModal.url.label" />}
+            value={SourceFromEnum.Url}
+          />
+          <Tab
+            label={<Trans i18nKey="addNewRepoModal.uploadFile.label" />}
+            value={SourceFromEnum.File}
+          />
         </Tabs>
       </Box>
       <TabPanel show={selectedSourceFrom === SourceFromEnum.Url}>
@@ -84,41 +93,43 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
             <TextField
               required
               error={!isValidUrl}
-              label="URL"
+              label={<Trans i18nKey="addNewRepoModal.url.label" />}
               value={sourceUrl}
               onChange={(event) => setSourceUrl(event.target.value)}
             />
             <FormHelperText>
-              How to{' '}
+              <Trans i18nKey="addNewRepoModal.urlFormat.label" />
               <Link
-                href="https://docs.github.com/cn/rest/repos/contents#get-repository-content"
+                href="https://docs.github.com/rest/repos/contents#get-repository-content"
                 rel="noreferrer"
                 target="_blank"
               >
-                use github api to get contents
+                GitHub
               </Link>
             </FormHelperText>
             <TextField
-              label="Token"
+              label={<Trans i18nKey="addNewRepoModal.token.label" />}
               value={urlAccessToken}
               onChange={(event) => setUrlAccessToken(event.target.value)}
             />
             <FormHelperText>
-              Github{' '}
+              <Trans i18nKey="addNewRepoModal.generateTokenHelperMsg.label" />
               <Link
                 href="https://github.com/settings/tokens/new"
                 rel="noreferrer"
                 target="_blank"
               >
-                generate an access token
+                Github
               </Link>
             </FormHelperText>
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onClose}>Cancel</Button>
+          <Button onClick={props.onClose}>
+            <Trans i18nKey="addNewRepoModal.cancel.label" />
+          </Button>
           <Button onClick={onLoadFromUrl} disabled={!isValidUrl}>
-            Add
+            <Trans i18nKey="addNewRepoModal.confirm.label" />
           </Button>
         </DialogActions>
       </TabPanel>
@@ -127,11 +138,13 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
           <Stack spacing={2}>
             <TextField
               disabled
-              label="Selected file"
+              label={
+                <Trans i18nKey="addNewRepoModal.selectedFile.noFileSelected" />
+              }
               value={sourceFile?.name ?? ''}
             />
             <Button variant="contained" component="label">
-              Select a file
+              <Trans i18nKey="addNewRepoModal.selectFileBtn.label" />
               <input
                 type="file"
                 hidden
@@ -142,9 +155,11 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onClose}>Cancel</Button>
+          <Button onClick={props.onClose}>
+            <Trans i18nKey="addNewRepoModal.cancel.label" />
+          </Button>
           <Button onClick={onLoadFromFile} disabled={!isValidFile}>
-            Add
+            <Trans i18nKey="addNewRepoModal.confirm.label" />
           </Button>
         </DialogActions>
       </TabPanel>

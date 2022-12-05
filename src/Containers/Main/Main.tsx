@@ -11,9 +11,11 @@ import Fab from '@mui/material/Fab/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import LoadingIndicatorModal from '@src/Containers/LoadingIndicatorModal/LoadingIndicatorModal';
 import AddNewRepoModal from './Components/AddNewRepoModal';
+import { useTranslation } from 'react-i18next';
 
 const Main = () => {
   const { dbContext } = useDbContext();
+  const { t } = useTranslation();
 
   //#region query param
   const query = Utils.useQuery();
@@ -36,7 +38,7 @@ const Main = () => {
   const loadingLabel = React.useMemo(() => {
     let loadingMsg = repoLoadingMsg || '';
     if (!metadataList) {
-      loadingMsg = 'Loading reading list.';
+      loadingMsg = t('loadingStatus.loadReadingList');
     }
 
     return loadingMsg;
@@ -60,15 +62,15 @@ const Main = () => {
     setShowAddModal(false);
 
     try {
-      setRepoLoadingMsg(`Download script`);
+      setRepoLoadingMsg(t('loadingStatus.downloadScript'));
       const url = new URL(urlStr);
 
-      if (!url) throw 'Invalid Url';
+      if (!url) throw t('loadingStatus.invalidUrl');
 
       let jsonObj: any = null;
       if (url.host === 'api.github.com') {
         // github API
-        // https://docs.github.com/cn/rest/repos/contents#get-repository-content
+        // https://docs.github.com/rest/repos/contents#get-repository-content
         const httpHeader: HeadersInit = {
           Accept: 'application/vnd.github.v3.raw',
         };
@@ -101,7 +103,7 @@ const Main = () => {
   const onLoadFromFile = async (sourceFile: Blob) => {
     // hide add modal
     setShowAddModal(false);
-    setRepoLoadingMsg(`Parse file`);
+    setRepoLoadingMsg(t('loadingStatus.parseScript'));
 
     try {
       const json = JSON.parse(await sourceFile.text());
@@ -117,13 +119,13 @@ const Main = () => {
     const metadata = jsonObj?.metadata;
     const script = jsonObj?.script;
     if (!metadata || !script) {
-      throw `Invalid data. please make sure data has 'metadata' and 'script'`;
+      throw t('loadingStatus.invalidScript');
     }
 
     // TODO: validation
 
     // insert into DB
-    setRepoLoadingMsg('Update DB');
+    setRepoLoadingMsg(t('loadingStatus.addToDb'));
     dbContext.addMetadata(metadata, script);
   };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import createTheme, { ThemeOptions } from '@mui/material/styles/createTheme';
 import { PaletteMode, Theme } from '@mui/material';
@@ -23,6 +24,7 @@ type SettingDbType = {
    * unit in scale, e.g. 150%
    */
   lineHeight: number;
+  language: string;
 };
 
 type ContentStyles = React.CSSProperties;
@@ -43,6 +45,7 @@ const DefaultSettingContext: SettingContextType = {
     contentThemeName: ContentThemePaletteNames.LightGrey,
     fontSize: 1.5,
     lineHeight: 150,
+    language: 'en',
   },
   setSetting: () => {},
 };
@@ -55,6 +58,7 @@ type SettingContextProps = {
   children: React.ReactNode;
 };
 export const SettingContextProvider = (props: SettingContextProps) => {
+  const { i18n } = useTranslation();
   const [setting, setSetting] = React.useState<SettingDbType>(
     DefaultSettingContext.setting
   );
@@ -111,6 +115,11 @@ export const SettingContextProvider = (props: SettingContextProps) => {
     setting?.fontSize,
     setting?.lineHeight,
   ]);
+
+  // on language change
+  React.useEffect(() => {
+    i18n.changeLanguage && i18n.changeLanguage(setting?.language);
+  }, [setting?.language]);
 
   return (
     <SettingContext.Provider

@@ -16,8 +16,13 @@ import {
 import { SimplePaletteColorOptions } from '@mui/material/styles/createPalette';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import { Trans, useTranslation } from 'react-i18next';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 const Setting = () => {
+  const { i18n } = useTranslation();
   const { setting, setSetting } = useSetting();
 
   const handleThemeModeSwitch = (
@@ -37,16 +42,24 @@ const Setting = () => {
 
   const isDarkMode = setting.themeMode === ThemeModes.Dark;
 
+  const handleLanguageChange = (event: SelectChangeEvent<string>) => {
+    setSetting('language', event.target.value);
+  };
+
   const darkModeSwitch = (
     <FormControl fullWidth>
-      <FormLabel focused={false}>Dark Mode</FormLabel>
+      <FormLabel focused={false}>
+        <Trans i18nKey="setting.darkMode.label" />
+      </FormLabel>
       <Switch checked={isDarkMode} onChange={handleThemeModeSwitch} />
     </FormControl>
   );
 
   const uiThemeSelector = (
     <FormControl fullWidth>
-      <FormLabel focused={false}>UI Theme</FormLabel>
+      <FormLabel focused={false}>
+        <Trans i18nKey="setting.uiTheme.label" />
+      </FormLabel>
       <Stack direction="row" spacing={2}>
         {Object.keys(UiThemePalette).map(
           (uiThemeName: keyof typeof UiThemePalette) => (
@@ -82,7 +95,9 @@ const Setting = () => {
 
   const contentThemeSelector = (
     <FormControl fullWidth>
-      <FormLabel focused={false}>Content Theme</FormLabel>
+      <FormLabel focused={false}>
+        <Trans i18nKey="setting.contentTheme.label" />
+      </FormLabel>
       <Stack direction="row" spacing={2}>
         {Object.keys(ContentThemePalette)
           .filter(
@@ -124,7 +139,9 @@ const Setting = () => {
 
   const fontSizeSlider = (
     <FormControl fullWidth>
-      <FormLabel focused={false}>Font Size</FormLabel>
+      <FormLabel focused={false}>
+        <Trans i18nKey="setting.fontSize.label" />
+      </FormLabel>
       <Slider
         aria-label="Font size"
         step={0.1}
@@ -138,7 +155,9 @@ const Setting = () => {
 
   const lineHeightSlider = (
     <FormControl fullWidth>
-      <FormLabel focused={false}>Line Height</FormLabel>
+      <FormLabel focused={false}>
+        <Trans i18nKey="setting.lineHeight.label" />
+      </FormLabel>
       <Slider
         aria-label="Line Height"
         step={10}
@@ -150,10 +169,31 @@ const Setting = () => {
     </FormControl>
   );
 
+  const languageSelector = (
+    <FormControl fullWidth>
+      <InputLabel>
+        <Trans i18nKey="setting.language.label" />
+      </InputLabel>
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={setting?.language}
+        label={<Trans i18nKey="setting.language.label" />}
+        onChange={handleLanguageChange}
+      >
+        {i18n.languages?.map((languageCode) => (
+          <MenuItem key={languageCode} value={languageCode}>
+            <Trans i18nKey={`setting.language.languageDic.${languageCode}`} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+
   return (
     <>
       <Typography variant="h4" sx={{ py: 3, px: 3 }}>
-        Settings
+        <Trans i18nKey="setting.label" />
       </Typography>
       <Stack spacing={2} sx={{ px: 4 }}>
         {darkModeSwitch}
@@ -161,6 +201,7 @@ const Setting = () => {
         {!isDarkMode && contentThemeSelector}
         {fontSizeSlider}
         {lineHeightSlider}
+        {languageSelector}
       </Stack>
     </>
   );

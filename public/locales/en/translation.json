@@ -1,0 +1,65 @@
+{
+  "loadingStatus": {
+    "loadReadingList": "Load reading list",
+    "downloadScript": "Downloading script",
+    "parseScript": "Parsing script",
+    "addToDb": "Updating database",
+    "invalidUrl": "Invalid url",
+    "invalidScript": "Invalid data. please make sure data has 'metadata' and 'script'"
+  },
+  "addNewRepoModal": {
+    "label": "Add New",
+    "url": {
+      "label": "URL"
+    },
+    "urlFormat": {
+      "label": "URL format: "
+    },
+    "token": {
+      "label": "Token"
+    },
+    "generateTokenHelperMsg": {
+      "label": "How to generate token: "
+    },
+    "uploadFile": {
+      "label": "Upload file"
+    },
+    "selectFileBtn": {
+      "label": "Select a file"
+    },
+    "selectedFile": {
+      "noFileSelected": "No file selected"
+    },
+    "confirm": {
+      "label": "Confirm"
+    },
+    "cancel": {
+      "label": "Cancel"
+    }
+  },
+  "setting": {
+    "label": "Settings",
+    "darkMode": {
+      "label": "Dark Mode"
+    },
+    "uiTheme": {
+      "label": "UI Theme"
+    },
+    "contentTheme": {
+      "label": "Content Theme"
+    },
+    "fontSize": {
+      "label": "Font Size"
+    },
+    "lineHeight": {
+      "label": "Line Height"
+    },
+    "language": {
+      "label": "Languages",
+      "languageDic": {
+        "en": "English",
+        "zhCN": "简体中文"
+      }
+    }
+  }
+}
