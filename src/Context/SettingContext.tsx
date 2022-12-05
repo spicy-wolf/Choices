@@ -2,13 +2,19 @@ import React from 'react';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import createTheme, { ThemeOptions } from '@mui/material/styles/createTheme';
 import { PaletteMode, Theme } from '@mui/material';
-import { ContentThemePalette, UiThemePalette } from '@src/Constants';
+import {
+  ContentThemePalette,
+  ContentThemePaletteNames,
+  ThemeModes,
+  UiThemePalette,
+  UiThemePaletteNames,
+} from '@src/Constants';
 
 // TODO: move SettingDbType to DbContext
 type SettingDbType = {
   themeMode: PaletteMode;
-  uiThemeName: string;
-  contentThemeName: string;
+  uiThemeName: `${UiThemePaletteNames}`;
+  contentThemeName: `${ContentThemePaletteNames}`;
   /**
    * unit in rem, e.g. 1.5rem
    */
@@ -32,9 +38,9 @@ type SettingContextType = {
 const DefaultSettingContext: SettingContextType = {
   contentStyles: {},
   setting: {
-    themeMode: 'light',
-    uiThemeName: 'brown',
-    contentThemeName: 'lightGrey',
+    themeMode: ThemeModes.Light,
+    uiThemeName: UiThemePaletteNames.Brown,
+    contentThemeName: ContentThemePaletteNames.LightGrey,
     fontSize: 1.5,
     lineHeight: 150,
   },
@@ -85,7 +91,7 @@ export const SettingContextProvider = (props: SettingContextProps) => {
       lineHeight: `${setting.lineHeight ?? 150}%`,
     };
 
-    if (setting?.themeMode === 'dark') {
+    if (setting?.themeMode === ThemeModes.Dark) {
       return {
         ...ContentThemePalette.dark,
         ...baseStyles,

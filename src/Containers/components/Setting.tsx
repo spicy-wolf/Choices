@@ -7,7 +7,12 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Avatar from '@mui/material/Avatar';
 import CheckIcon from '@mui/icons-material/Check';
-import { ContentThemePalette, UiThemePalette } from '@src/Constants';
+import {
+  ContentThemePalette,
+  ContentThemePaletteNames,
+  ThemeModes,
+  UiThemePalette,
+} from '@src/Constants';
 import { SimplePaletteColorOptions } from '@mui/material/styles/createPalette';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -19,18 +24,18 @@ const Setting = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
-    setSetting('themeMode', checked ? 'dark' : 'light');
+    setSetting('themeMode', checked ? ThemeModes.Dark : ThemeModes.Light);
   };
 
-  const handleFontSizeSwitch = (event: Event, value: number) => {
+  const handleFontSizeChange = (event: Event, value: number) => {
     setSetting('fontSize', value);
   };
 
-  const handleLineHeightSwitch = (event: Event, value: number) => {
+  const handleLineHeightChange = (event: Event, value: number) => {
     setSetting('lineHeight', value);
   };
 
-  const isDarkMode = setting.themeMode === 'dark';
+  const isDarkMode = setting.themeMode === ThemeModes.Dark;
 
   const darkModeSwitch = (
     <FormControl fullWidth>
@@ -43,31 +48,34 @@ const Setting = () => {
     <FormControl fullWidth>
       <FormLabel focused={false}>UI Theme</FormLabel>
       <Stack direction="row" spacing={2}>
-        {Object.keys(UiThemePalette).map((uiThemeName) => (
-          <IconButton
-            key={uiThemeName}
-            aria-label={uiThemeName}
-            sx={{
-              bgcolor: (
-                UiThemePalette[uiThemeName].primary as SimplePaletteColorOptions
-              ).main,
-              width: '2em',
-              height: '2em',
-            }}
-            onClick={() => setSetting('uiThemeName', uiThemeName)}
-          >
-            <Avatar
+        {Object.keys(UiThemePalette).map(
+          (uiThemeName: keyof typeof UiThemePalette) => (
+            <IconButton
+              key={uiThemeName}
+              aria-label={uiThemeName}
               sx={{
                 bgcolor: (
                   UiThemePalette[uiThemeName]
                     .primary as SimplePaletteColorOptions
                 ).main,
+                width: '2em',
+                height: '2em',
               }}
+              onClick={() => setSetting('uiThemeName', uiThemeName)}
             >
-              {uiThemeName === setting.uiThemeName && <CheckIcon />}
-            </Avatar>
-          </IconButton>
-        ))}
+              <Avatar
+                sx={{
+                  bgcolor: (
+                    UiThemePalette[uiThemeName]
+                      .primary as SimplePaletteColorOptions
+                  ).main,
+                }}
+              >
+                {uiThemeName === setting.uiThemeName && <CheckIcon />}
+              </Avatar>
+            </IconButton>
+          )
+        )}
       </Stack>
     </FormControl>
   );
@@ -77,8 +85,11 @@ const Setting = () => {
       <FormLabel focused={false}>Content Theme</FormLabel>
       <Stack direction="row" spacing={2}>
         {Object.keys(ContentThemePalette)
-          .filter((contentThemeName) => contentThemeName !== 'dark')
-          .map((contentThemeName) => (
+          .filter(
+            (contentThemeName) =>
+              contentThemeName !== ContentThemePaletteNames.Dark
+          )
+          .map((contentThemeName: keyof typeof ContentThemePalette) => (
             <IconButton
               key={contentThemeName}
               aria-label={contentThemeName}
@@ -120,7 +131,7 @@ const Setting = () => {
         min={1}
         max={2.5}
         value={setting.fontSize}
-        onChange={handleFontSizeSwitch}
+        onChange={handleFontSizeChange}
       />
     </FormControl>
   );
@@ -134,7 +145,7 @@ const Setting = () => {
         min={100}
         max={250}
         value={setting.lineHeight}
-        onChange={handleLineHeightSwitch}
+        onChange={handleLineHeightChange}
       />
     </FormControl>
   );
