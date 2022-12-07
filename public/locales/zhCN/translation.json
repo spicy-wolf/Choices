@@ -1,0 +1,65 @@
+{
+  "loadingStatus": {
+    "loadReadingList": "加载阅读列表",
+    "downloadScript": "下载脚本中",
+    "parseScript": "解析脚本中",
+    "addToDb": "更新数据库",
+    "invalidUrl": "无效的链接",
+    "invalidScript": "脚本损坏，请检查脚本中是否包含'metadata'和'script'项"
+  },
+  "addNewRepoModal": {
+    "label": "添加",
+    "url": {
+      "label": "网址"
+    },
+    "urlFormat": {
+      "label": "网址格式："
+    },
+    "token": {
+      "label": "令牌"
+    },
+    "generateTokenHelperMsg": {
+      "label": "如何生成令牌："
+    },
+    "uploadFile": {
+      "label": "上传文件"
+    },
+    "selectFileBtn": {
+      "label": "选择文件"
+    },
+    "selectedFile": {
+      "noFileSelected": "没有选择任何文件"
+    },
+    "confirm": {
+      "label": "确认"
+    },
+    "cancel": {
+      "label": "取消"
+    }
+  },
+  "setting": {
+    "label": "设置",
+    "darkMode": {
+      "label": "夜间模式"
+    },
+    "uiTheme": {
+      "label": "用户界面"
+    },
+    "contentTheme": {
+      "label": "阅读界面"
+    },
+    "fontSize": {
+      "label": "字体大小"
+    },
+    "lineHeight": {
+      "label": "行间距"
+    },
+    "language": {
+      "label": "语言",
+      "languageDic": {
+        "en": "English",
+        "zhCN": "简体中文"
+      }
+    }
+  }
+}
