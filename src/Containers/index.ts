@@ -1,5 +1,5 @@
 import File2ScriptConverter from './File2ScriptConverter/File2ScriptConverter';
-import Main from './Main/Main';
+import Library from './Library/Library';
 import Read from './Read/Read';
 
-export { Main, Read, File2ScriptConverter };
+export { Library, Read, File2ScriptConverter };

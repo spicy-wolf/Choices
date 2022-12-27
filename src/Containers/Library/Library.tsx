@@ -12,14 +12,18 @@ import AddIcon from '@mui/icons-material/Add';
 import LoadingIndicatorModal from '@src/Containers/LoadingIndicatorModal/LoadingIndicatorModal';
 import AddNewRepoModal from './Components/AddNewRepoModal';
 import { useTranslation } from 'react-i18next';
+import {
+  MainPageSidebar,
+  MainPageSidebarButtonEnum,
+} from '../components/MainPageSidebar';
 
-const Main = () => {
+const Library = () => {
   const { dbContext } = useDbContext();
   const { t } = useTranslation();
 
   //#region query param
   const query = Utils.useQuery();
-  const src = query.get(RouterPathStrings.MAIN_PAGE_SRC_PARAM);
+  const src = query.get(RouterPathStrings.LIBRARY_PAGE_SRC_PARAM);
   //#endregion
 
   //#region state
@@ -156,8 +160,15 @@ const Main = () => {
         onLoadFromUrl={onLoadFromUrl}
         onLoadFromFile={onLoadFromFile}
       />
-      <Container sx={{ pt: 1 }}>
-        <Grid container spacing={2} direction="row" alignItems="stretch">
+      <Container sx={{ display: 'flex' }}>
+        <MainPageSidebar selected={MainPageSidebarButtonEnum.Library} />
+        <Grid
+          container
+          spacing={2}
+          direction="row"
+          alignItems="stretch"
+          sx={{ pt: 1 }}
+        >
           {metadataElements}
         </Grid>
       </Container>
@@ -178,4 +189,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default Library;
