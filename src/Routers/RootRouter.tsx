@@ -1,7 +1,13 @@
 import React from 'react';
 import { RouterPathStrings } from '@src/Constants';
-import { File2ScriptConverter, Main, Read } from '@src/Containers';
-import { Routes, Route, Location, useLocation } from 'react-router-dom';
+import { File2ScriptConverter, Library, Read } from '@src/Containers';
+import {
+  Routes,
+  Route,
+  Location,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
 
 const RootRouter = () => {
   let location = useLocation();
@@ -15,10 +21,14 @@ const RootRouter = () => {
     <>
       <Routes location={state?.backgroundLocation || location}>
         <Route path={RouterPathStrings.READ_PAGE} element={<Read />} />
-        <Route path={RouterPathStrings.MAIN_PAGE} element={<Main />} />
         <Route
           path={RouterPathStrings.FILE_2_SCRIPT_PAGE}
           element={<File2ScriptConverter />}
+        />
+        <Route path={RouterPathStrings.LIBRARY_PAGE} element={<Library />} />
+        <Route
+          path=""
+          element={<Navigate to={RouterPathStrings.LIBRARY_PAGE} />}
         />
       </Routes>
 

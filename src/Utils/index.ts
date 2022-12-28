@@ -1,4 +1,4 @@
-import { generateMainPath } from './PathGenerators/generateMainPath';
+import { generateLibraryPath } from './PathGenerators/generateMainPath';
 import { generateReadPath } from './PathGenerators/generateReadPath';
 import { generateColorFromStr } from './generateColorFromStr';
 import { combinePath } from './combinePath';
@@ -13,7 +13,7 @@ export {
   combinePath,
   digeststring,
   generateColorFromStr,
-  generateMainPath,
+  generateLibraryPath,
   generateReadPath,
   propertyOf,
 };
