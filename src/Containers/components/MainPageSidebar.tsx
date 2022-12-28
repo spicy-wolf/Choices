@@ -2,17 +2,19 @@ import React from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import SettingsIcon from '@mui/icons-material/Settings';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Stack } from '@mui/system';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { generateLibraryPath } from '@src/Utils';
+import { generateLibraryPath, generateSettingPath } from '@src/Utils';
 
 enum MainPageSidebarButtonEnum {
   Library = 'Library',
+  Setting = 'Setting',
 }
 
 type MainPageSidebarProps = {
@@ -51,6 +53,7 @@ const MainPageSidebarButton = (props: MainPageSidebarButtonProps) => {
 
 const MainPageSidebar = (props: MainPageSidebarProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Drawer
@@ -71,9 +74,14 @@ const MainPageSidebar = (props: MainPageSidebarProps) => {
             onClick={() => navigate(generateLibraryPath())}
           >
             <LibraryBooksIcon />
-            <ListItemText
-              primary={<Trans i18nKey={`mainPageSidebar.library.label`} />}
-            />
+            <ListItemText primary={t('mainPageSidebar.library.label')} />
+          </MainPageSidebarButton>
+          <MainPageSidebarButton
+            selected={props.selected === MainPageSidebarButtonEnum.Setting}
+            onClick={() => navigate(generateSettingPath())}
+          >
+            <SettingsIcon />
+            <ListItemText primary={t('mainPageSidebar.setting.label')} />
           </MainPageSidebarButton>
         </ListItem>
       </List>

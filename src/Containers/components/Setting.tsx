@@ -21,7 +21,16 @@ import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-const Setting = () => {
+type SettingProps = {
+  showDarkModeSwitch?: boolean;
+  showUiThemeSelector?: boolean;
+  showContentThemeSelector?: boolean;
+  showFontSizeSlider?: boolean;
+  showLineHeightSlider?: boolean;
+  showLanguageSelector?: boolean;
+};
+
+const Setting = (props: SettingProps) => {
   const { i18n } = useTranslation();
   const { setting, setSetting } = useSetting();
 
@@ -196,12 +205,12 @@ const Setting = () => {
         <Trans i18nKey="setting.label" />
       </Typography>
       <Stack spacing={2} sx={{ px: 4 }}>
-        {darkModeSwitch}
-        {uiThemeSelector}
-        {!isDarkMode && contentThemeSelector}
-        {fontSizeSlider}
-        {lineHeightSlider}
-        {languageSelector}
+        {props.showLanguageSelector && languageSelector}
+        {props.showDarkModeSwitch && darkModeSwitch}
+        {props.showUiThemeSelector && uiThemeSelector}
+        {props.showContentThemeSelector && !isDarkMode && contentThemeSelector}
+        {props.showFontSizeSlider && fontSizeSlider}
+        {props.showLineHeightSlider && lineHeightSlider}
       </Stack>
     </>
   );

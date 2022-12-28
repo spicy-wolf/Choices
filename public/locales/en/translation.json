@@ -65,6 +65,9 @@
   "mainPageSidebar": {
     "library": {
       "label": "Library"
+    },
+    "setting": {
+      "label": "Setting"
     }
   }
 }
