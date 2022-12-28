@@ -57,7 +57,14 @@ const SidePanel = (props: SidePanelProps) => {
             Save
           </Grid>
           <Grid item xs hidden={selectedPanel !== SidePanelOptions.Setting}>
-            <Setting />
+            <Setting
+              showLanguageSelector
+              showDarkModeSwitch
+              showUiThemeSelector
+              showContentThemeSelector
+              showFontSizeSlider
+              showLineHeightSlider
+            />
           </Grid>
 
           <Grid item xs="auto" sx={{ borderTop: 1, borderColor: 'divider' }}>

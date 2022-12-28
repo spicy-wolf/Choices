@@ -65,6 +65,9 @@
   "mainPageSidebar": {
     "library": {
       "label": "书库"
+    },
+    "setting": {
+      "label": "设置"
     }
   }
 }

@@ -1,6 +1,11 @@
 import React from 'react';
 import { RouterPathStrings } from '@src/Constants';
-import { File2ScriptConverter, Library, Read } from '@src/Containers';
+import {
+  File2ScriptConverter,
+  Library,
+  Read,
+  SettingPage,
+} from '@src/Containers';
 import {
   Routes,
   Route,
@@ -24,6 +29,10 @@ const RootRouter = () => {
         <Route
           path={RouterPathStrings.FILE_2_SCRIPT_PAGE}
           element={<File2ScriptConverter />}
+        />
+        <Route
+          path={RouterPathStrings.SETTING_PAGE}
+          element={<SettingPage />}
         />
         <Route path={RouterPathStrings.LIBRARY_PAGE} element={<Library />} />
         <Route
