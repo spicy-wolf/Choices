@@ -2,8 +2,8 @@ import React from 'react';
 import { RouterPathStrings } from '@src/Constants';
 import {
   File2ScriptConverter,
-  Library,
-  Read,
+  LibraryPage,
+  ReadPage,
   SettingPage,
 } from '@src/Containers';
 import {
@@ -25,7 +25,7 @@ const RootRouter = () => {
   return (
     <>
       <Routes location={state?.backgroundLocation || location}>
-        <Route path={RouterPathStrings.READ_PAGE} element={<Read />} />
+        <Route path={RouterPathStrings.READ_PAGE} element={<ReadPage />} />
         <Route
           path={RouterPathStrings.FILE_2_SCRIPT_PAGE}
           element={<File2ScriptConverter />}
@@ -34,7 +34,10 @@ const RootRouter = () => {
           path={RouterPathStrings.SETTING_PAGE}
           element={<SettingPage />}
         />
-        <Route path={RouterPathStrings.LIBRARY_PAGE} element={<Library />} />
+        <Route
+          path={RouterPathStrings.LIBRARY_PAGE}
+          element={<LibraryPage />}
+        />
         <Route
           path=""
           element={<Navigate to={RouterPathStrings.LIBRARY_PAGE} />}

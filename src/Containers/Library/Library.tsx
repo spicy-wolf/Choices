@@ -17,7 +17,7 @@ import {
   MainPageSidebarButtonEnum,
 } from '../components/MainPageSidebar';
 
-const Library = () => {
+const LibraryPage = () => {
   const { dbContext } = useDbContext();
   const { t } = useTranslation();
 
@@ -189,4 +189,4 @@ const Library = () => {
   );
 };
 
-export default Library;
+export default LibraryPage;
