@@ -11,9 +11,7 @@ import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useSetting } from '@src/Context';
 
-type ReadProps = {};
-
-const Read = (props: ReadProps) => {
+const ReadPage = () => {
   //#region query param
   const query = useQuery();
   const repoName = query.get(RouterPathStrings.READ_PAGE_REPO_PARAM);
@@ -82,4 +80,4 @@ const Read = (props: ReadProps) => {
   );
 };
 
-export default Read;
+export default ReadPage;
