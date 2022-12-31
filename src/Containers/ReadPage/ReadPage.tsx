@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
 import { LoadingIndicatorModal } from '@src/Containers/components';
@@ -6,7 +6,7 @@ import SidePanel from './Components/SidePanel';
 import Content from './Components/Content';
 import { useMetadata } from './Hooks/useMetadata';
 import { useScripts } from './Hooks/useScripts';
-import { useAutoSaveDataLoader } from './Hooks/useAutoSaveDataLoader';
+import { useSaveData } from './Hooks/useSaveData';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useSetting } from '@src/Context';
@@ -24,32 +24,36 @@ const ReadPage = () => {
   const [metadata, metadataLoadingError] = useMetadata(repoName, authorName);
   const [scripts, scriptLoadingError] = useScripts(metadata?.id);
   const [
-    saveData,
-    saveDataFunc,
-    isAutoSaveDataLoaded,
-    autoSaveDataLoaderError,
-  ] = useAutoSaveDataLoader(metadata?.id);
+    {
+      saveDataList,
+      addSaveData,
+      deleteSaveData,
+      defaultSaveData,
+      defaultSaveDataDispatch,
+    },
+    saveDataLoadingError,
+  ] = useSaveData(metadata?.id);
   const { contentStyles } = useSetting();
   //#endregion
 
+  const [loadingMsg, setLoadingMsg] = useState<string>();
+
   const loadingLabel = React.useMemo(() => {
-    let loadingMsg = '';
+    let _loadingMsg = '';
     if (!metadata) {
-      loadingMsg = 'Loading metadata.';
+      _loadingMsg = 'Loading metadata.';
     } else if (!scripts) {
-      loadingMsg = 'Loading scripts.';
-    } else if (!isAutoSaveDataLoaded) {
-      loadingMsg = 'Loading save data.';
+      _loadingMsg = 'Loading scripts.';
+    } else if (!saveDataList || saveDataList.length === 0 || !defaultSaveData) {
+      _loadingMsg = 'Loading save data.';
     }
 
-    return loadingMsg;
-  }, [metadata, scripts, isAutoSaveDataLoaded]);
+    return _loadingMsg || loadingMsg;
+  }, [metadata, scripts, saveDataList, defaultSaveData, loadingMsg]);
 
   const loadingError = React.useMemo(() => {
-    const errorMsg =
-      metadataLoadingError || scriptLoadingError || autoSaveDataLoaderError;
-    return errorMsg;
-  }, [metadataLoadingError, scriptLoadingError, autoSaveDataLoaderError]);
+    return metadataLoadingError || scriptLoadingError || saveDataLoadingError;
+  }, [metadataLoadingError, scriptLoadingError, saveDataLoadingError]);
 
   useEffect(() => {
     if (!!loadingLabel || !!loadingError) {
@@ -58,6 +62,10 @@ const ReadPage = () => {
       setShowLoadingModal(false);
     }
   }, [loadingLabel, loadingError]);
+
+  useEffect(() => {
+    if (!saveDataList || saveDataList.length === 0) return;
+  }, [saveDataList]);
 
   return (
     <div style={{ backgroundColor: contentStyles.backgroundColor }}>
@@ -71,8 +79,19 @@ const ReadPage = () => {
       <Container>
         {!loadingLabel && !loadingError && (
           <>
-            <SidePanel />
-            <Content {...{ ...saveData, ...saveDataFunc }} scripts={scripts} />
+            <SidePanel
+              defaultSaveData={defaultSaveData}
+              defaultSaveDataDispatch={defaultSaveDataDispatch}
+              addSaveData={addSaveData}
+              deleteSaveData={deleteSaveData}
+              saveDataList={saveDataList}
+              setLoadingMsg={setLoadingMsg}
+            />
+            <Content
+              scripts={scripts}
+              saveData={defaultSaveData}
+              saveDataDispatch={defaultSaveDataDispatch}
+            />
           </>
         )}
       </Container>

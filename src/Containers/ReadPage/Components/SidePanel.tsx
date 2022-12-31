@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, useState } from 'react';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -10,14 +10,24 @@ import AltRouteIcon from '@mui/icons-material/AltRoute';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Setting } from '@src/Containers/components';
+import { SaveAndLoad } from './SaveAndLoad';
+import * as Database from '@src/Database';
+import { SaveDataDispatchType } from '../Hooks/useSaveDataReducer';
 
 enum SidePanelOptions {
   Branch = 'branch',
-  Save = 'save',
+  SaveAndLoad = 'saveAndLoad',
   Setting = 'setting',
 }
 
-type SidePanelProps = {};
+type SidePanelProps = {
+  defaultSaveData: Database.Types.SaveDataType;
+  defaultSaveDataDispatch: Dispatch<SaveDataDispatchType>;
+  addSaveData: (_saveData: Database.Types.SaveDataType) => Promise<void>;
+  deleteSaveData: (saveDataId: string) => Promise<void>;
+  saveDataList: Database.Types.SaveDataType[];
+  setLoadingMsg: (loadingMsg: string) => void;
+};
 
 const SidePanel = (props: SidePanelProps) => {
   const windowSize = useWindowSize();
@@ -39,6 +49,7 @@ const SidePanel = (props: SidePanelProps) => {
         <Grid
           container
           direction="column"
+          wrap="nowrap"
           sx={{
             '@media (orientation: portrait)': {
               width: '80vw',
@@ -53,8 +64,20 @@ const SidePanel = (props: SidePanelProps) => {
           <Grid item xs hidden={selectedPanel !== SidePanelOptions.Branch}>
             Branch
           </Grid>
-          <Grid item xs hidden={selectedPanel !== SidePanelOptions.Save}>
-            Save
+          <Grid
+            item
+            xs
+            hidden={selectedPanel !== SidePanelOptions.SaveAndLoad}
+            overflow="auto"
+          >
+            <SaveAndLoad
+              defaultSaveData={props.defaultSaveData}
+              defaultSaveDataDispatch={props.defaultSaveDataDispatch}
+              addSaveData={props.addSaveData}
+              deleteSaveData={props.deleteSaveData}
+              saveDataList={props.saveDataList}
+              setLoadingMsg={props.setLoadingMsg}
+            />
           </Grid>
           <Grid item xs hidden={selectedPanel !== SidePanelOptions.Setting}>
             <Setting
@@ -80,7 +103,7 @@ const SidePanel = (props: SidePanelProps) => {
               />
               <Tab
                 label={<SaveIcon />}
-                value={SidePanelOptions.Save}
+                value={SidePanelOptions.SaveAndLoad}
                 aria-label="save"
               />
               <Tab

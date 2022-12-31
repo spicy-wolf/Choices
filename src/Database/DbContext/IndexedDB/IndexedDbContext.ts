@@ -398,7 +398,9 @@ export class IndexedDbContext extends AbstractDbContext {
     return new Promise((resolve, reject) => {
       saveDataRequest.onsuccess = (event: any) => {
         let result = event.target.result as Types.SaveDataType[];
-        result = result.sort((item) => item.timestamp - item.timestamp);
+        result = result.sort(
+          (item) => item.createTimestamp - item.createTimestamp
+        );
         resolve(result);
       };
       transaction.onerror = (event: any) => {
@@ -406,8 +408,8 @@ export class IndexedDbContext extends AbstractDbContext {
       };
     });
   }
-  public async getAutoSaveDataFromMetadataId(
-    metadataId: string
+  public async getSaveDataFromId(
+    saveDataId: string
   ): Promise<Types.SaveDataType> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(
@@ -417,25 +419,18 @@ export class IndexedDbContext extends AbstractDbContext {
 
       const saveDataRequest = transaction
         .objectStore(this.SAVE_DATA_TB_NAME)
-        .index(this.SAVE_DATA_METADATAID_NAME)
-        .openCursor(IDBKeyRange.only(metadataId));
+        .get(saveDataId);
       saveDataRequest.onsuccess = (event: any) => {
-        const cursor = event.target.result as IDBCursorWithValue;
-        if (cursor) {
-          if (cursor.value.description === '') {
-            const autoSaveData = cursor.value as Types.SaveDataType;
-            const readlogRequest = transaction
-              .objectStore(this.READ_LOG_TB_NAME)
-              .getAll(
-                IDBKeyRange.bound([autoSaveData.id, 0], [autoSaveData.id, ''])
-              );
-            readlogRequest.onsuccess = (event: any) => {
-              const readingLogs = event.target.result as Types.ReadLogType[];
-              autoSaveData.readingLogs = readingLogs;
-              resolve(autoSaveData);
-            };
-          }
-          cursor.continue();
+        const saveData = event.target.result as Types.SaveDataType;
+        if (saveData) {
+          const readlogRequest = transaction
+            .objectStore(this.READ_LOG_TB_NAME)
+            .getAll(IDBKeyRange.bound([saveData.id, 0], [saveData.id, '']));
+          readlogRequest.onsuccess = (event: any) => {
+            const readingLogs = event.target.result as Types.ReadLogType[];
+            saveData.readingLogs = readingLogs;
+            resolve(saveData);
+          };
         } else {
           // did not find auto save, then return null
           resolve(null);
@@ -453,7 +448,7 @@ export class IndexedDbContext extends AbstractDbContext {
     }
 
     const { readingLogs, ...restSaveData } = saveData;
-    const newSaveDataId = uuidv4();
+    const newSaveDataId = saveData.id || uuidv4();
 
     const transaction = this.db.transaction(
       [this.SAVE_DATA_TB_NAME, this.READ_LOG_TB_NAME],
@@ -461,7 +456,7 @@ export class IndexedDbContext extends AbstractDbContext {
     );
     const saveDataRequest = transaction
       .objectStore(this.SAVE_DATA_TB_NAME)
-      .add({ ...restSaveData, id: newSaveDataId, timestamp: Date.now() });
+      .add({ ...restSaveData, id: newSaveDataId, createTimestamp: Date.now() });
 
     for (const readingLog of readingLogs) {
       const readingLogRequest = transaction
@@ -475,7 +470,7 @@ export class IndexedDbContext extends AbstractDbContext {
         resolve(newSaveDataId);
       };
       transaction.onerror = (event) => {
-        reject();
+        reject((event.target as IDBRequest).error);
       };
       transaction.onabort = (event) => {
         reject();
@@ -498,7 +493,7 @@ export class IndexedDbContext extends AbstractDbContext {
     );
     const saveDataRequest = transaction
       .objectStore(this.SAVE_DATA_TB_NAME)
-      .put({ ...restSaveData, id: saveData.id, timestamp: Date.now() });
+      .put({ ...restSaveData, id: saveData.id, createTimestamp: Date.now() });
 
     // insert extra reading log
     const readlogRequest = transaction

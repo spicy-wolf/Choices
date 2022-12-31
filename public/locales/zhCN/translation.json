@@ -70,6 +70,35 @@
       }
     }
   },
+  "saveAndLoad": {
+    "label": "保存/加载",
+    "loadingSaveDataMsg": "加载存档中",
+    "deleteBtn": {
+      "label": "删除"
+    },
+    "saveNewBtn": {
+      "label": "创建新存档"
+    },
+    "saveDescriptionInput": {
+      "label": "简述"
+    },
+    "saveConfirmBtn": {
+      "label": "保存"
+    },
+    "saveCancelBtn": {
+      "label": "取消"
+    },
+    "loadModal": {
+      "title": "加载存档",
+      "body": "未保存的记录将会丢失。确认继续吗？",
+      "loadConfirmBtn": {
+        "label": "是"
+      },
+      "loadCancelBtn": {
+        "label": "否"
+      }
+    }
+  },
   "mainPageSidebar": {
     "library": {
       "label": "书库"

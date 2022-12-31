@@ -72,7 +72,8 @@ const initSaveData: Types.SaveDataType = {
   id: '',
   metadataId: 'dummy metadata id',
   description: '', // auto saved data
-  timestamp: 1654405690298,
+  saveDataType: 'default',
+  createTimestamp: 1654405690298,
 
   scriptCursorPos: '',
   logCursorPos: 0,
@@ -224,15 +225,15 @@ describe('indexed db test', () => {
   });
 
   describe('test script and reading log', () => {
-    test('test no auto save data at init', async () => {
-      const autoSaveData = await dbContext.getAutoSaveDataFromMetadataId(
+    test('test no save data at init', async () => {
+      const saveDataList = await dbContext.getAllSaveDataFromMetadataId(
         initSaveData.metadataId
       );
-      expect(autoSaveData).toEqual(null);
+      expect(saveDataList).toHaveLength(0);
     });
 
     test('test add save data', async () => {
-      jest.useFakeTimers().setSystemTime(initSaveData.timestamp);
+      jest.useFakeTimers().setSystemTime(initSaveData.createTimestamp);
       const newSaveDataId = await dbContext.addSaveData(initSaveData);
 
       expect(newSaveDataId.length).toBeGreaterThan(0);
@@ -241,17 +242,17 @@ describe('indexed db test', () => {
       );
       expect(allSaveData.length).toEqual(1);
 
-      const autoSaveData = await dbContext.getAutoSaveDataFromMetadataId(
-        initSaveData.metadataId
+      const actualSaveData = await dbContext.getSaveDataFromId(
+        allSaveData[0].id
       );
-      expect(autoSaveData).toStrictEqual({
+      expect(actualSaveData).toStrictEqual({
         ...initSaveData,
         id: newSaveDataId,
       });
     });
 
     test('test put save data', async () => {
-      jest.useFakeTimers().setSystemTime(initSaveData.timestamp);
+      jest.useFakeTimers().setSystemTime(initSaveData.createTimestamp);
       const newSaveDataId = await dbContext.addSaveData(initSaveData);
       expect(newSaveDataId.length).toBeGreaterThan(0);
 
@@ -284,10 +285,10 @@ describe('indexed db test', () => {
       );
       expect(allSaveData.length).toEqual(1);
 
-      const autoSaveData = await dbContext.getAutoSaveDataFromMetadataId(
-        initSaveData.metadataId
+      const actualSaveData = await dbContext.getSaveDataFromId(
+        allSaveData[0].id
       );
-      expect(autoSaveData).toStrictEqual(altSaveData);
+      expect(actualSaveData).toStrictEqual(altSaveData);
     });
 
     test('test put save data with read log merge', async () => {
@@ -307,7 +308,7 @@ describe('indexed db test', () => {
           },
         ],
       };
-      jest.useFakeTimers().setSystemTime(saveData.timestamp);
+      jest.useFakeTimers().setSystemTime(saveData.createTimestamp);
       const newSaveDataId = await dbContext.addSaveData(saveData);
       expect(newSaveDataId.length).toBeGreaterThan(0);
 
@@ -336,10 +337,10 @@ describe('indexed db test', () => {
       );
       expect(allSaveData.length).toEqual(1);
 
-      const autoSaveData = await dbContext.getAutoSaveDataFromMetadataId(
-        initSaveData.metadataId
+      const actualSaveData = await dbContext.getSaveDataFromId(
+        allSaveData[0].id
       );
-      expect(autoSaveData).toStrictEqual(saveDataWithExtraReadinglog);
+      expect(actualSaveData).toStrictEqual(saveDataWithExtraReadinglog);
     });
 
     test('test delete save data', async () => {

@@ -30,8 +30,8 @@ export abstract class AbstractDbContext {
   public abstract getAllSaveDataFromMetadataId(
     metadataId: string
   ): Promise<Types.SaveDataType[]>;
-  public abstract getAutoSaveDataFromMetadataId(
-    metadataId: string
+  public abstract getSaveDataFromId(
+    saveDataId: string
   ): Promise<Types.SaveDataType>;
   public abstract addSaveData(saveData: Types.SaveDataType): Promise<string>;
   public abstract putSaveData(saveData: Types.SaveDataType): Promise<void>;
