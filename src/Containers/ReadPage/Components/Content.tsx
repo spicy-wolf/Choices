@@ -71,9 +71,7 @@ const Content = (props: ContentProps) => {
     overscan: 1,
   });
 
-  const [virtualItems, setVirtualItems] = useState<VirtualItem[]>(
-    virtualizer.getVirtualItems()
-  );
+  const [virtualLastItemIndex, setVirtualLastItemIndex] = useState<number>();
 
   //#region scrolling to prev saved position -> get the paragraph index by sentence id -> scroll to index
   useEffect(() => {
@@ -99,11 +97,11 @@ const Content = (props: ContentProps) => {
   }, []);
   //#endregion
 
-  // Note: virtualItems is diff everytime call "getVirtualItems", keep an cache to reduce update times
+  // Note: virtualItems is diff everytime call "getVirtualItems"
   useEffect(() => {
-    const newVirtualItems = virtualizer.getVirtualItems();
-    if (JSON.stringify(newVirtualItems) !== JSON.stringify(virtualItems)) {
-      setVirtualItems(newVirtualItems);
+    const [lastItem] = [...virtualizer.getVirtualItems()].reverse();
+    if (lastItem) {
+      setVirtualLastItemIndex(lastItem.index);
     }
   }, [virtualizer.getVirtualItems()]);
 
@@ -112,12 +110,10 @@ const Content = (props: ContentProps) => {
   }, [virtualizer.isScrolling]);
 
   React.useEffect(() => {
-    const [lastItem] = [...virtualItems].reverse();
-
-    if (!lastItem) {
+    if (virtualLastItemIndex === null || virtualLastItemIndex === undefined)
       return;
-    }
-    if (lastItem.index >= itemCount - 1 && !pauseComponent) {
+
+    if (virtualLastItemIndex >= itemCount - 1 && !pauseComponent) {
       setIsExecutingStatement(true);
       // execute scripts
       const scripts = props.scripts;
@@ -135,7 +131,7 @@ const Content = (props: ContentProps) => {
         setPauseComponent: setPauseComponentWrapper,
       });
     }
-  }, [itemCount, virtualItems, pauseComponent]);
+  }, [itemCount, virtualLastItemIndex, pauseComponent]);
 
   React.useEffect(() => {
     if (isExecutingStatement) setIsExecutingStatement(false);
