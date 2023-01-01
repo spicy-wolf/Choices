@@ -3,8 +3,8 @@ import Dialog from '@mui/material/Dialog/Dialog';
 import DialogActions from '@mui/material/DialogActions/DialogActions';
 import DialogContent from '@mui/material/DialogContent/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle/DialogTitle';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 const LoadingIndicatorModal = (props: {
   loadingLabel?: string;
@@ -12,19 +12,44 @@ const LoadingIndicatorModal = (props: {
   open: boolean;
   handleClose: () => void;
 }) => {
+  const { t } = useTranslation();
+
+  const msgStr = useMemo(() => {
+    const msg = props.error || props.loadingLabel;
+    if (typeof msg === 'string') {
+      return t(msg);
+    } else {
+      return JSON.stringify(msg);
+    }
+  }, [props.error, props.loadingLabel]);
+
+  const handleClose = (
+    event: object,
+    reason: 'backdropClick' | 'escapeKeyDown'
+  ) => {
+    if (reason === 'backdropClick' || reason === 'escapeKeyDown') return;
+
+    props.handleClose && props.handleClose();
+  };
+
   return (
-    <Dialog open={props.open} onClose={props.handleClose}>
-      <DialogTitle id="alert-dialog-title">Loading...</DialogTitle>
+    <Dialog open={props.open} onClose={handleClose} disableEscapeKeyDown>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {props.error ?? props.loadingLabel}
+          {msgStr}
         </DialogContentText>
       </DialogContent>
       {props.error && (
         <DialogActions>
-          <Button>Copy</Button>
+          <Button
+            onClick={() => {
+              navigator?.clipboard.writeText(msgStr);
+            }}
+          >
+            <Trans i18nKey="loadingIndicatorModal.copyBtn.label" />
+          </Button>
           <Button autoFocus onClick={props.handleClose}>
-            Close
+            <Trans i18nKey="loadingIndicatorModal.closeBtn.label" />
           </Button>
         </DialogActions>
       )}
