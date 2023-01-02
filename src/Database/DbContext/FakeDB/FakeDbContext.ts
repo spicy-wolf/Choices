@@ -27,7 +27,7 @@ export class FakeDbContext extends AbstractDbContext {
       });
     }
 
-    this.saveDataDb = [...FakeSaveData];
+    this.saveDataDb = [...FakeSaveData] as Types.SaveDataType[];
     this.readLogDb = [...(FakeReadLog as Types.ReadLogType[])];
   }
 
@@ -85,22 +85,22 @@ export class FakeDbContext extends AbstractDbContext {
     );
     return result;
   }
-  public async getAutoSaveDataFromMetadataId(
-    metadataId: string
+  public async getSaveDataFromId(
+    saveDataId: string
   ): Promise<Types.SaveDataType> {
-    const autoSaveData = this.saveDataDb.find(
-      (item) => item.metadataId === metadataId && item.description === ''
-    );
+    const saveData = this.saveDataDb.find((item) => item.id === saveDataId);
     // find related reading logs
-    if (autoSaveData && autoSaveData.id) {
-      const readingLogs = this.readLogDb.filter(
-        (item) => item.saveDataId === autoSaveData.id
-      );
-      autoSaveData.readingLogs = readingLogs;
+    if (saveData && saveData.id) {
+      const readingLogs = this.readLogDb
+        .filter((item) => item.saveDataId === saveData.id)
+        .sort((item1, item2) => item1.order - item2.order);
+      saveData.readingLogs = readingLogs;
     }
-    return autoSaveData;
+    return saveData;
   }
   public async addSaveData(saveData: Types.SaveDataType): Promise<string> {
+    saveData.id = saveData.id ?? uuid();
+    saveData.createTimestamp = Date.now();
     await this.putSaveData(saveData);
     return saveData.id;
   }
@@ -119,11 +119,23 @@ export class FakeDbContext extends AbstractDbContext {
       this.saveDataDb[index] = otherSaveData;
     }
     // reading log update
-    // TODO: be better
-    this.readLogDb = readingLogs;
+    readingLogs?.forEach((newLog) => {
+      if (
+        !this.readLogDb.find(
+          (oldLog) =>
+            oldLog.saveDataId === newLog.saveDataId &&
+            oldLog.order === newLog.order
+        )
+      ) {
+        this.readLogDb.push(newLog);
+      }
+    });
   }
   public async deleteSaveDataFromId(saveDataId: string): Promise<void> {
-    throw 'Not Implemented';
+    this.saveDataDb = this.saveDataDb?.filter((item) => item.id !== saveDataId);
+    this.readLogDb = this.readLogDb?.filter(
+      (item) => item.saveDataId !== saveDataId
+    );
   }
   //#endregion
 }

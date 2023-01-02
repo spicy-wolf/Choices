@@ -70,6 +70,35 @@
       }
     }
   },
+  "saveAndLoad": {
+    "label": "Save/Load",
+    "loadingSaveDataMsg": "Loading save data",
+    "deleteBtn": {
+      "label": "Delete"
+    },
+    "saveNewBtn": {
+      "label": "Save New"
+    },
+    "saveDescriptionInput": {
+      "label": "Description"
+    },
+    "saveConfirmBtn": {
+      "label": "Save"
+    },
+    "saveCancelBtn": {
+      "label": "Cancel"
+    },
+    "loadModal": {
+      "title": "Load save data",
+      "body": "Unsaved data will be lost. Are you sure to continue?",
+      "loadConfirmBtn": {
+        "label": "Yes"
+      },
+      "loadCancelBtn": {
+        "label": "No"
+      }
+    }
+  },
   "mainPageSidebar": {
     "library": {
       "label": "Library"
