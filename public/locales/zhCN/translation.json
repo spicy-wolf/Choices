@@ -7,6 +7,14 @@
     "invalidUrl": "无效的链接",
     "invalidScript": "脚本损坏，请检查脚本中是否包含'metadata'和'script'项"
   },
+  "loadingIndicatorModal": {
+    "copyBtn": {
+      "label": "拷贝"
+    },
+    "closeBtn": {
+      "label": "关闭"
+    }
+  },
   "addNewRepoModal": {
     "label": "添加",
     "url": {

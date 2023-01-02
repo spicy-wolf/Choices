@@ -7,6 +7,14 @@
     "invalidUrl": "Invalid url",
     "invalidScript": "Invalid data. please make sure data has 'metadata' and 'script'"
   },
+  "loadingIndicatorModal": {
+    "copyBtn": {
+      "label": "Copy"
+    },
+    "closeBtn": {
+      "label": "Close"
+    }
+  },
   "addNewRepoModal": {
     "label": "Add New",
     "url": {
