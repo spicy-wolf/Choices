@@ -57,4 +57,4 @@ const LoadingIndicatorModal = (props: {
   );
 };
 
-export default LoadingIndicatorModal;
+export { LoadingIndicatorModal };

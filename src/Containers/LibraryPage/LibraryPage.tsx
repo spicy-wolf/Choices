@@ -9,7 +9,7 @@ import Container from '@mui/material/Container/Container';
 import Grid from '@mui/material/Grid/Grid';
 import Fab from '@mui/material/Fab/Fab';
 import AddIcon from '@mui/icons-material/Add';
-import LoadingIndicatorModal from '@src/Containers/LoadingIndicatorModal/LoadingIndicatorModal';
+import { LoadingIndicatorModal } from '@src/Containers/components';
 import AddNewRepoModal from './Components/AddNewRepoModal';
 import { useTranslation } from 'react-i18next';
 import {

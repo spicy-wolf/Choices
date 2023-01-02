@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
-import LoadingIndicatorModal from '@src/Containers/LoadingIndicatorModal/LoadingIndicatorModal';
+import { LoadingIndicatorModal } from '@src/Containers/components';
 import SidePanel from './Components/SidePanel';
 import Content from './Components/Content';
 import { useMetadata } from './Hooks/useMetadata';
