@@ -348,7 +348,7 @@ export class IndexedDbContext extends AbstractDbContext {
         resolve();
       };
       transaction.onerror = (event: any) => {
-        reject();
+        reject((event.target as IDBRequest).error);
       };
       transaction.onabort = (event: any) => {
         reject();

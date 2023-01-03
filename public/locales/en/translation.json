@@ -45,6 +45,18 @@
       "label": "Cancel"
     }
   },
+  "repoCard": {
+    "deleteConfirmationMsg": "Are you sure to delete? All relative save data will be deleted as well.",
+    "deleteBtn": {
+      "label": "Delete"
+    },
+    "deleteConfirmationBtn": {
+      "label": "Confirm"
+    },
+    "deleteCancelBtn": {
+      "label": "Cancel"
+    }
+  },
   "setting": {
     "label": "Settings",
     "darkMode": {

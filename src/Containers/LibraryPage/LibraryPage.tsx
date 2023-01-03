@@ -3,7 +3,6 @@ import { RouterPathStrings } from '@src/Constants';
 import * as Utils from '@src/Utils';
 import useMetadataList from './Hooks/useMetadataList';
 import { RepoCard } from './Components/RepoCard';
-import { useDbContext } from '@src/Context/DbContext';
 import CssBaseline from '@mui/material/CssBaseline/CssBaseline';
 import Container from '@mui/material/Container/Container';
 import Grid from '@mui/material/Grid/Grid';
@@ -18,7 +17,6 @@ import {
 } from '../components/MainPageSidebar';
 
 const LibraryPage = () => {
-  const { dbContext } = useDbContext();
   const { t } = useTranslation();
 
   //#region query param
@@ -36,22 +34,22 @@ const LibraryPage = () => {
   //#endregion
 
   //#region hooks
-  const [metadataList, metadataListLoadingError] = useMetadataList();
+  const metadataListLoader = useMetadataList();
   //#endregion
 
   const loadingLabel = React.useMemo(() => {
     let loadingMsg = repoLoadingMsg || '';
-    if (!metadataList) {
+    if (!metadataListLoader?.metadataList) {
       loadingMsg = t('loadingStatus.loadReadingList');
     }
 
     return loadingMsg;
-  }, [metadataList, repoLoadingMsg]);
+  }, [metadataListLoader?.metadataList, repoLoadingMsg]);
 
   const loadingError = React.useMemo(() => {
-    const errorMsg = metadataListLoadingError || repoLoadingErrorMsg || '';
+    const errorMsg = metadataListLoader?.error || repoLoadingErrorMsg || '';
     return errorMsg;
-  }, [metadataListLoadingError, repoLoadingErrorMsg]);
+  }, [metadataListLoader?.error, repoLoadingErrorMsg]);
 
   useEffect(() => {
     if (!!loadingLabel || !!loadingError) {
@@ -130,20 +128,23 @@ const LibraryPage = () => {
 
     // insert into DB
     setRepoLoadingMsg(t('loadingStatus.addToDb'));
-    dbContext.addMetadata(metadata, script);
+    await metadataListLoader?.addMetadata(metadata, script);
   };
 
   const metadataElements: JSX.Element[] = React.useMemo(() => {
     let result: JSX.Element[] = [];
-    if (metadataList) {
-      result = metadataList.map((item) => (
+    if (metadataListLoader?.metadataList) {
+      result = metadataListLoader?.metadataList.map((item) => (
         <Grid key={item.id} item xs={12} md={4}>
-          <RepoCard item={item} />
+          <RepoCard
+            item={item}
+            deleteMetadata={metadataListLoader?.deleteMetadata}
+          />
         </Grid>
       ));
     }
     return result;
-  }, [metadataList]);
+  }, [metadataListLoader?.metadataList]);
 
   return (
     <>
