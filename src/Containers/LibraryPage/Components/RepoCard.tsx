@@ -34,7 +34,7 @@ export const RepoCard = (props: RepoCardProps) => {
     React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
-  const thumbnailBgColor = React.useMemo(() => {
+  const repoIndicatorColor = React.useMemo(() => {
     return Utils.generateColorFromStr(
       props.item?.author + props.item?.repoName
     );
@@ -102,6 +102,13 @@ export const RepoCard = (props: RepoCardProps) => {
     <>
       <Card sx={{ height: '100%' }}>
         <Box sx={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+          <Box
+            sx={{
+              backgroundColor: repoIndicatorColor,
+              height: '100%',
+              width: '0.5rem',
+            }}
+          />
           <CardActionArea onClick={onClick}>
             <CardHeader
               sx={{
