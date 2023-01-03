@@ -33,7 +33,7 @@ export class FakeDbContext extends AbstractDbContext {
 
   //#region Metadata
   public async getAllMetadata(): Promise<Types.RepoMetadataType[]> {
-    return this.metadataDb;
+    return [...this.metadataDb];
   }
   public async getMetadata(
     author: string,
@@ -62,7 +62,16 @@ export class FakeDbContext extends AbstractDbContext {
     return metaData.id;
   }
   public async deleteMetadataFromId(metadataId: string): Promise<void> {
-    throw 'Not Implemented';
+    // delete save data and reading logs
+    const saveDataList = await this.getAllSaveDataFromMetadataId(metadataId);
+    saveDataList?.forEach(
+      async (saveData) => await this.deleteSaveDataFromId(saveData?.id)
+    );
+
+    // delete metadata
+    this.metadataDb = this.metadataDb.filter(
+      (value) => value?.id !== metadataId
+    );
   }
   //#endregion
 

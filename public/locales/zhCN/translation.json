@@ -45,6 +45,18 @@
       "label": "取消"
     }
   },
+  "repoCard": {
+    "deleteConfirmationMsg": "确认删除吗？所有相关存档也会被一起删除。",
+    "deleteBtn": {
+      "label": "删除"
+    },
+    "deleteConfirmationBtn": {
+      "label": "确认"
+    },
+    "deleteCancelBtn": {
+      "label": "取消"
+    }
+  },
   "setting": {
     "label": "设置",
     "darkMode": {
