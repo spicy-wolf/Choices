@@ -79,7 +79,12 @@ const SidePanel = (props: SidePanelProps) => {
               setLoadingMsg={props.setLoadingMsg}
             />
           </Grid>
-          <Grid item xs hidden={selectedPanel !== SidePanelOptions.Setting}>
+          <Grid
+            item
+            xs
+            hidden={selectedPanel !== SidePanelOptions.Setting}
+            overflow="auto"
+          >
             <Setting
               showLanguageSelector
               showDarkModeSwitch
