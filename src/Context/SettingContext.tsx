@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import createTheme, { ThemeOptions } from '@mui/material/styles/createTheme';
@@ -11,8 +11,9 @@ import {
   UiThemePaletteNames,
 } from '@src/Constants';
 
-// TODO: move SettingDbType to DbContext
-type SettingDbType = {
+const USER_SETTINGS_LOCALSTORAGE_NAME = 'user_settings';
+
+type UserSettingType = {
   themeMode: PaletteMode;
   uiThemeName: `${UiThemePaletteNames}`;
   contentThemeName: `${ContentThemePaletteNames}`;
@@ -30,9 +31,9 @@ type SettingDbType = {
 type ContentStyles = React.CSSProperties;
 type SettingContextType = {
   contentStyles: ContentStyles;
-  setting: SettingDbType;
+  setting: UserSettingType;
   setSetting: (
-    fieldName: keyof SettingDbType,
+    fieldName: keyof UserSettingType,
     value: any
   ) => Promise<void> | void;
 };
@@ -59,19 +60,39 @@ type SettingContextProps = {
 };
 export const SettingContextProvider = (props: SettingContextProps) => {
   const { i18n } = useTranslation();
-  const [setting, setSetting] = React.useState<SettingDbType>(
+  const [setting, setSetting] = React.useState<UserSettingType>(
     DefaultSettingContext.setting
   );
 
-  // TODO: load from DB
-  // TODO: store to DB with debounce
+  useEffect(() => {
+    if (typeof Storage === 'undefined') {
+      console.error('localstorage no supported');
+    }
+    try {
+      const _settings = localStorage.getItem(USER_SETTINGS_LOCALSTORAGE_NAME);
+      if (_settings) {
+        setSetting(JSON.parse(_settings) as UserSettingType);
+      }
+    } catch (ex) {
+      // parse failed
+      console.error('cannot load settings from localstorage');
+    }
+  }, []);
 
   const setSettingWrapper = async (
-    fieldName: keyof SettingDbType,
+    fieldName: keyof UserSettingType,
     value: any
   ): Promise<void> => {
-    const newSetting: SettingDbType = { ...setting, [fieldName]: value };
+    const newSetting: UserSettingType = { ...setting, [fieldName]: value };
     setSetting(newSetting);
+
+    // update localstorage to store user setting while updating
+    if (newSetting) {
+      localStorage.setItem(
+        USER_SETTINGS_LOCALSTORAGE_NAME,
+        JSON.stringify(newSetting)
+      );
+    }
   };
 
   // UI theme
