@@ -112,7 +112,6 @@ const Content = (props: ContentProps) => {
       return;
 
     if (virtualLastItemIndex >= itemCount - 1 && !pauseComponent) {
-      setIsExecutingStatement(true);
       // execute scripts
       const scripts = props.scripts;
       if (scripts.length === 0) return;
@@ -129,11 +128,12 @@ const Content = (props: ContentProps) => {
         setPauseComponent: setPauseComponentWrapper,
       });
     }
-  }, [itemCount, virtualLastItemIndex, pauseComponent]);
-
-  React.useEffect(() => {
-    if (isExecutingStatement) setIsExecutingStatement(false);
-  }, [isExecutingStatement]);
+  }, [
+    itemCount,
+    virtualLastItemIndex,
+    pauseComponent,
+    props.saveData?.scriptCursorPos,
+  ]);
 
   const scrollToIndex = (index: number) => {
     if (index < 0) return; // edge case checking
@@ -270,7 +270,10 @@ const pushGroupedReadingLogs = (
           StatementEngine.CheckStatementType.isSentence(log) &&
           StatementEngine.CheckStatementType.isSentence(lastLogInPrevGrouped)
         ) {
-          prevGrouped.push(log);
+          _groupedReadingLogs[_groupedReadingLogs.length - 1] = [
+            ...prevGrouped,
+            log,
+          ];
         } else {
           _groupedReadingLogs.push([log]);
         }
