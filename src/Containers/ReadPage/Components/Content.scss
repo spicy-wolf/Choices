@@ -24,6 +24,16 @@
 
     p {
       display: inline;
+      animation: appear-animate 0.25s linear;
     }
+  }
+}
+
+@keyframes appear-animate {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
