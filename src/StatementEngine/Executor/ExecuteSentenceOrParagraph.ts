@@ -61,7 +61,7 @@ const splitLongStatement = (
   /**
    * Split a big paragraph into small pieces
    */
-  let data = statement.data;
+  let data = statement.data?.toString() ?? '';
   // TODO: replace inline variables
   data = data.replace(/\r?\n/g, '\n');
 
