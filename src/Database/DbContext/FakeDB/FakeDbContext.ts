@@ -52,12 +52,14 @@ export class FakeDbContext extends AbstractDbContext {
     metaData: Types.RepoMetadataType,
     script?: Types.ScriptType
   ): Promise<string> {
-    if (script) {
-      this.scriptDb = this.scriptDb.concat(script);
-    }
     // generate an id
     metaData.id = uuid();
     this.metadataDb.push(metaData);
+
+    if (script) {
+      script.forEach((statement) => (statement.metadataId = metaData.id));
+      this.scriptDb = this.scriptDb.concat(script);
+    }
 
     return metaData.id;
   }
