@@ -30,7 +30,7 @@ const LibraryPage = () => {
     React.useState<boolean>(false);
   const [repoLoadingMsg, setRepoLoadingMsg] = React.useState<string>();
   const [repoLoadingErrorMsg, setRepoLoadingErrorMsg] =
-    React.useState<string>();
+    React.useState<string>('');
   //#endregion
 
   //#region hooks
@@ -62,6 +62,8 @@ const LibraryPage = () => {
   const onLoadFromUrl = async (urlStr: string, urlAccessToken: string) => {
     // hide add modal
     setShowAddModal(false);
+    // clear prev error
+    setRepoLoadingErrorMsg('');
 
     try {
       setRepoLoadingMsg(t('loadingStatus.downloadScript'));
@@ -105,6 +107,9 @@ const LibraryPage = () => {
   const onLoadFromFile = async (sourceFile: Blob) => {
     // hide add modal
     setShowAddModal(false);
+    // clear prev error
+    setRepoLoadingErrorMsg('');
+
     setRepoLoadingMsg(t('loadingStatus.parseScript'));
 
     try {
