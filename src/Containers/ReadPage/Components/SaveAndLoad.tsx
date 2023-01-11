@@ -159,6 +159,7 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
                   fullWidth
                   disabled={!saveDataDescription}
                   variant="contained"
+                  component="a"
                   onClick={addManualSaveData}
                 >
                   <Trans i18nKey="saveAndLoad.saveConfirmBtn.label" />
@@ -168,6 +169,7 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
                 <Button
                   fullWidth
                   variant="outlined"
+                  component="a"
                   onClick={() => setShowAddSaveDataCard(false)}
                 >
                   <Trans i18nKey="saveAndLoad.saveCancelBtn.label" />
