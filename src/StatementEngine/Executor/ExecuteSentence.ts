@@ -1,8 +1,9 @@
 import * as StatementTypes from '../Types';
 import type { ExecuteHelpersType } from './Execute.type';
+import { splitLongSentences } from '../Helper';
 
-export const executeEndOfLine = (
-  statement: StatementTypes.EndOfLineStatementType,
+export const executeSentence = (
+  statement: StatementTypes.SentenceStatementType,
   helpers: ExecuteHelpersType
 ) => {
   if (!statement) return;
@@ -16,13 +17,16 @@ export const executeEndOfLine = (
     // move to next statement
     newSaveData.scriptCursorPos = helpers?.defaultNextStatementId;
 
+    // add read logs
     const lastReadLogOrder = newSaveData.readingLogs.at(-1)?.order ?? -1;
-    // update reading log
-    newSaveData.readingLogs.push({
-      sourceStatementId: statement.id,
-      order: lastReadLogOrder + 1,
-      type: statement.type,
-    });
+    const shorterSentences: StatementTypes.SentenceComponentType[] =
+      splitLongSentences(statement.data)?.map((s, index) => ({
+        sourceStatementId: statement.id,
+        order: lastReadLogOrder + index + 1,
+        type: statement.type,
+        data: s,
+      }));
+    newSaveData.readingLogs = newSaveData.readingLogs.concat(shorterSentences);
 
     return newSaveData;
   });

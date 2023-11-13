@@ -1,5 +1,7 @@
-export * as CheckStatementType from './CheckStatementType';
+export * as CheckStatementType from './checkStatementType';
 export {
   getLogOrderFromElement,
   getElementfromLogOrder,
-} from './HtmlElementWithLogOrder';
+} from './htmlElementWithLogOrder';
+export { getLastReadLogOrder } from './getLastReadLogOrder';
+export { splitLongSentences } from './splitLongSentences';

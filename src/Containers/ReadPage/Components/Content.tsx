@@ -4,17 +4,19 @@ import './Content.scss';
 import * as Database from '@src/Database';
 import { ContentRow } from './ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
-import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useSetting } from '@src/Context';
-import { SaveDataDispatchType } from '../Hooks/useSaveDataReducer';
+import { useGroupedReadingLogs } from '../Hooks/useGroupedReadingLogs';
 
 type AnyStatementType = StatementEngine.Types.AnyStatementType;
-type LogComponentType = StatementEngine.Types.LogComponentType;
+type AnyComponentType = StatementEngine.Types.AnyComponentType;
 type PauseComponentType = StatementEngine.Types.PauseComponentType;
 type ContentProps = {
   scripts: AnyStatementType[];
   saveData: Database.Types.SaveDataType;
-  saveDataDispatch: Dispatch<SaveDataDispatchType>;
+  setSaveData: React.Dispatch<
+    React.SetStateAction<Database.Types.SaveDataType>
+  >;
 };
 
 const Content = (props: ContentProps) => {
@@ -27,43 +29,32 @@ const Content = (props: ContentProps) => {
   );
   const contentRef = React.useRef<HTMLDivElement>(null);
 
-  const [isExecutingStatement, setIsExecutingStatement] =
-    useState<boolean>(false);
-
   const [pauseComponent, setPauseComponent] = useState<PauseComponentType>();
-
-  const [groupedReadingLogs, setGroupedReadingLogs] = useState<
-    Database.Types.ReadLogType[][]
-  >(pushGroupedReadingLogs(null, props.saveData?.readingLogs));
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
+
+  const { doExecution } = StatementEngine.useExecutor(
+    props.scripts,
+    props.saveData as StatementEngine.Types.SaveDataType,
+    props.setSaveData,
+    setPauseComponent
+  );
+
+  const { groupedReadingLogs } = useGroupedReadingLogs(
+    props.saveData?.readingLogs as AnyComponentType[]
+  );
 
   // this "+1" has two use cases
   // 1. always assume there are some more statements to execute
   // 2. if there is a pause component, then the itemCount == length of groupedReadingLogs + one pause component
   //    which means the loadMoreItem will not be triggered
-  const itemCount: number = useMemo(
+  const readingLogCount: number = useMemo(
     () => (groupedReadingLogs?.length || 0) + 1,
     [groupedReadingLogs]
   );
 
-  // create a script dic base on script array to speed up search by id
-  const scriptIdIndexDic: { [key: string]: number } = useMemo(() => {
-    let result = {};
-    if (props.scripts && props.scripts.length > 0) {
-      result = props.scripts.reduce<{ [key: string]: number }>(
-        (dic, current, index) => {
-          dic[current.id] = index;
-          return dic;
-        },
-        {}
-      );
-    }
-    return result;
-  }, [props.scripts]);
-
   // init react virtual
   const virtualizer = useVirtualizer({
-    count: itemCount,
+    count: readingLogCount,
     getScrollElement: () => contentRef.current,
     estimateSize: () => 100,
     overscan: 1,
@@ -79,11 +70,10 @@ const Content = (props: ContentProps) => {
       initScrollToLogCursorPos.current !== undefined
     ) {
       // find the group index which contains initScrollToLogCursorPos
-      const index = groupedReadingLogs.findIndex(
-        (item) =>
-          !!item.find(
-            (subItem) => subItem.order === initScrollToLogCursorPos.current
-          )
+      const index = groupedReadingLogs.findIndex((item) =>
+        item.find(
+          (subItem) => subItem.order === initScrollToLogCursorPos.current
+        )
       );
       if (index !== -1) {
         scrollToIndex(index);
@@ -111,28 +101,15 @@ const Content = (props: ContentProps) => {
     if (virtualLastItemIndex === null || virtualLastItemIndex === undefined)
       return;
 
-    if (virtualLastItemIndex >= itemCount - 1 && !pauseComponent) {
-      // execute scripts
-      const scripts = props.scripts;
-      if (scripts.length === 0) return;
-
-      const currentStatementId = props.saveData?.scriptCursorPos;
-      const currentStatementCursorIndex =
-        scriptIdIndexDic[currentStatementId] ?? 0;
-      let currentStatement: AnyStatementType =
-        scripts[currentStatementCursorIndex];
-
-      StatementEngine.execute(currentStatement, {
-        addReadingLogs,
-        moveScriptCursor,
-        setPauseComponent: setPauseComponentWrapper,
-      });
+    if (virtualLastItemIndex >= readingLogCount - 1 && !pauseComponent) {
+      doExecution();
     }
   }, [
-    itemCount,
+    readingLogCount,
     virtualLastItemIndex,
     pauseComponent,
     props.saveData?.scriptCursorPos,
+    // props.saveData // TODO: what if no updates in scriptCursorPos???
   ]);
 
   const scrollToIndex = (index: number) => {
@@ -147,9 +124,7 @@ const Content = (props: ContentProps) => {
     });
   };
 
-  const getRowData = (
-    index: number
-  ): LogComponentType[] | PauseComponentType[] => {
+  const getRowData = (index: number): AnyComponentType[] => {
     // pauseComponent is always show at the end
     if (groupedReadingLogs?.length === index && !!pauseComponent) {
       return [pauseComponent];
@@ -157,50 +132,6 @@ const Content = (props: ContentProps) => {
       return groupedReadingLogs[index];
     }
   };
-
-  //#region statement executor control callback methods
-  const addReadingLogs = (newLogs: LogComponentType[]): void => {
-    const _newLogs: Database.Types.ReadLogType[] = newLogs.map((item) => ({
-      ...item,
-      saveDataId: null, // the saveDataId will be assigned when store to DB
-    }));
-    props.saveDataDispatch &&
-      props.saveDataDispatch({ type: 'pushReadingLogs', payload: _newLogs });
-    // update grouped reading logs
-    const _groupedReadingLogs = pushGroupedReadingLogs(
-      groupedReadingLogs,
-      _newLogs
-    );
-    setGroupedReadingLogs(_groupedReadingLogs);
-  };
-
-  const moveScriptCursor = (statementId?: string): void => {
-    if (statementId) {
-      props.saveDataDispatch &&
-        props.saveDataDispatch({
-          type: 'updateScriptCursorPos',
-          payload: statementId,
-        });
-    } else {
-      // if statementId is not given, then move to next
-      const currentStatementId = props.saveData?.scriptCursorPos;
-      const currentStatementCursorIndex =
-        scriptIdIndexDic[currentStatementId] ?? 0;
-      const nextStatementCursorIndex = currentStatementCursorIndex + 1;
-      let nextStatement: AnyStatementType =
-        props.scripts[nextStatementCursorIndex];
-      props.saveDataDispatch &&
-        props.saveDataDispatch({
-          type: 'updateScriptCursorPos',
-          payload: nextStatement?.id,
-        });
-    }
-  };
-
-  const setPauseComponentWrapper = (pauseComponent: PauseComponentType) => {
-    setPauseComponent(pauseComponent);
-  };
-  //#endregion
 
   return (
     <div
@@ -238,11 +169,10 @@ const Content = (props: ContentProps) => {
               data={getRowData(virtualRow.index)}
               isScrolling={isScrolling}
               setReadingLogCursorPos={(topScreenItemId: number) => {
-                props.saveDataDispatch &&
-                  props.saveDataDispatch({
-                    type: 'updateLogCursorPos',
-                    payload: topScreenItemId,
-                  });
+                props.setSaveData((_saveData) => ({
+                  ..._saveData,
+                  logCursorPos: topScreenItemId,
+                }));
               }}
             />
           </div>
@@ -250,40 +180,6 @@ const Content = (props: ContentProps) => {
       </div>
     </div>
   );
-};
-
-const pushGroupedReadingLogs = (
-  prevGroupedReadingLogs: Database.Types.ReadLogType[][],
-  newReadingLogs: Database.Types.ReadLogType[]
-): Database.Types.ReadLogType[][] => {
-  let _groupedReadingLogs = prevGroupedReadingLogs ?? [];
-  _groupedReadingLogs = _groupedReadingLogs.slice(); // prepare a copy
-
-  if (newReadingLogs) {
-    for (let log of newReadingLogs) {
-      if (!log) continue;
-
-      const prevGrouped = _groupedReadingLogs[_groupedReadingLogs.length - 1];
-      if (prevGrouped) {
-        const lastLogInPrevGrouped = prevGrouped[prevGrouped.length - 1];
-        if (
-          StatementEngine.CheckStatementType.isSentence(log) &&
-          StatementEngine.CheckStatementType.isSentence(lastLogInPrevGrouped)
-        ) {
-          _groupedReadingLogs[_groupedReadingLogs.length - 1] = [
-            ...prevGrouped,
-            log,
-          ];
-        } else {
-          _groupedReadingLogs.push([log]);
-        }
-      } else {
-        _groupedReadingLogs.push([log]);
-      }
-    }
-  }
-
-  return _groupedReadingLogs;
 };
 
 export default Content;

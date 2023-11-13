@@ -1,7 +1,7 @@
 import { StatementTypeNames } from '../Constants';
-import { BaseStatementType } from './BaseStatement.type';
+import { BaseComponentType } from './BaseComponent.type';
 
-export type SentenceStatementType = {
+export type SentenceComponentType = {
   type: typeof StatementTypeNames.SENTENCE[number];
   data: string;
-} & BaseStatementType;
+} & BaseComponentType;

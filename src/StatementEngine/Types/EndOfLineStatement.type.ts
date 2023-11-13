@@ -1,11 +1,6 @@
 import { StatementTypeNames } from '../Constants';
-import {
-  AbstractComponentType,
-  AbstractStatementType,
-} from './AbstractStatement.type';
+import { BaseStatementType } from './BaseStatement.type';
 
-type BaseType = {
+export type EndOfLineStatementType = {
   type: typeof StatementTypeNames.END_OF_LINE[number];
-};
-export type EndOfLineStatementType = AbstractStatementType & BaseType;
-export type EndOfLineComponentType = AbstractComponentType & BaseType;
+} & BaseStatementType;

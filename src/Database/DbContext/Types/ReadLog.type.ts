@@ -1,6 +1,8 @@
-import { Types } from '@src/StatementEngine';
-
-export type ReadLogType = Types.LogComponentType & {
-  saveDataId: string;
+export type ReadLogType = {
+  saveDataId?: string; // TODO: remove me
   timestamp?: number; // timestamp cannot be used as order due to collision
+  sourceStatementId: string;
+  order: number;
+  type: string;
+  [key: string]: any; // extra data
 };

@@ -1,11 +1,10 @@
 import React from 'react';
 import * as StatementEngine from '@src/StatementEngine';
 
-type LogComponentType = StatementEngine.Types.LogComponentType;
-type PauseComponentType = StatementEngine.Types.PauseComponentType;
+type AnyComponentType = StatementEngine.Types.AnyComponentType;
 
 const ContentRow = (props: {
-  data: LogComponentType[] | PauseComponentType[];
+  data: AnyComponentType[];
   isScrolling?: boolean;
   setReadingLogCursorPos?: (topScreenItemId: number) => void;
 }): JSX.Element => {

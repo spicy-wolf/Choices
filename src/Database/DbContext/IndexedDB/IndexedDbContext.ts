@@ -29,10 +29,8 @@ export class IndexedDbContext extends AbstractDbContext {
     Utils.propertyOf<Types.SaveDataType>('id');
   private readonly SAVE_DATA_METADATAID_NAME: string =
     Utils.propertyOf<Types.SaveDataType>('metadataId');
-  private readonly READ_LOG_SAVEDATAID_NAME: string =
-    Utils.propertyOf<Types.ReadLogType>('saveDataId');
-  private readonly READ_LOG_ORDER_NAME: string =
-    Utils.propertyOf<Types.ReadLogType>('order');
+  private readonly READ_LOG_SAVEDATAID_NAME: string = 'saveDataId'; // TODO:
+  private readonly READ_LOG_ORDER_NAME: string = 'order'; // TODO: remove me
   //#endregion
 
   private db: IDBDatabase = null;
