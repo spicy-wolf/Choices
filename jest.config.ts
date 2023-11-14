@@ -90,7 +90,6 @@ export default {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^@src(.*)$': '<rootDir>/src$1',
-    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -138,6 +137,7 @@ export default {
   setupFiles: [
     // https://github.com/dumbmatter/fakeIndexedDB
     'fake-indexeddb/auto',
+    '<rootDir>/src/Mocks/mockNanoid.ts',
   ],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
@@ -199,4 +199,3 @@ export default {
   // Whether to use watchman for file crawling
   // watchman: true,
 };
-

@@ -1,7 +1,6 @@
 import * as Types from '../Types';
 import { IndexedDbContext } from './IndexedDbContext';
 const FDBFactory = require('fake-indexeddb/lib/FDBFactory');
-import crypto from 'crypto';
 import * as digestString from '@src/Utils/digestString';
 
 const initMetadata: Types.RepoMetadataType = {

@@ -1,10 +1,10 @@
-import { v4 as uuid } from 'uuid';
 import * as Types from '../Types';
 import { AbstractDbContext } from '../DbContext';
 import FakeMetadata from '@resources/FakeMetadata.json';
 import FakeScript from '@resources/FakeScript.json';
 import FakeSaveData from '@resources/FakeSaveData.json';
 import FakeReadLog from '@resources/FakeReadLog.json';
+import { generateId } from '@src/Utils';
 
 export class FakeDbContext extends AbstractDbContext {
   private metadataDb: Types.RepoMetadataType[] = [];
@@ -53,7 +53,7 @@ export class FakeDbContext extends AbstractDbContext {
     script?: Types.ScriptType
   ): Promise<string> {
     // generate an id
-    metaData.id = uuid();
+    metaData.id = generateId();
     this.metadataDb.push(metaData);
 
     if (script) {
@@ -110,7 +110,7 @@ export class FakeDbContext extends AbstractDbContext {
     return saveData;
   }
   public async addSaveData(saveData: Types.SaveDataType): Promise<string> {
-    saveData.id = saveData.id ?? uuid();
+    saveData.id = saveData.id ?? generateId();
     saveData.createTimestamp = Date.now();
     await this.putSaveData(saveData);
     return saveData.id;
@@ -138,7 +138,7 @@ export class FakeDbContext extends AbstractDbContext {
             oldLog.order === newLog.order
         )
       ) {
-        this.readLogDb.push(newLog);
+        this.readLogDb.push({ ...newLog, saveDataId: saveData.id });
       }
     });
   }

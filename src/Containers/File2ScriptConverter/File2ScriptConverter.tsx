@@ -1,6 +1,6 @@
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { Types } from '@src/StatementEngine';
+import { generateId } from '@src/Utils';
 
 const File2ScriptConverter = () => {
   const inputRef = React.useRef<HTMLTextAreaElement>();
@@ -13,14 +13,14 @@ const File2ScriptConverter = () => {
 
       const statements: Types.AnyStatementType[] = paragraphList.map(
         (item, index) => ({
-          id: uuidv4(),
+          id: generateId(),
           order: index,
           type: 'p',
           data: item,
         })
       );
       statements.push({
-        id: uuidv4(),
+        id: generateId(),
         order: statements.length,
         type: 'fin',
       } as Types.FinStatementType);

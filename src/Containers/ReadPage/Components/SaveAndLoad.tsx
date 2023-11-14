@@ -1,5 +1,4 @@
 import React, { Dispatch } from 'react';
-import { v4 as uuid } from 'uuid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -25,6 +24,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
+import { generateId } from '@src/Utils';
 
 type SaveAndLoadProps = {
   defaultSaveData: Database.Types.SaveDataType;
@@ -51,7 +51,7 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
       newSaveData.description = saveDataDescription;
       newSaveData.saveDataType = 'manual';
       // set new save data id
-      const newSaveDataId = uuid();
+      const newSaveDataId = generateId();
       newSaveData.id = newSaveDataId;
 
       props.addSaveData && (await props.addSaveData(newSaveData));
@@ -73,7 +73,7 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
       ) as Database.Types.SaveDataType;
       newDefaultSaveData.description = ''; // clear description
       newDefaultSaveData.saveDataType = 'default';
-      const newDefaultSaveDataId = uuid();
+      const newDefaultSaveDataId = generateId();
       newDefaultSaveData.id = newDefaultSaveDataId;
 
       props.setLoadingMsg('saveAndLoad.loadingSaveDataMsg');

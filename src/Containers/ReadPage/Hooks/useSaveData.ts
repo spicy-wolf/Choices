@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { v4 as uuid } from 'uuid';
 import { useDbContext } from '@src/Context/DbContext';
 import * as Database from '@src/Database';
-import { useDebounce } from '@src/Utils';
+import { useDebounce, generateId } from '@src/Utils';
 
 const useSaveData = (metadataId: string) => {
   const { dbContext } = useDbContext();
@@ -92,7 +91,7 @@ const useSaveData = (metadataId: string) => {
     ) as Database.Types.SaveDataType;
     newSaveData.description = saveDataDescription;
     newSaveData.saveDataType = 'manual';
-    newSaveData.id = uuid();
+    newSaveData.id = generateId();
     newSaveData.createTimestamp = Date.now();
     const saveDataId = await addSaveData(newSaveData);
 
@@ -108,7 +107,7 @@ const useSaveData = (metadataId: string) => {
     ) as Database.Types.SaveDataType;
     newSaveData.description = '';
     newSaveData.saveDataType = 'default';
-    newSaveData.id = defaultSaveData.id ?? uuid();
+    newSaveData.id = defaultSaveData.id ?? generateId();
     newSaveData.createTimestamp = Date.now();
     setDefaultSaveData(defaultSaveData);
   };

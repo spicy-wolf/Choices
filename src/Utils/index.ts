@@ -2,6 +2,7 @@ import { generateLibraryPath } from './PathGenerators/generateMainPath';
 import { generateReadPath } from './PathGenerators/generateReadPath';
 import { generateSettingPath } from './PathGenerators/generateSettingPath';
 import { generateColorFromStr } from './generateColorFromStr';
+import { generateId } from './generateId';
 import { combinePath } from './combinePath';
 import { digestString } from './digestString';
 import { useQuery } from './useQuery';
@@ -17,5 +18,6 @@ export {
   generateLibraryPath,
   generateReadPath,
   generateSettingPath,
+  generateId,
   propertyOf,
 };
