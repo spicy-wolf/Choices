@@ -137,6 +137,7 @@ export default {
   setupFiles: [
     // https://github.com/dumbmatter/fakeIndexedDB
     'fake-indexeddb/auto',
+    '<rootDir>/src/Mocks/mockNanoid.ts',
   ],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
