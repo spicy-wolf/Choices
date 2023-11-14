@@ -3,7 +3,7 @@ import { generateReadPath } from './PathGenerators/generateReadPath';
 import { generateSettingPath } from './PathGenerators/generateSettingPath';
 import { generateColorFromStr } from './generateColorFromStr';
 import { combinePath } from './combinePath';
-import { digeststring } from './digeststring';
+import { digestString } from './digestString';
 import { useQuery } from './useQuery';
 import { useDebounce } from './useDebounce';
 import { propertyOf } from './propertyOf';
@@ -12,7 +12,7 @@ export {
   useQuery,
   useDebounce,
   combinePath,
-  digeststring,
+  digestString,
   generateColorFromStr,
   generateLibraryPath,
   generateReadPath,

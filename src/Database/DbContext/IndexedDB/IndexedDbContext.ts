@@ -576,7 +576,7 @@ export class IndexedDbContext extends AbstractDbContext {
     const str = author?.trim() + repoName?.trim();
     if (!str) throw 'Invalid author or repo name';
 
-    const metadataId = await Utils.digeststring(str);
+    const metadataId = await Utils.digestString(str);
     return metadataId;
   }
 }

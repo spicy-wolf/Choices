@@ -2,6 +2,7 @@ import * as Types from '../Types';
 import { IndexedDbContext } from './IndexedDbContext';
 const FDBFactory = require('fake-indexeddb/lib/FDBFactory');
 import crypto from 'crypto';
+import * as digestString from '@src/Utils/digestString';
 
 const initMetadata: Types.RepoMetadataType = {
   id: '',
@@ -87,7 +88,10 @@ describe('indexed db test', () => {
   beforeAll(() => {
     // mock
     global.TextEncoder = require('util').TextEncoder;
-    global.crypto = crypto.webcrypto as any;
+    //global.crypto = crypto.webcrypto as any;
+
+    const spy = jest.spyOn(digestString, 'digestString');
+    spy.mockImplementation((str) => Promise.resolve(str));
   });
   beforeEach(async () => {
     global.indexedDB = new FDBFactory();
