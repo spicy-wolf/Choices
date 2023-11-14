@@ -138,7 +138,7 @@ export class FakeDbContext extends AbstractDbContext {
             oldLog.order === newLog.order
         )
       ) {
-        this.readLogDb.push(newLog);
+        this.readLogDb.push({ ...newLog, saveDataId: saveData.id });
       }
     });
   }
