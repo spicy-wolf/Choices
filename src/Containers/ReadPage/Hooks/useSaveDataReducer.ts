@@ -9,7 +9,7 @@ type SaveDataDispatchType =
       type: 'updateSaveDataContext';
       payload: Database.Types.SaveDataContext;
     }
-  | { type: 'pushReadingLogs'; payload: Database.Types.ReadLogType[] };
+  | { type: 'pushReadLogs'; payload: Database.Types.ReadLogType[] };
 
 const useSaveDataReducer = () => {
   const reducer = (
@@ -33,7 +33,7 @@ const useSaveDataReducer = () => {
       }
     } else if (action.type === 'updateSaveDataContext') {
       newState = { ...state, context: action.payload };
-    } else if (action.type === 'pushReadingLogs') {
+    } else if (action.type === 'pushReadLogs') {
       const newLogs = action.payload;
       if (newLogs && newLogs.length > 0) {
         if (!state?.id) {
@@ -41,17 +41,17 @@ const useSaveDataReducer = () => {
         }
 
         // decorate before saving
-        let readingLogIndex = state?.readingLogs?.length ?? 0;
+        let readLogIndex = state?.readLogs?.length ?? 0;
         for (const log of newLogs) {
           log.saveDataId = state?.id;
-          log.order = readingLogIndex;
+          log.order = readLogIndex;
           log.timestamp = Date.now();
-          readingLogIndex++;
+          readLogIndex++;
         }
 
         newState = {
           ...state,
-          readingLogs: state.readingLogs.concat(newLogs),
+          readLogs: state.readLogs.concat(newLogs),
         };
       }
     }

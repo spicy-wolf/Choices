@@ -5,7 +5,7 @@ import { StatementTypeNames } from '../Constants';
 export const executeSentence = (
   statement: StatementTypes.SentenceStatementType,
   controlMethods: {
-    addReadingLogs: (statements: StatementTypes.LogComponentType[]) => void;
+    addReadLogs: (statements: StatementTypes.LogComponentType[]) => void;
     moveScriptCursor: (statementId?: string) => void;
   }
 ) => {
@@ -15,7 +15,7 @@ export const executeSentence = (
     splitLongStatement(statement);
 
   // update reading log
-  controlMethods.addReadingLogs && controlMethods.addReadingLogs(components);
+  controlMethods.addReadLogs && controlMethods.addReadLogs(components);
   // move to next statement
   controlMethods.moveScriptCursor && controlMethods.moveScriptCursor();
 };
@@ -23,7 +23,7 @@ export const executeSentence = (
 export const executeParagraph = (
   statement: StatementTypes.ParagraphStatementType,
   hooks: {
-    addReadingLogs: (statements: StatementTypes.LogComponentType[]) => void;
+    addReadLogs: (statements: StatementTypes.LogComponentType[]) => void;
     moveScriptCursor: (statementId?: string) => void;
   }
 ) => {
@@ -40,7 +40,7 @@ export const executeParagraph = (
   });
 
   // update reading log
-  hooks.addReadingLogs && hooks.addReadingLogs(components);
+  hooks.addReadLogs && hooks.addReadLogs(components);
   // move to next statement
   hooks.moveScriptCursor && hooks.moveScriptCursor();
 };

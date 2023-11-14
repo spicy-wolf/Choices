@@ -179,30 +179,28 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
 
               // generate default save data description
               let defaultSaveDataDescription: string = '';
-              const readingLogs = props.defaultSaveData?.readingLogs;
-              if (!readingLogs || readingLogs.length === 0) {
+              const readLogs = props.defaultSaveData?.readLogs;
+              if (!readLogs || readLogs.length === 0) {
                 setSaveDataDescription('');
                 return;
               }
 
               for (
-                let i = readingLogs.length - 1;
+                let i = readLogs.length - 1;
                 i >= 0 && defaultSaveDataDescription.length <= 200;
                 i--
               ) {
-                for (let j = readingLogs[i].length - 1; j >= 0; j--) {
-                  const readingLog = readingLogs[i][j];
+                for (let j = readLogs[i].length - 1; j >= 0; j--) {
+                  const readLog = readLogs[i][j];
                   if (
-                    !StatementEngine.CheckStatementType.isParagraph(
-                      readingLog
-                    ) &&
-                    !StatementEngine.CheckStatementType.isSentence(readingLog)
+                    !StatementEngine.CheckStatementType.isParagraph(readLog) &&
+                    !StatementEngine.CheckStatementType.isSentence(readLog)
                   )
                     continue;
 
                   const piece =
                     (
-                      readingLog as
+                      readLog as
                         | StatementEngine.Types.ParagraphComponentType
                         | StatementEngine.Types.SentenceComponentType
                     )?.data ?? '';

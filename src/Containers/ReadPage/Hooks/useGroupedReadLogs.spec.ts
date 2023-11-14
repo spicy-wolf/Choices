@@ -1,11 +1,11 @@
 import { describe, expect, test } from '@jest/globals';
 import { renderHook } from '@testing-library/react';
-import { useGroupedReadingLogs } from './useGroupedReadingLogs';
+import { useGroupedReadLogs } from './useGroupedReadLogs';
 import * as StatementEngine from '@src/StatementEngine';
 
 type AnyComponentType = StatementEngine.Types.AnyComponentType;
 
-describe('test useGroupedReadingLogs hook', () => {
+describe('test useGroupedReadLogs hook', () => {
   const dataSet: [AnyComponentType[], AnyComponentType[][]][] = [
     [null, []],
     [[], []],
@@ -49,7 +49,7 @@ describe('test useGroupedReadingLogs hook', () => {
     ],
   ];
   test.each(dataSet)('test convert reading log %o to %o', (input, expected) => {
-    const { result } = renderHook(() => useGroupedReadingLogs(input));
-    expect(result.current.groupedReadingLogs).toEqual(expected);
+    const { result } = renderHook(() => useGroupedReadLogs(input));
+    expect(result.current.groupedReadLogs).toEqual(expected);
   });
 });

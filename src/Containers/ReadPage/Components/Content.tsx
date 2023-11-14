@@ -6,7 +6,7 @@ import { ContentRow } from './ContentRow';
 import { useWindowSize } from '@src/Context/WindowSizeContext';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useSetting } from '@src/Context';
-import { useGroupedReadingLogs } from '../Hooks/useGroupedReadingLogs';
+import { useGroupedReadLogs } from '../Hooks/useGroupedReadLogs';
 
 type AnyStatementType = StatementEngine.Types.AnyStatementType;
 type AnyComponentType = StatementEngine.Types.AnyComponentType;
@@ -39,22 +39,22 @@ const Content = (props: ContentProps) => {
     setPauseComponent
   );
 
-  const { groupedReadingLogs } = useGroupedReadingLogs(
-    props.saveData?.readingLogs as AnyComponentType[]
+  const { groupedReadLogs } = useGroupedReadLogs(
+    props.saveData?.readLogs as AnyComponentType[]
   );
 
   // this "+1" has two use cases
   // 1. always assume there are some more statements to execute
-  // 2. if there is a pause component, then the itemCount == length of groupedReadingLogs + one pause component
+  // 2. if there is a pause component, then the itemCount == length of groupedReadLogs + one pause component
   //    which means the loadMoreItem will not be triggered
-  const readingLogCount: number = useMemo(
-    () => (groupedReadingLogs?.length || 0) + 1,
-    [groupedReadingLogs]
+  const readLogCount: number = useMemo(
+    () => (groupedReadLogs?.length || 0) + 1,
+    [groupedReadLogs]
   );
 
   // init react virtual
   const virtualizer = useVirtualizer({
-    count: readingLogCount,
+    count: readLogCount,
     getScrollElement: () => contentRef.current,
     estimateSize: () => 100,
     overscan: 1,
@@ -70,7 +70,7 @@ const Content = (props: ContentProps) => {
       initScrollToLogCursorPos.current !== undefined
     ) {
       // find the group index which contains initScrollToLogCursorPos
-      const index = groupedReadingLogs.findIndex((item) =>
+      const index = groupedReadLogs.findIndex((item) =>
         item.find(
           (subItem) => subItem.order === initScrollToLogCursorPos.current
         )
@@ -101,11 +101,11 @@ const Content = (props: ContentProps) => {
     if (virtualLastItemIndex === null || virtualLastItemIndex === undefined)
       return;
 
-    if (virtualLastItemIndex >= readingLogCount - 1 && !pauseComponent) {
+    if (virtualLastItemIndex >= readLogCount - 1 && !pauseComponent) {
       doExecution();
     }
   }, [
-    readingLogCount,
+    readLogCount,
     virtualLastItemIndex,
     pauseComponent,
     props.saveData?.scriptCursorPos,
@@ -126,10 +126,10 @@ const Content = (props: ContentProps) => {
 
   const getRowData = (index: number): AnyComponentType[] => {
     // pauseComponent is always show at the end
-    if (groupedReadingLogs?.length === index && !!pauseComponent) {
+    if (groupedReadLogs?.length === index && !!pauseComponent) {
       return [pauseComponent];
     } else {
-      return groupedReadingLogs[index];
+      return groupedReadLogs[index];
     }
   };
 
@@ -168,7 +168,7 @@ const Content = (props: ContentProps) => {
             <ContentRow
               data={getRowData(virtualRow.index)}
               isScrolling={isScrolling}
-              setReadingLogCursorPos={(topScreenItemId: number) => {
+              setReadLogCursorPos={(topScreenItemId: number) => {
                 props.setSaveData((_saveData) => ({
                   ..._saveData,
                   logCursorPos: topScreenItemId,

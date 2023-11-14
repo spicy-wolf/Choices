@@ -4,5 +4,5 @@ export type SaveDataType = {
   scriptCursorPos: string;
   logCursorPos: number;
   context: { [key: string]: any };
-  readingLogs?: (BaseComponentType & { [key: string]: any })[];
+  readLogs?: (BaseComponentType & { [key: string]: any })[];
 };

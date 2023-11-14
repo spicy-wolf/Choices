@@ -46,7 +46,7 @@ const useSaveData = (metadataId: string) => {
               logCursorPos: null,
 
               context: {},
-              readingLogs: [],
+              readLogs: [],
             };
             const _defaultSaveDataId = await addSaveData(_defaultSaveData);
             _defaultSaveData.id = _defaultSaveDataId;

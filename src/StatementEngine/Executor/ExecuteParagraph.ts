@@ -13,12 +13,12 @@ export const executeParagraph = (
 
   setSaveData((_saveData) => {
     const newSaveData = { ..._saveData };
-    newSaveData.readingLogs = [..._saveData.readingLogs];
+    newSaveData.readLogs = [..._saveData.readLogs];
     // move to next statement
     newSaveData.scriptCursorPos = helpers?.defaultNextStatementId;
 
     // add read logs
-    let lastReadLogOrder = newSaveData.readingLogs.at(-1)?.order ?? -1;
+    let lastReadLogOrder = newSaveData.readLogs.at(-1)?.order ?? -1;
     const shorterSentences: StatementTypes.SentenceComponentType[] =
       splitLongSentences(statement.data)?.map((s, index) => ({
         sourceStatementId: statement.id,
@@ -26,11 +26,11 @@ export const executeParagraph = (
         type: 's',
         data: s,
       }));
-    newSaveData.readingLogs = newSaveData.readingLogs.concat(shorterSentences);
+    newSaveData.readLogs = newSaveData.readLogs.concat(shorterSentences);
 
     // add eol
-    lastReadLogOrder = newSaveData.readingLogs.at(-1)?.order ?? -1;
-    newSaveData.readingLogs.push({
+    lastReadLogOrder = newSaveData.readLogs.at(-1)?.order ?? -1;
+    newSaveData.readLogs.push({
       sourceStatementId: statement.id,
       order: lastReadLogOrder + 1,
       type: 'eol',

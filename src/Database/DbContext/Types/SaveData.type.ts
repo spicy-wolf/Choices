@@ -12,5 +12,5 @@ export type SaveDataType = {
   logCursorPos: number;
 
   context: SaveDataContext;
-  readingLogs?: ReadLogType[];
+  readLogs?: ReadLogType[];
 };

@@ -6,7 +6,7 @@ type AnyComponentType = StatementEngine.Types.AnyComponentType;
 const ContentRow = (props: {
   data: AnyComponentType[];
   isScrolling?: boolean;
-  setReadingLogCursorPos?: (topScreenItemId: number) => void;
+  setReadLogCursorPos?: (topScreenItemId: number) => void;
 }): JSX.Element => {
   const rowRef = React.useRef<HTMLDivElement>();
 
@@ -28,7 +28,7 @@ const ContentRow = (props: {
             childDomRect.bottom >= 5 &&
             order !== null
           ) {
-            props.setReadingLogCursorPos && props.setReadingLogCursorPos(order);
+            props.setReadLogCursorPos && props.setReadLogCursorPos(order);
             break;
           }
         }

@@ -8,7 +8,7 @@ export type AbstractStatementType = {
 export type AbstractComponentType = {
   sourceStatementId: string;
   /**
-   * Note: the order value is init to null, then it will be assigned in addReadingLog func
+   * Note: the order value is init to null, then it will be assigned in addReadLog func
    */
   order: number | null;
   type: string;

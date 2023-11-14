@@ -12,13 +12,13 @@ export const executeEndOfLine = (
 
   setSaveData((_saveData) => {
     const newSaveData = { ..._saveData };
-    newSaveData.readingLogs = [..._saveData.readingLogs];
+    newSaveData.readLogs = [..._saveData.readLogs];
     // move to next statement
     newSaveData.scriptCursorPos = helpers?.defaultNextStatementId;
 
-    const lastReadLogOrder = newSaveData.readingLogs.at(-1)?.order ?? -1;
+    const lastReadLogOrder = newSaveData.readLogs.at(-1)?.order ?? -1;
     // update reading log
-    newSaveData.readingLogs.push({
+    newSaveData.readLogs.push({
       sourceStatementId: statement.id,
       order: lastReadLogOrder + 1,
       type: statement.type,
