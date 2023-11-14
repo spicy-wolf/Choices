@@ -1,7 +1,6 @@
 import * as Types from '../Types';
 import * as Utils from '@src/Utils';
 import { AbstractDbContext } from '../DbContext';
-import { v4 as uuidv4 } from 'uuid';
 
 export class IndexedDbContext extends AbstractDbContext {
   private readonly DB_NAME: string = 'choices';
@@ -446,7 +445,7 @@ export class IndexedDbContext extends AbstractDbContext {
     }
 
     const { readLogs, ...restSaveData } = saveData;
-    const newSaveDataId = saveData.id || uuidv4();
+    const newSaveDataId = saveData.id || Utils.generateId();
 
     const transaction = this.db.transaction(
       [this.SAVE_DATA_TB_NAME, this.READ_LOG_TB_NAME],
