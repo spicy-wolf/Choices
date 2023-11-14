@@ -29,10 +29,8 @@ export class IndexedDbContext extends AbstractDbContext {
     Utils.propertyOf<Types.SaveDataType>('id');
   private readonly SAVE_DATA_METADATAID_NAME: string =
     Utils.propertyOf<Types.SaveDataType>('metadataId');
-  private readonly READ_LOG_SAVEDATAID_NAME: string =
-    Utils.propertyOf<Types.ReadLogType>('saveDataId');
-  private readonly READ_LOG_ORDER_NAME: string =
-    Utils.propertyOf<Types.ReadLogType>('order');
+  private readonly READ_LOG_SAVEDATAID_NAME: string = 'saveDataId'; // TODO:
+  private readonly READ_LOG_ORDER_NAME: string = 'order'; // TODO: remove me
   //#endregion
 
   private db: IDBDatabase = null;
@@ -427,8 +425,8 @@ export class IndexedDbContext extends AbstractDbContext {
             .objectStore(this.READ_LOG_TB_NAME)
             .getAll(IDBKeyRange.bound([saveData.id, 0], [saveData.id, '']));
           readlogRequest.onsuccess = (event: any) => {
-            const readingLogs = event.target.result as Types.ReadLogType[];
-            saveData.readingLogs = readingLogs;
+            const readLogs = event.target.result as Types.ReadLogType[];
+            saveData.readLogs = readLogs;
             resolve(saveData);
           };
         } else {
@@ -447,7 +445,7 @@ export class IndexedDbContext extends AbstractDbContext {
       throw 'invalid metadata id';
     }
 
-    const { readingLogs, ...restSaveData } = saveData;
+    const { readLogs, ...restSaveData } = saveData;
     const newSaveDataId = saveData.id || uuidv4();
 
     const transaction = this.db.transaction(
@@ -458,11 +456,11 @@ export class IndexedDbContext extends AbstractDbContext {
       .objectStore(this.SAVE_DATA_TB_NAME)
       .add({ ...restSaveData, id: newSaveDataId, createTimestamp: Date.now() });
 
-    for (const readingLog of readingLogs) {
-      const readingLogRequest = transaction
+    for (const readLog of readLogs) {
+      const readLogRequest = transaction
         .objectStore(this.READ_LOG_TB_NAME)
         // note: we should not give a new id since the readLogIndicator in savedata should match reading log
-        .add({ ...readingLog, /* id: uuidv4(),*/ saveDataId: newSaveDataId });
+        .add({ ...readLog, /* id: uuidv4(),*/ saveDataId: newSaveDataId });
     }
 
     return new Promise((resolve, reject) => {
@@ -485,7 +483,7 @@ export class IndexedDbContext extends AbstractDbContext {
       throw 'invalid metadata id';
     }
 
-    const { readingLogs, ...restSaveData } = saveData;
+    const { readLogs, ...restSaveData } = saveData;
 
     const transaction = this.db.transaction(
       [this.SAVE_DATA_TB_NAME, this.READ_LOG_TB_NAME],
@@ -505,18 +503,16 @@ export class IndexedDbContext extends AbstractDbContext {
     readlogRequest.onsuccess = (event: any) => {
       const cursor = event.target.result as IDBCursorWithValue;
       const lastOrderNumber = cursor?.value?.order;
-      let newReadingLogs = readingLogs;
+      let newReadLogs = readLogs;
 
       if (lastOrderNumber >= 0) {
-        newReadingLogs = readingLogs.filter(
-          (item) => item.order > lastOrderNumber
-        );
+        newReadLogs = readLogs.filter((item) => item.order > lastOrderNumber);
       }
-      for (const readingLog of newReadingLogs) {
-        const readingLogRequest = transaction
+      for (const readLog of newReadLogs) {
+        const readLogRequest = transaction
           .objectStore(this.READ_LOG_TB_NAME)
           // note: we should not give a new id since the readLogIndicator in savedata should match reading log
-          .add({ ...readingLog, /*id: uuidv4(),*/ saveDataId: saveData.id });
+          .add({ ...readLog, /*id: uuidv4(),*/ saveDataId: saveData.id });
       }
     };
 
@@ -580,7 +576,7 @@ export class IndexedDbContext extends AbstractDbContext {
     const str = author?.trim() + repoName?.trim();
     if (!str) throw 'Invalid author or repo name';
 
-    const metadataId = await Utils.digeststring(str);
+    const metadataId = await Utils.digestString(str);
     return metadataId;
   }
 }

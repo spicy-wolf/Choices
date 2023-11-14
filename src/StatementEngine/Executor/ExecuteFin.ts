@@ -1,21 +1,18 @@
 import * as StatementTypes from '../Types';
+import type { ExecuteHelpersType } from './Execute.type';
 
 export const executeFin = (
   statement: StatementTypes.FinStatementType,
-  controlMethods: {
-    setPauseComponent: (
-      pauseComponent: StatementTypes.PauseComponentType
-    ) => void;
-  }
+  helpers: ExecuteHelpersType
 ) => {
   if (!statement) return;
 
-  const component: StatementTypes.FinComponentType = {
-    sourceStatementId: statement.id,
+  const setSaveData = helpers?.setSaveData;
+  if (!setSaveData) return;
+
+  helpers.setPauseComponent({
+    sourceStatementId: helpers.defaultNextStatementId,
     order: null, // fin component does not have order because it is always at the bottom
     type: statement.type,
-  };
-  controlMethods.setPauseComponent &&
-    controlMethods.setPauseComponent(component);
-  // dont move to next statement since the pause component pauses execution
+  } as StatementTypes.FinComponentType);
 };

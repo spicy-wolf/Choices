@@ -26,10 +26,11 @@ const ReadPage = () => {
   const [
     {
       saveDataList,
-      addSaveData,
+      createSaveData,
+      loadSaveData,
       deleteSaveData,
       defaultSaveData,
-      defaultSaveDataDispatch,
+      setDefaultSaveData,
     },
     saveDataLoadingError,
   ] = useSaveData(metadata?.id);
@@ -79,18 +80,19 @@ const ReadPage = () => {
       <Container>
         {!loadingLabel && !loadingError && (
           <>
-            <SidePanel
+            {/* <SidePanel
               defaultSaveData={defaultSaveData}
               defaultSaveDataDispatch={defaultSaveDataDispatch}
               addSaveData={addSaveData}
               deleteSaveData={deleteSaveData}
               saveDataList={saveDataList}
               setLoadingMsg={setLoadingMsg}
-            />
+            /> */}
             <Content
+              key={defaultSaveData?.id}
               scripts={scripts}
               saveData={defaultSaveData}
-              saveDataDispatch={defaultSaveDataDispatch}
+              setSaveData={setDefaultSaveData}
             />
           </>
         )}

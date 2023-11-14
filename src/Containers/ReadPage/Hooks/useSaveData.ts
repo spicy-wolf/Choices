@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import { useDbContext } from '@src/Context/DbContext';
 import * as Database from '@src/Database';
-import { useSaveDataReducer } from './useSaveDataReducer';
 import { useDebounce } from '@src/Utils';
 
 const useSaveData = (metadataId: string) => {
@@ -12,7 +12,8 @@ const useSaveData = (metadataId: string) => {
   const [saveDataList, setSaveDataList] =
     useState<Database.Types.SaveDataType[]>();
 
-  const [defaultSaveData, defaultSaveDataDispatch] = useSaveDataReducer();
+  const [defaultSaveData, setDefaultSaveData] =
+    useState<Database.Types.SaveDataType>();
 
   const debouncedDefaultSaveData = useDebounce(defaultSaveData, 500);
 
@@ -37,7 +38,7 @@ const useSaveData = (metadataId: string) => {
             _defaultSaveData = {
               id: null,
               metadataId: metadataId, // parent id
-              description: '', // a short description for this piece of savedata
+              description: '', // default save data does not have description
               createTimestamp: Date.now(),
               saveDataType: 'default',
 
@@ -45,19 +46,14 @@ const useSaveData = (metadataId: string) => {
               logCursorPos: null,
 
               context: {},
-              readingLogs: [],
+              readLogs: [],
             };
-            const _defaultSaveDataId = await dbContext.addSaveData(
-              _defaultSaveData
-            );
+            const _defaultSaveDataId = await addSaveData(_defaultSaveData);
             _defaultSaveData.id = _defaultSaveDataId;
             _saveDataList.push(_defaultSaveData);
           }
 
-          defaultSaveDataDispatch({
-            type: 'setValue',
-            payload: _defaultSaveData,
-          });
+          setDefaultSaveData(_defaultSaveData);
           setSaveDataList(_saveDataList);
           setError('');
         } catch (err) {
@@ -76,8 +72,9 @@ const useSaveData = (metadataId: string) => {
   }, [debouncedDefaultSaveData]);
 
   const addSaveData = async (_saveData: Database.Types.SaveDataType) => {
-    await dbContext.addSaveData(_saveData);
+    const saveDataId = await dbContext.addSaveData(_saveData);
     await refreshSaveDataList();
+    return saveDataId;
   };
   const updateSaveData = async (_saveData: Database.Types.SaveDataType) => {
     await dbContext.putSaveData(_saveData);
@@ -86,6 +83,34 @@ const useSaveData = (metadataId: string) => {
   const deleteSaveData = async (saveDataId: string) => {
     await dbContext.deleteSaveDataFromId(saveDataId);
     await refreshSaveDataList();
+  };
+  const createSaveData = async (saveDataDescription: string) => {
+    if (!defaultSaveData) return;
+
+    const newSaveData = JSON.parse(
+      JSON.stringify(defaultSaveData)
+    ) as Database.Types.SaveDataType;
+    newSaveData.description = saveDataDescription;
+    newSaveData.saveDataType = 'manual';
+    newSaveData.id = uuid();
+    newSaveData.createTimestamp = Date.now();
+    const saveDataId = await addSaveData(newSaveData);
+
+    await refreshSaveDataList();
+    return saveDataId;
+  };
+  const loadSaveData = async (saveDataId: string) => {
+    const saveData = await dbContext.getSaveDataFromId(saveDataId);
+    if (!saveData) return;
+
+    const newSaveData = JSON.parse(
+      JSON.stringify(saveData)
+    ) as Database.Types.SaveDataType;
+    newSaveData.description = '';
+    newSaveData.saveDataType = 'default';
+    newSaveData.id = defaultSaveData.id ?? uuid();
+    newSaveData.createTimestamp = Date.now();
+    setDefaultSaveData(defaultSaveData);
   };
   const refreshSaveDataList = async () => {
     let _saveDataList: Database.Types.SaveDataType[] =
@@ -96,10 +121,11 @@ const useSaveData = (metadataId: string) => {
   return [
     {
       saveDataList,
-      addSaveData,
+      createSaveData,
+      loadSaveData,
       deleteSaveData,
       defaultSaveData,
-      defaultSaveDataDispatch,
+      setDefaultSaveData,
     },
     error,
   ] as const;

@@ -2,6 +2,7 @@ import * as Types from '../Types';
 import { IndexedDbContext } from './IndexedDbContext';
 const FDBFactory = require('fake-indexeddb/lib/FDBFactory');
 import crypto from 'crypto';
+import * as digestString from '@src/Utils/digestString';
 
 const initMetadata: Types.RepoMetadataType = {
   id: '',
@@ -79,7 +80,7 @@ const initSaveData: Types.SaveDataType = {
   logCursorPos: 0,
 
   context: {},
-  readingLogs: [],
+  readLogs: [],
 };
 
 describe('indexed db test', () => {
@@ -87,7 +88,10 @@ describe('indexed db test', () => {
   beforeAll(() => {
     // mock
     global.TextEncoder = require('util').TextEncoder;
-    global.crypto = crypto.webcrypto as any;
+    //global.crypto = crypto.webcrypto as any;
+
+    const spy = jest.spyOn(digestString, 'digestString');
+    spy.mockImplementation((str) => Promise.resolve(str));
   });
   beforeEach(async () => {
     global.indexedDB = new FDBFactory();
@@ -262,7 +266,7 @@ describe('indexed db test', () => {
         scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
         logCursorPos: 0,
 
-        readingLogs: [
+        readLogs: [
           {
             sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
             saveDataId: newSaveDataId,
@@ -298,7 +302,7 @@ describe('indexed db test', () => {
         scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
         logCursorPos: 0,
 
-        readingLogs: [
+        readLogs: [
           {
             sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
             saveDataId: '',
@@ -316,9 +320,9 @@ describe('indexed db test', () => {
       const saveDataWithExtraReadinglog: Types.SaveDataType = {
         ...saveData,
         id: newSaveDataId,
-        readingLogs: [
+        readLogs: [
           {
-            ...saveData.readingLogs[0],
+            ...saveData.readLogs[0],
             saveDataId: newSaveDataId,
           },
           // extra reading log here
@@ -367,7 +371,7 @@ describe('indexed db test', () => {
         metadataId: metadataId,
         scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
         logCursorPos: 0,
-        readingLogs: [
+        readLogs: [
           {
             sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
             saveDataId: '',
@@ -412,7 +416,7 @@ describe('indexed db test', () => {
             scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
             logCursorPos: 0,
 
-            readingLogs: [
+            readLogs: [
               {
                 sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
                 saveDataId: 'im test id',
@@ -443,7 +447,7 @@ describe('indexed db test', () => {
             scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
             logCursorPos: 0,
 
-            readingLogs: [
+            readLogs: [
               {
                 sourceStatementId: '6ff9fa61-1288-40dd-a0e3-00189218860e',
                 saveDataId: 'im test id',

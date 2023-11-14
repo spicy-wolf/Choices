@@ -53,9 +53,6 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
       // set new save data id
       const newSaveDataId = uuid();
       newSaveData.id = newSaveDataId;
-      newSaveData.readingLogs?.forEach(
-        (item) => (item.saveDataId = newSaveDataId)
-      );
 
       props.addSaveData && (await props.addSaveData(newSaveData));
     } catch (ex) {
@@ -78,9 +75,6 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
       newDefaultSaveData.saveDataType = 'default';
       const newDefaultSaveDataId = uuid();
       newDefaultSaveData.id = newDefaultSaveDataId;
-      newDefaultSaveData.readingLogs?.forEach(
-        (item) => (item.saveDataId = newDefaultSaveDataId)
-      );
 
       props.setLoadingMsg('saveAndLoad.loadingSaveDataMsg');
       // delete old default
@@ -185,16 +179,28 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
 
               // generate default save data description
               let defaultSaveDataDescription: string = '';
-              const readingLogs = props.defaultSaveData?.readingLogs;
-              if (readingLogs && readingLogs.length > 0) {
-                for (
-                  let i = readingLogs.length - 1;
-                  i >= 0 && defaultSaveDataDescription.length <= 200;
-                  i--
-                ) {
+              const readLogs = props.defaultSaveData?.readLogs;
+              if (!readLogs || readLogs.length === 0) {
+                setSaveDataDescription('');
+                return;
+              }
+
+              for (
+                let i = readLogs.length - 1;
+                i >= 0 && defaultSaveDataDescription.length <= 200;
+                i--
+              ) {
+                for (let j = readLogs[i].length - 1; j >= 0; j--) {
+                  const readLog = readLogs[i][j];
+                  if (
+                    !StatementEngine.CheckStatementType.isParagraph(readLog) &&
+                    !StatementEngine.CheckStatementType.isSentence(readLog)
+                  )
+                    continue;
+
                   const piece =
                     (
-                      readingLogs[i] as
+                      readLog as
                         | StatementEngine.Types.ParagraphComponentType
                         | StatementEngine.Types.SentenceComponentType
                     )?.data ?? '';

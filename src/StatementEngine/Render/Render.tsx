@@ -5,9 +5,7 @@ import EndOfLine from './EndOfLine/EndOfLine';
 import Sentence from './Sentence/Sentence';
 import Fin from './Fin/Fin';
 
-export const render = (
-  props: Types.LogComponentType | Types.PauseComponentType
-): JSX.Element => {
+export const render = (props: Types.AnyComponentType): JSX.Element => {
   if (!props) {
     // run time error
     return <></>;

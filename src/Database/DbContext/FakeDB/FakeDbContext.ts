@@ -102,10 +102,10 @@ export class FakeDbContext extends AbstractDbContext {
     const saveData = this.saveDataDb.find((item) => item.id === saveDataId);
     // find related reading logs
     if (saveData && saveData.id) {
-      const readingLogs = this.readLogDb
+      const readLogs = this.readLogDb
         .filter((item) => item.saveDataId === saveData.id)
         .sort((item1, item2) => item1.order - item2.order);
-      saveData.readingLogs = readingLogs;
+      saveData.readLogs = readLogs;
     }
     return saveData;
   }
@@ -116,7 +116,7 @@ export class FakeDbContext extends AbstractDbContext {
     return saveData.id;
   }
   public async putSaveData(saveData: Types.SaveDataType): Promise<void> {
-    const { readingLogs, ...otherSaveData } = saveData;
+    const { readLogs, ...otherSaveData } = saveData;
 
     // check if existed
     const index = this.saveDataDb.findIndex(
@@ -130,7 +130,7 @@ export class FakeDbContext extends AbstractDbContext {
       this.saveDataDb[index] = otherSaveData;
     }
     // reading log update
-    readingLogs?.forEach((newLog) => {
+    readLogs?.forEach((newLog) => {
       if (
         !this.readLogDb.find(
           (oldLog) =>

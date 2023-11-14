@@ -1,4 +1,3 @@
-import * as Types from '../Types';
 import { StatementTypeNames } from '../Constants';
 
 export const isEndOfLine = (statement: any) => {
