@@ -179,7 +179,7 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
 
               // generate default save data description
               let defaultSaveDataDescription: string = '';
-              const readLogs = props.defaultSaveData?.readLogs;
+              const readLogs = props.defaultSaveData?.readLogs as StatementEngine.Types.AnyComponentType[];
               if (!readLogs || readLogs.length === 0) {
                 setSaveDataDescription('');
                 return;
@@ -190,24 +190,23 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
                 i >= 0 && defaultSaveDataDescription.length <= 200;
                 i--
               ) {
-                for (let j = readLogs[i].length - 1; j >= 0; j--) {
-                  const readLog = readLogs[i][j];
-                  if (
-                    !StatementEngine.CheckStatementType.isParagraph(readLog) &&
+                const readLog = readLogs[i];
+                if (
+                  !StatementEngine.CheckStatementType.isParagraph(readLog) &&
                     !StatementEngine.CheckStatementType.isSentence(readLog)
-                  )
-                    continue;
+                )
+                  continue;
 
-                  const piece =
+                const piece =
                     (
                       readLog as
                         | StatementEngine.Types.ParagraphComponentType
                         | StatementEngine.Types.SentenceComponentType
                     )?.data ?? '';
-                  defaultSaveDataDescription = `${piece
-                    .replace(/(\r\n|\n|\r)/gm, '')
-                    .trim()}${defaultSaveDataDescription}`;
-                }
+                defaultSaveDataDescription = `${piece
+                  .replace(/(\r\n|\n|\r)/gm, '')
+                  .trim()}${defaultSaveDataDescription}`;
+                
               }
               setSaveDataDescription(defaultSaveDataDescription);
             }}

@@ -15,10 +15,10 @@ import {
 } from 'react-router-dom';
 
 const RootRouter = () => {
-  let location = useLocation();
+  const location = useLocation();
 
   // https://reactrouter.com/docs/en/v6/examples/modal
-  let state = location.state as {
+  const state = location.state as {
     backgroundLocation?: Location;
   };
 

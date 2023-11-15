@@ -13,7 +13,7 @@ export const useGroupedReadLogs = (readLogs: AnyComponentType[]) => {
       return;
     }
 
-    let newGroupedReadLogs = [...groupedReadLogs];
+    const newGroupedReadLogs = [...groupedReadLogs];
     const lastReadLogOrder =
       StatementEngine.getLastReadLogOrder(groupedReadLogs);
     let index = 0;

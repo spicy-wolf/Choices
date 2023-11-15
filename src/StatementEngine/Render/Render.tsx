@@ -11,7 +11,7 @@ export const render = (props: Types.AnyComponentType): JSX.Element => {
     return <></>;
   }
 
-  let Component: (props: any) => JSX.Element = null;
+  let Component: (props: Types.AnyComponentType) => JSX.Element = null;
 
   const statement = props;
   if (CheckStatementType.isEndOfLine(statement)) {

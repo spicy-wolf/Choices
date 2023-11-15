@@ -34,7 +34,7 @@ type SettingContextType = {
   setting: UserSettingType;
   setSetting: (
     fieldName: keyof UserSettingType,
-    value: any
+    value: unknown
   ) => Promise<void> | void;
 };
 
@@ -81,7 +81,7 @@ export const SettingContextProvider = (props: SettingContextProps) => {
 
   const setSettingWrapper = async (
     fieldName: keyof UserSettingType,
-    value: any
+    value: unknown
   ): Promise<void> => {
     const newSetting: UserSettingType = { ...setting, [fieldName]: value };
     setSetting(newSetting);

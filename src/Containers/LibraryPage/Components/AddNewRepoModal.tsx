@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import * as Utils from '@src/Utils';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -48,8 +47,8 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
 
   const isValidUrl = React.useMemo(() => {
     try {
-      // try to create a url to check url format
-      const url = new URL(sourceUrl);
+      // TODO: try to create a url to check url format
+      // const url = new URL(sourceUrl);
       return true;
     } catch (ex) {
       return false;

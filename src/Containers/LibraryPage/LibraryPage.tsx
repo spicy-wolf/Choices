@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { RouterPathStrings } from '@src/Constants';
-import * as Utils from '@src/Utils';
+// import { RouterPathStrings } from '@src/Constants';
+// import * as Utils from '@src/Utils';
 import useMetadataList from './Hooks/useMetadataList';
 import { RepoCard } from './Components/RepoCard';
 import CssBaseline from '@mui/material/CssBaseline/CssBaseline';
@@ -15,13 +15,15 @@ import {
   MainPageSidebar,
   MainPageSidebarButtonEnum,
 } from '../components/MainPageSidebar';
+import * as Database from '@src/Database';
 
 const LibraryPage = () => {
   const { t } = useTranslation();
 
   //#region query param
-  const query = Utils.useQuery();
-  const src = query.get(RouterPathStrings.LIBRARY_PAGE_SRC_PARAM);
+  // TODO: load src from URL
+  // const query = Utils.useQuery();
+  // const src = query.get(RouterPathStrings.LIBRARY_PAGE_SRC_PARAM);
   //#endregion
 
   //#region state
@@ -71,7 +73,7 @@ const LibraryPage = () => {
 
       if (!url) throw t('loadingStatus.invalidUrl');
 
-      let jsonObj: any = null;
+      let jsonObj: Parameters<typeof onLoadFromJsonObj>[0] = null; //TODO: looks ugly
       if (url.host === 'api.github.com') {
         // github API
         // https://docs.github.com/rest/repos/contents#get-repository-content
@@ -122,7 +124,7 @@ const LibraryPage = () => {
     }
   };
 
-  const onLoadFromJsonObj = async (jsonObj: any) => {
+  const onLoadFromJsonObj = async (jsonObj: {metadata: Database.Types.RepoMetadataType, script:  Database.Types.ScriptType}) => {
     const metadata = jsonObj?.metadata;
     const script = jsonObj?.script;
     if (!metadata || !script) {

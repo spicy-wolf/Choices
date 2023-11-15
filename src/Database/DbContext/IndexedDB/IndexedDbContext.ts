@@ -2,6 +2,10 @@ import * as Types from '../Types';
 import * as Utils from '@src/Utils';
 import { AbstractDbContext } from '../DbContext';
 
+declare interface DbResultEvent<T> extends Event {
+  target: IDBRequest<T>
+}
+
 export class IndexedDbContext extends AbstractDbContext {
   private readonly DB_NAME: string = 'choices';
   private readonly METADATA_TB_NAME: string = 'metadata';
@@ -42,7 +46,7 @@ export class IndexedDbContext extends AbstractDbContext {
 
   public async init(): Promise<void> {
     return new Promise((resolve, reject) => {
-      let request = window.indexedDB.open(this.DB_NAME, 1);
+      const request = window.indexedDB.open(this.DB_NAME, 1);
 
       request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
         const db: IDBDatabase = request.result;
@@ -103,11 +107,11 @@ export class IndexedDbContext extends AbstractDbContext {
           //#endregion
         }
       };
-      request.onsuccess = (event: any) => {
+      request.onsuccess = () => {
         this.db = request.result;
         resolve();
       };
-      request.onerror = (event: any) => {
+      request.onerror = () => {
         reject();
       };
     });
@@ -121,11 +125,11 @@ export class IndexedDbContext extends AbstractDbContext {
     );
     const request = transaction.objectStore(this.METADATA_TB_NAME).getAll();
     return new Promise((resolve, reject) => {
-      request.onsuccess = (event: any) => {
-        const result = event.target.result as Types.RepoMetadataType[];
+      request.onsuccess = (event: DbResultEvent<Types.RepoMetadataType[]>) => {
+        const result = event.target.result;
         resolve(result);
       };
-      transaction.onerror = (event: any) => {
+      transaction.onerror = () => {
         reject();
       };
     });
@@ -146,11 +150,11 @@ export class IndexedDbContext extends AbstractDbContext {
     const request = transaction.objectStore(this.METADATA_TB_NAME).get(id);
 
     return new Promise((resolve, reject) => {
-      request.onsuccess = (event: any) => {
+      request.onsuccess = (event: DbResultEvent<Types.RepoMetadataType>) => {
         const result = event.target.result;
         resolve(result);
       };
-      transaction.onerror = (event) => {
+      transaction.onerror = () => {
         reject();
       };
     });
@@ -181,13 +185,13 @@ export class IndexedDbContext extends AbstractDbContext {
     this.replaceScriptsHelper(transaction, metadataId, script);
 
     return new Promise((resolve, reject) => {
-      transaction.oncomplete = (event: any) => {
+      transaction.oncomplete = () => {
         resolve(metadataId);
       };
-      transaction.onerror = (event: any) => {
+      transaction.onerror = () => {
         reject();
       };
-      transaction.onabort = (event: any) => {
+      transaction.onabort = () => {
         reject();
       };
     });
@@ -217,13 +221,13 @@ export class IndexedDbContext extends AbstractDbContext {
     this.replaceScriptsHelper(transaction, metadataId, script);
 
     return new Promise((resolve, reject) => {
-      transaction.oncomplete = (event: any) => {
+      transaction.oncomplete = () => {
         resolve(metadataId);
       };
-      transaction.onerror = (event: any) => {
+      transaction.onerror = () => {
         reject();
       };
-      transaction.onabort = (event: any) => {
+      transaction.onabort = () => {
         reject();
       };
     });
@@ -249,15 +253,15 @@ export class IndexedDbContext extends AbstractDbContext {
       .objectStore(this.SCRIPT_TB_NAME)
       .index(`${this.SCRIPT_METADATAID_NAME}_${this.SCRIPT_ORDER_NAME}`)
       .openCursor(IDBKeyRange.bound([metadataId, 0], [metadataId, '']), 'next');
-    oldScriptRequest.onsuccess = (event: any) => {
+    oldScriptRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
       const deletionPromiseList: Promise<void>[] = [];
-      const cursor = event.target.result as IDBCursorWithValue;
+      const cursor = event.target.result;
       if (cursor) {
         deletionPromiseList.push(
           new Promise((resolve, reject) => {
             const cursorDeletion = cursor.delete();
-            cursorDeletion.onsuccess = (event) => resolve();
-            cursorDeletion.onerror = (event) => reject();
+            cursorDeletion.onsuccess = () => resolve();
+            cursorDeletion.onerror = () => reject();
           })
         );
         cursor.continue();
@@ -266,12 +270,12 @@ export class IndexedDbContext extends AbstractDbContext {
         Promise.all(deletionPromiseList)
           .then(() => {
             script?.forEach((item, index) => {
-              const scriptRequest = transaction
+              transaction
                 .objectStore(this.SCRIPT_TB_NAME)
                 .add({ ...item, metadataId: metadataId, order: index });
             });
           })
-          .catch((err) => {
+          .catch(() => {
             transaction.abort();
           });
       }
@@ -294,8 +298,8 @@ export class IndexedDbContext extends AbstractDbContext {
       .objectStore(this.SAVE_DATA_TB_NAME)
       .index(this.SAVE_DATA_METADATAID_NAME)
       .openCursor(IDBKeyRange.only(metadataId));
-    saveDataRequest.onsuccess = (event: any) => {
-      const saveDataCursor = event.target.result as IDBCursorWithValue;
+    saveDataRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
+      const saveDataCursor = event.target.result;
       if (saveDataCursor) {
         // delete reading logs
         const saveDataId = saveDataCursor.value.id;
@@ -303,8 +307,8 @@ export class IndexedDbContext extends AbstractDbContext {
           .objectStore(this.READ_LOG_TB_NAME)
           .openCursor(IDBKeyRange.bound([saveDataId, 0], [saveDataId, '']));
 
-        readlogRequest.onsuccess = (event: any) => {
-          const readlogCursor = event.target.result as IDBCursorWithValue;
+        readlogRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
+          const readlogCursor = event.target.result;
           if (readlogCursor) {
             readlogCursor.delete();
             readlogCursor.continue();
@@ -316,7 +320,7 @@ export class IndexedDbContext extends AbstractDbContext {
         saveDataCursor.continue();
       }
     };
-    saveDataRequest.onerror = (event: any) => {};
+    saveDataRequest.onerror = () => { };
     //#endregion
 
     //#region delete scripts
@@ -324,8 +328,8 @@ export class IndexedDbContext extends AbstractDbContext {
       .objectStore(this.SCRIPT_TB_NAME)
       .index(`${this.SCRIPT_METADATAID_NAME}_${this.SCRIPT_ORDER_NAME}`)
       .openCursor(IDBKeyRange.bound([metadataId, 0], [metadataId, '']));
-    scriptRequest.onsuccess = (event: any) => {
-      const cursor = event.target.result as IDBCursorWithValue;
+    scriptRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
+      const cursor = event.target.result;
 
       if (cursor) {
         cursor.delete();
@@ -341,13 +345,13 @@ export class IndexedDbContext extends AbstractDbContext {
     //#endregion
 
     return new Promise((resolve, reject) => {
-      transaction.oncomplete = (event: any) => {
+      transaction.oncomplete = () => {
         resolve();
       };
-      transaction.onerror = (event: any) => {
+      transaction.onerror = (event: DbResultEvent<void>) => {
         reject((event.target as IDBRequest).error);
       };
-      transaction.onabort = (event: any) => {
+      transaction.onabort = () => {
         reject();
       };
     });
@@ -366,12 +370,12 @@ export class IndexedDbContext extends AbstractDbContext {
       .getAll(IDBKeyRange.bound([metadataId, 0], [metadataId, '']));
 
     return new Promise((resolve, reject) => {
-      scriptRequest.onsuccess = (event: any) => {
-        let result = event.target.result as Types.ScriptType;
+      scriptRequest.onsuccess = (event: DbResultEvent<Types.ScriptType>) => {
+        let result = event.target.result;
         result = result.sort((item) => item.order - item.order);
         resolve(result);
       };
-      transaction.onerror = (event: any) => {
+      transaction.onerror = () => {
         reject();
       };
     });
@@ -393,14 +397,14 @@ export class IndexedDbContext extends AbstractDbContext {
       .getAll(IDBKeyRange.only(metadataId));
 
     return new Promise((resolve, reject) => {
-      saveDataRequest.onsuccess = (event: any) => {
-        let result = event.target.result as Types.SaveDataType[];
+      saveDataRequest.onsuccess = (event: DbResultEvent<Types.SaveDataType[]>) => {
+        let result = event.target.result;
         result = result.sort(
           (item) => item.createTimestamp - item.createTimestamp
         );
         resolve(result);
       };
-      transaction.onerror = (event: any) => {
+      transaction.onerror = () => {
         reject();
       };
     });
@@ -417,13 +421,13 @@ export class IndexedDbContext extends AbstractDbContext {
       const saveDataRequest = transaction
         .objectStore(this.SAVE_DATA_TB_NAME)
         .get(saveDataId);
-      saveDataRequest.onsuccess = (event: any) => {
+      saveDataRequest.onsuccess = (event: DbResultEvent<Types.SaveDataType>) => {
         const saveData = event.target.result as Types.SaveDataType;
         if (saveData) {
           const readlogRequest = transaction
             .objectStore(this.READ_LOG_TB_NAME)
             .getAll(IDBKeyRange.bound([saveData.id, 0], [saveData.id, '']));
-          readlogRequest.onsuccess = (event: any) => {
+          readlogRequest.onsuccess = (event: DbResultEvent<Types.ReadLogType[]>) => {
             const readLogs = event.target.result as Types.ReadLogType[];
             saveData.readLogs = readLogs;
             resolve(saveData);
@@ -433,8 +437,8 @@ export class IndexedDbContext extends AbstractDbContext {
           resolve(null);
         }
       };
-      transaction.oncomplete = (event: any) => {};
-      transaction.onerror = (event: any) => {
+      transaction.oncomplete = () => { };
+      transaction.onerror = () => {
         reject();
       };
     });
@@ -463,13 +467,13 @@ export class IndexedDbContext extends AbstractDbContext {
     }
 
     return new Promise((resolve, reject) => {
-      transaction.oncomplete = (event) => {
+      transaction.oncomplete = () => {
         resolve(newSaveDataId);
       };
-      transaction.onerror = (event) => {
+      transaction.onerror = (event: DbResultEvent<void>) => {
         reject((event.target as IDBRequest).error);
       };
-      transaction.onabort = (event) => {
+      transaction.onabort = () => {
         reject();
       };
     });
@@ -499,7 +503,7 @@ export class IndexedDbContext extends AbstractDbContext {
         IDBKeyRange.bound([saveData.id, 0], [saveData.id, '']),
         'prev'
       );
-    readlogRequest.onsuccess = (event: any) => {
+    readlogRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
       const cursor = event.target.result as IDBCursorWithValue;
       const lastOrderNumber = cursor?.value?.order;
       let newReadLogs = readLogs;
@@ -516,13 +520,13 @@ export class IndexedDbContext extends AbstractDbContext {
     };
 
     return new Promise((resolve, reject) => {
-      transaction.oncomplete = (event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
-      transaction.onerror = (event) => {
+      transaction.onerror = () => {
         reject();
       };
-      transaction.onabort = (event) => {
+      transaction.onabort = () => {
         reject();
       };
     });
@@ -535,8 +539,8 @@ export class IndexedDbContext extends AbstractDbContext {
     const saveDataRequest = transaction
       .objectStore(this.SAVE_DATA_TB_NAME)
       .get(saveDataId);
-    saveDataRequest.onsuccess = (event: any) => {
-      let saveData = event.target.result as Types.SaveDataType;
+    saveDataRequest.onsuccess = (event: DbResultEvent<Types.SaveDataType>) => {
+      const saveData = event.target.result as Types.SaveDataType;
 
       if (saveData) {
         // delete reading logs
@@ -545,8 +549,8 @@ export class IndexedDbContext extends AbstractDbContext {
           .objectStore(this.READ_LOG_TB_NAME)
           .openCursor(IDBKeyRange.bound([saveDataId, 0], [saveDataId, '']));
 
-        readlogRequest.onsuccess = (event: any) => {
-          let readlogCursor = event.target.result;
+        readlogRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
+          const readlogCursor = event.target.result;
 
           if (readlogCursor) {
             readlogCursor.delete();
@@ -558,10 +562,10 @@ export class IndexedDbContext extends AbstractDbContext {
     transaction.objectStore(this.SAVE_DATA_TB_NAME).delete(saveDataId);
 
     return new Promise((resolve, reject) => {
-      transaction.oncomplete = (event) => {
+      transaction.oncomplete = () => {
         resolve();
       };
-      transaction.onerror = (event) => {
+      transaction.onerror = () => {
         reject();
       };
     });
