@@ -27,7 +27,7 @@ type RepoCardProps = {
 };
 
 export const RepoCard = (props: RepoCardProps) => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [openThreeDotMenu, setOpenThreeDotMenu] = React.useState(false);
   const [openDeleteConfirmationModal, setOpenDeleteConfirmationModal] =

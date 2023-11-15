@@ -8,10 +8,10 @@ export const useExecutor = (
   scripts: AnyStatementType[],
   saveData: StatementTypes.SaveDataType,
   setSaveData: React.Dispatch<
-    React.SetStateAction<StatementTypes.SaveDataType>
+  React.SetStateAction<StatementTypes.SaveDataType>
   >,
   setPauseComponent: React.Dispatch<
-    React.SetStateAction<StatementTypes.FinComponentType>
+  React.SetStateAction<StatementTypes.FinComponentType>
   >
 ) => {
   const [triggerExecuting, setTriggerExecuting] =

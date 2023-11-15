@@ -15,7 +15,7 @@ export const execute = (
   // TODO: check condition
 
   if (CheckStatementType.isEndOfLine(statement)) {
-    let eolStatement = statement as StatementTypes.EndOfLineStatementType;
+    const eolStatement = statement as StatementTypes.EndOfLineStatementType;
     executeEndOfLine(eolStatement, helpers);
   } else if (CheckStatementType.isFin(statement)) {
     const finStatement = statement as StatementTypes.FinStatementType;

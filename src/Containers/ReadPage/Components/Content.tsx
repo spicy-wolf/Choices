@@ -15,7 +15,7 @@ type ContentProps = {
   scripts: AnyStatementType[];
   saveData: Database.Types.SaveDataType;
   setSaveData: React.Dispatch<
-    React.SetStateAction<Database.Types.SaveDataType>
+  React.SetStateAction<Database.Types.SaveDataType>
   >;
 };
 

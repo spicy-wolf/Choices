@@ -6,7 +6,7 @@ export const generateLibraryPath = (src?: string): string => {
   if (src) {
     result += '?';
 
-    let paramDic: { [key: string]: string } = {};
+    const paramDic: { [key: string]: string } = {};
     if (src) paramDic[RouterPathStrings.LIBRARY_PAGE_SRC_PARAM] = src;
 
     result += new URLSearchParams(paramDic).toString();

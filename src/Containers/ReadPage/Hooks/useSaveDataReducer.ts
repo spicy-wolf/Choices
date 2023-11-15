@@ -6,9 +6,9 @@ type SaveDataDispatchType =
   | { type: 'updateScriptCursorPos'; payload: string }
   | { type: 'updateLogCursorPos'; payload: number }
   | {
-      type: 'updateSaveDataContext';
-      payload: Database.Types.SaveDataContext;
-    }
+    type: 'updateSaveDataContext';
+    payload: Database.Types.SaveDataContext;
+  }
   | { type: 'pushReadLogs'; payload: Database.Types.ReadLogType[] };
 
 const useSaveDataReducer = () => {

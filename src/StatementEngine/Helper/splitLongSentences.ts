@@ -7,8 +7,8 @@ export const splitLongSentences = (
     return [''];
 
   const regex = new RegExp('.{1,' + maxLength + '}', 'g');
-  let shorterSentences = sentence.toString().match(regex);
-  for (let ss of shorterSentences) {
+  const shorterSentences = sentence.toString().match(regex);
+  for (const ss of shorterSentences) {
     result.push(ss ?? '');
   }
 

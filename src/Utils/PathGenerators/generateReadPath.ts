@@ -9,7 +9,7 @@ export const generateReadPath = (
   if (repoName || authorName) {
     result += '?';
 
-    let paramDic: { [key: string]: string } = {};
+    const paramDic: { [key: string]: string } = {};
     if (repoName) paramDic[RouterPathStrings.READ_PAGE_REPO_PARAM] = repoName;
     if (authorName)
       paramDic[RouterPathStrings.READ_PAGE_AUTHOR_PARAM] = authorName;

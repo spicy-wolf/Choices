@@ -1,7 +1,8 @@
 import * as Types from '../Types';
 import { IndexedDbContext } from './IndexedDbContext';
-const FDBFactory = require('fake-indexeddb/lib/FDBFactory');
+import 'fake-indexeddb/auto';
 import * as digestString from '@src/Utils/digestString';
+import { IDBFactory } from 'fake-indexeddb';
 
 const initMetadata: Types.RepoMetadataType = {
   id: '',
@@ -85,15 +86,11 @@ const initSaveData: Types.SaveDataType = {
 describe('indexed db test', () => {
   let dbContext: IndexedDbContext = null;
   beforeAll(() => {
-    // mock
-    global.TextEncoder = require('util').TextEncoder;
-    //global.crypto = crypto.webcrypto as any;
-
     const spy = jest.spyOn(digestString, 'digestString');
     spy.mockImplementation((str) => Promise.resolve(str));
   });
   beforeEach(async () => {
-    global.indexedDB = new FDBFactory();
+    global.indexedDB = new IDBFactory();
     dbContext = new IndexedDbContext();
     await dbContext.init();
   });
@@ -106,14 +103,14 @@ describe('indexed db test', () => {
       // test get
       const allMetadata = await dbContext.getAllMetadata();
       expect(allMetadata?.length).toEqual(1);
-      expect(allMetadata[0]).toStrictEqual({ ...initMetadata, id: metadataId });
+      expect(allMetadata[0]).toEqual({ ...initMetadata, id: metadataId });
 
       const metadata = await dbContext.getMetadata(
         initMetadata.author,
         initMetadata.repoName
       );
       expect(metadata).toBeDefined();
-      expect(metadata).toStrictEqual({ ...initMetadata, id: metadataId });
+      expect(metadata).toEqual({ ...initMetadata, id: metadataId });
 
       // test get script
       const script = await dbContext.getScriptFromMetadataId(metadataId);
@@ -133,14 +130,14 @@ describe('indexed db test', () => {
       // test get
       const allMetadata = await dbContext.getAllMetadata();
       expect(allMetadata?.length).toEqual(1);
-      expect(allMetadata[0]).toStrictEqual({ ...altMetadata, id: metadataId });
+      expect(allMetadata[0]).toEqual({ ...altMetadata, id: metadataId });
 
       const metadata = await dbContext.getMetadata(
         altMetadata.author,
         altMetadata.repoName
       );
       expect(metadata).toBeDefined();
-      expect(metadata).toStrictEqual({ ...altMetadata, id: metadataId });
+      expect(metadata).toEqual({ ...altMetadata, id: metadataId });
 
       // test get script
       const script = await dbContext.getScriptFromMetadataId(metadataId);
@@ -248,7 +245,7 @@ describe('indexed db test', () => {
       const actualSaveData = await dbContext.getSaveDataFromId(
         allSaveData[0].id
       );
-      expect(actualSaveData).toStrictEqual({
+      expect(actualSaveData).toEqual({
         ...initSaveData,
         id: newSaveDataId,
       });
@@ -291,7 +288,7 @@ describe('indexed db test', () => {
       const actualSaveData = await dbContext.getSaveDataFromId(
         allSaveData[0].id
       );
-      expect(actualSaveData).toStrictEqual(altSaveData);
+      expect(actualSaveData).toEqual(altSaveData);
     });
 
     test('test put save data with read log merge', async () => {
@@ -343,7 +340,7 @@ describe('indexed db test', () => {
       const actualSaveData = await dbContext.getSaveDataFromId(
         allSaveData[0].id
       );
-      expect(actualSaveData).toStrictEqual(saveDataWithExtraReadinglog);
+      expect(actualSaveData).toEqual(saveDataWithExtraReadinglog);
     });
 
     test('test delete save data', async () => {

@@ -4,5 +4,5 @@ export type ReadLogType = {
   sourceStatementId: string;
   order: number;
   type: string;
-  [key: string]: any; // extra data
+  [key: string]: unknown; // extra data
 };

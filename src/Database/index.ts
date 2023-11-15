@@ -8,8 +8,8 @@ import * as Types from './DbContext/Types';
  *
  * __USE_FAKE_DB__ is defined in webpack, and the value is from cli
  */
-declare var __USE_FAKE_DB__: boolean;
-const { DbContext } = require('./DbContext/' +
-  (__USE_FAKE_DB__ ? 'FakeDB' : 'IndexedDB'));
+declare let __USE_FAKE_DB__: boolean;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { DbContext } = require('./DbContext/' + (__USE_FAKE_DB__ ? 'FakeDB' : 'IndexedDB'));
 
 export { DbContext, AbstractDbContext, Types };

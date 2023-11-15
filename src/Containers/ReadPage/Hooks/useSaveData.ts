@@ -23,7 +23,7 @@ const useSaveData = (metadataId: string) => {
       if (metadataId) {
         try {
           // load all save data into a list
-          let _saveDataList: Database.Types.SaveDataType[] =
+          const _saveDataList: Database.Types.SaveDataType[] =
             (await dbContext.getAllSaveDataFromMetadataId(metadataId)) ?? [];
 
           let _defaultSaveData = _saveDataList?.find(
@@ -112,7 +112,7 @@ const useSaveData = (metadataId: string) => {
     setDefaultSaveData(defaultSaveData);
   };
   const refreshSaveDataList = async () => {
-    let _saveDataList: Database.Types.SaveDataType[] =
+    const _saveDataList: Database.Types.SaveDataType[] =
       (await dbContext.getAllSaveDataFromMetadataId(metadataId)) ?? [];
     setSaveDataList(_saveDataList);
   };
