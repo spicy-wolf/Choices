@@ -1,5 +1,5 @@
 import * as StatementTypes from '../Types';
-import type { ExecuteHelpersType } from './Execute.type';
+import type { ExecuteHelpersType } from './execute.type';
 
 export const executeFin = (
   statement: StatementTypes.FinStatementType,

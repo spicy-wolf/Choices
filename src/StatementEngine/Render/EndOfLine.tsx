@@ -1,6 +1,6 @@
 import React from 'react';
-import { HtmlElementAttribute } from '../../Constants';
-import { EndOfLineComponentType } from '../../Types';
+import { HtmlElementAttribute } from '../Constants';
+import { EndOfLineComponentType } from '../Types';
 
 const EndOfLine = (props: EndOfLineComponentType): JSX.Element => {
   const elementProps = {

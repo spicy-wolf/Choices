@@ -1,2 +1,2 @@
-export { execute } from './Execute';
+export { execute } from './execute';
 export { useExecutor } from './useExecutor';

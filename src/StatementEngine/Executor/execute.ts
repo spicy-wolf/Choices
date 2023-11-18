@@ -1,10 +1,10 @@
 import * as StatementTypes from '../Types';
 import { CheckStatementType } from '../Helper';
-import { executeEndOfLine } from './ExecuteEndOfLine';
-import { executeFin } from './ExecuteFin';
-import { executeSentence } from './ExecuteSentence';
-import { executeParagraph } from './ExecuteParagraph';
-import type { ExecuteHelpersType } from './Execute.type';
+import { executeEndOfLine } from './executeEndOfLine';
+import { executeFin } from './executeFin';
+import { executeSentence } from './executeSentence';
+import { executeParagraph } from './executeParagraph';
+import type { ExecuteHelpersType } from './execute.type';
 
 // TODO: return something to mention whether this round of execution added logs or not
 export const execute = (
