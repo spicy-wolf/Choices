@@ -10,7 +10,7 @@
     "start": "webpack serve --open --progress --config webpack.dev.js",
     "startWithFakeDB": "webpack serve --open --progress --config webpack.dev.js --env USE_FAKE_DB=true",
     "build": "webpack --progress --color --config webpack.prod.js",
-    "\n======= code quantity ========": "",
+    "\n======= code quality =========": "",
     "test": "jest",
     "eslint": "eslint .",
     "\n========== deploy ==========": "",
