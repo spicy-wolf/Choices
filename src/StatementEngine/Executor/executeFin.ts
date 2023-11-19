@@ -7,11 +7,8 @@ export const executeFin = (
 ) => {
   if (!statement) return;
 
-  const setSaveData = helpers?.setSaveData;
-  if (!setSaveData) return;
-
-  helpers.setPauseComponent({
-    sourceStatementId: helpers.defaultNextStatementId,
+  helpers?.setPauseComponent?.({
+    sourceStatementId: statement?.id,
     order: null, // fin component does not have order because it is always at the bottom
     type: statement.type,
   } as StatementTypes.FinComponentType);
