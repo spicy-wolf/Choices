@@ -1,6 +1,6 @@
 import React from 'react';
-import { SentenceComponentType } from '../../Types';
-import { HtmlElementAttribute } from '../../Constants';
+import { SentenceComponentType } from '../Types';
+import { HtmlElementAttribute } from '../Constants';
 
 const Sentence = (props: SentenceComponentType): JSX.Element => {
   // Note: no need to worry pre-space &nbsp, it resolved automatically

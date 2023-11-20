@@ -1,9 +1,9 @@
 import React from 'react';
 import * as Types from '../Types';
 import { CheckStatementType } from '../Helper';
-import EndOfLine from './EndOfLine/EndOfLine';
-import Sentence from './Sentence/Sentence';
-import Fin from './Fin/Fin';
+import EndOfLine from './EndOfLine';
+import Sentence from './Sentence';
+import Fin from './Fin';
 
 export const render = (props: Types.AnyComponentType): JSX.Element => {
   if (!props) {

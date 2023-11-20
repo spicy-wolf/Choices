@@ -1,5 +1,5 @@
 import * as StatementTypes from '../Types';
-import type { ExecuteHelpersType } from './Execute.type';
+import type { ExecuteHelpersType } from './execute.type';
 import { splitLongSentences } from '../Helper';
 
 export const executeParagraph = (
@@ -8,12 +8,9 @@ export const executeParagraph = (
 ) => {
   if (!statement) return;
 
-  const setSaveData = helpers?.setSaveData;
-  if (!setSaveData) return;
-
-  setSaveData((_saveData) => {
+  helpers?.setSaveData?.((_saveData) => {
     const newSaveData = { ..._saveData };
-    newSaveData.readLogs = [..._saveData.readLogs];
+    newSaveData.readLogs = _saveData.readLogs ? [..._saveData.readLogs] : [];
     // move to next statement
     newSaveData.scriptCursorPos = helpers?.defaultNextStatementId;
 

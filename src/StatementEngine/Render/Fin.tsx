@@ -1,6 +1,6 @@
 import React from 'react';
-import { HtmlElementAttribute } from '../../Constants';
-import { FinComponentType } from '../../Types';
+import { HtmlElementAttribute } from '../Constants';
+import { FinComponentType } from '../Types';
 
 const Fin = (props: FinComponentType): JSX.Element => {
   const elementProps = {
