@@ -21,3 +21,8 @@ export const isSentence = (statement: AnyStatementType | AnyComponentType) => {
     statement?.type?.toLowerCase()
   );
 };
+export const isJump = (statement: AnyStatementType | AnyComponentType) => {
+  return (StatementTypeNames.JUMP as readonly string[]).includes(
+    statement?.type?.toLowerCase()
+  );
+};

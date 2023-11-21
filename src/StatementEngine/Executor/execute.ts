@@ -5,6 +5,7 @@ import { executeFin } from './executeFin';
 import { executeSentence } from './executeSentence';
 import { executeParagraph } from './executeParagraph';
 import type { ExecuteHelpersType } from './execute.type';
+import { executeJump } from './executeJump';
 
 // TODO: return something to mention whether this round of execution added logs or not
 export const execute = (
@@ -27,7 +28,10 @@ export const execute = (
   } else if (CheckStatementType.isSentence(statement)) {
     const sentenceStatement = statement as StatementTypes.SentenceStatementType;
     executeSentence(sentenceStatement, helpers);
+  } else if (CheckStatementType.isJump(statement)) {
+    const sentenceStatement = statement as StatementTypes.JumpStatementType;
+    executeJump(sentenceStatement, helpers);
   } else {
-    //TODO: Error for unknown
+    console.error('unknown statement type', statement);
   }
 };

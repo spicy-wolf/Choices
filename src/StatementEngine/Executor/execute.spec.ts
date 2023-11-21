@@ -5,6 +5,7 @@ import * as ExecuteEndOfLine from './executeEndOfLine';
 import * as ExecuteFin from './executeFin';
 import * as ExecuteParagraph from './executeParagraph';
 import * as ExecuteSentence from './executeSentence';
+import * as ExecuteJump from './executeJump';
 import type { AnyStatementType } from '../Types';
 
 describe('test execute function', () => {
@@ -24,6 +25,7 @@ describe('test execute function', () => {
     { name: 'fin', checkerMock: jest.spyOn(CheckStatementType, 'isFin'), executorMock: jest.spyOn(ExecuteFin, 'executeFin') },
     { name: 'paragraph', checkerMock: jest.spyOn(CheckStatementType, 'isParagraph'), executorMock: jest.spyOn(ExecuteParagraph, 'executeParagraph') },
     { name: 'sentence', checkerMock: jest.spyOn(CheckStatementType, 'isSentence'), executorMock: jest.spyOn(ExecuteSentence, 'executeSentence') },
+    { name: 'jump', checkerMock: jest.spyOn(CheckStatementType, 'isJump'), executorMock: jest.spyOn(ExecuteJump, 'executeJump') },
   ];
 
   test.each(dataSet)('should execute $name return when giving $name statement', (arg) => {
