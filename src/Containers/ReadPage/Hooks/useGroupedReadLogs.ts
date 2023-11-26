@@ -4,7 +4,7 @@ import * as StatementEngine from '@src/StatementEngine';
 type AnyComponentType = StatementEngine.Types.AnyComponentType;
 export const useGroupedReadLogs = (readLogs: AnyComponentType[]) => {
   const [groupedReadLogs, setGroupedReadLogs] = useState<AnyComponentType[][]>(
-    []
+    null
   );
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export const useGroupedReadLogs = (readLogs: AnyComponentType[]) => {
       return;
     }
 
-    const newGroupedReadLogs = [...groupedReadLogs];
+    const newGroupedReadLogs = groupedReadLogs ? [...groupedReadLogs] : [];
     const lastReadLogOrder =
       StatementEngine.getLastReadLogOrder(groupedReadLogs);
     let index = 0;
