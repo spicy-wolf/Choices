@@ -80,14 +80,14 @@ const ReadPage = () => {
       <Container>
         {!loadingLabel && !loadingError && (
           <>
-            {/* <SidePanel
+            <SidePanel
               defaultSaveData={defaultSaveData}
-              defaultSaveDataDispatch={defaultSaveDataDispatch}
-              addSaveData={addSaveData}
+              loadSaveData={loadSaveData}
+              createSaveData={createSaveData}
               deleteSaveData={deleteSaveData}
               saveDataList={saveDataList}
               setLoadingMsg={setLoadingMsg}
-            /> */}
+            />
             <Content
               key={defaultSaveData?.id}
               scripts={scripts}

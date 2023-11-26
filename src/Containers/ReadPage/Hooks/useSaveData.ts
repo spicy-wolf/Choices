@@ -86,30 +86,42 @@ const useSaveData = (metadataId: string) => {
   const createSaveData = async (saveDataDescription: string) => {
     if (!defaultSaveData) return;
 
-    const newSaveData = JSON.parse(
-      JSON.stringify(defaultSaveData)
-    ) as Database.Types.SaveDataType;
+    const newSaveData = structuredClone(defaultSaveData);
     newSaveData.description = saveDataDescription;
     newSaveData.saveDataType = 'manual';
     newSaveData.id = generateId();
     newSaveData.createTimestamp = Date.now();
+    for (const log of newSaveData.readLogs) {
+      log.saveDataId = newSaveData.id;
+    }
+
     const saveDataId = await addSaveData(newSaveData);
 
     await refreshSaveDataList();
     return saveDataId;
   };
   const loadSaveData = async (saveDataId: string) => {
+    // make a copy
     const saveData = await dbContext.getSaveDataFromId(saveDataId);
     if (!saveData) return;
 
-    const newSaveData = JSON.parse(
-      JSON.stringify(saveData)
-    ) as Database.Types.SaveDataType;
+    const newSaveData = structuredClone(saveData);
     newSaveData.description = '';
     newSaveData.saveDataType = 'default';
-    newSaveData.id = defaultSaveData.id ?? generateId();
+    newSaveData.id = generateId();
     newSaveData.createTimestamp = Date.now();
-    setDefaultSaveData(defaultSaveData);
+    for (const log of newSaveData.readLogs) {
+      log.saveDataId = newSaveData.id;
+    }
+
+    // delete default save data
+    await dbContext.deleteSaveDataFromId(defaultSaveData?.id);
+
+    // save new default
+    await dbContext.addSaveData(newSaveData);
+
+    // update state
+    setDefaultSaveData(newSaveData);
   };
   const refreshSaveDataList = async () => {
     const _saveDataList: Database.Types.SaveDataType[] =

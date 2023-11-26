@@ -7,6 +7,14 @@
     "invalidUrl": "无效的链接",
     "invalidScript": "脚本损坏，请检查脚本中是否包含'metadata'和'script'项"
   },
+  "yesNoModal": {
+    "confirmBtn": {
+      "label": "确认"
+    },
+    "cancelBtn": {
+      "label": "取消"
+    }
+  },
   "loadingIndicatorModal": {
     "copyBtn": {
       "label": "拷贝"
@@ -85,6 +93,9 @@
   "saveAndLoad": {
     "label": "保存/加载",
     "loadingSaveDataMsg": "加载存档中",
+    "deletingSaveDataMsg": "正在删除",
+    "loadingSaveDataFailedMsg": "加载存档失败",
+    "deletingSaveDataFailedMsg": "删除存档失败",
     "deleteBtn": {
       "label": "删除"
     },
@@ -102,13 +113,11 @@
     },
     "loadModal": {
       "title": "加载存档",
-      "body": "未保存的记录将会丢失。确认继续吗？",
-      "loadConfirmBtn": {
-        "label": "是"
-      },
-      "loadCancelBtn": {
-        "label": "否"
-      }
+      "body": "未保存的记录将会丢失。确认继续吗？"
+    },
+    "deleteModal": {
+      "title": "删除存档",
+      "body": "即将删除存档。确认继续吗？"
     }
   },
   "mainPageSidebar": {

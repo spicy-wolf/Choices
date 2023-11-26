@@ -14,9 +14,7 @@ type PauseComponentType = StatementEngine.Types.PauseComponentType;
 type ContentProps = {
   scripts: AnyStatementType[];
   saveData: Database.Types.SaveDataType;
-  setSaveData: React.Dispatch<
-  React.SetStateAction<Database.Types.SaveDataType>
-  >;
+  setSaveData: React.Dispatch<React.SetStateAction<Database.Types.SaveDataType>>;
 };
 
 const Content = (props: ContentProps) => {

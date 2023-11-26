@@ -7,6 +7,14 @@
     "invalidUrl": "Invalid url",
     "invalidScript": "Invalid data. please make sure data has 'metadata' and 'script'"
   },
+  "yesNoModal": {
+    "confirmBtn": {
+      "label": "Yes"
+    },
+    "cancelBtn": {
+      "label": "No"
+    }
+  },
   "loadingIndicatorModal": {
     "copyBtn": {
       "label": "Copy"
@@ -85,6 +93,9 @@
   "saveAndLoad": {
     "label": "Save/Load",
     "loadingSaveDataMsg": "Loading save data",
+    "deletingSaveDataMsg": "Deleting save data",
+    "loadingSaveDataFailedMsg": "Cannot load save data",
+    "deletingSaveDataFailedMsg": "Cannot delete save data",
     "deleteBtn": {
       "label": "Delete"
     },
@@ -102,13 +113,11 @@
     },
     "loadModal": {
       "title": "Load save data",
-      "body": "Unsaved data will be lost. Are you sure to continue?",
-      "loadConfirmBtn": {
-        "label": "Yes"
-      },
-      "loadCancelBtn": {
-        "label": "No"
-      }
+      "body": "Unsaved data will be lost. Are you sure to continue?"
+    },
+    "deleteModal": {
+      "title": "Delete save data",
+      "body": "The save data will be deleted. Are you sure to continue?"
     }
   },
   "mainPageSidebar": {
