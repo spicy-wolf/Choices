@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const resolve = (pathStr) => {
   return path.join(__dirname, pathStr);
@@ -14,7 +15,7 @@ module.exports = (env) => ({
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, DIST_FOLDER),
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].js',
     clean: true,
   },
   module: {
@@ -57,8 +58,16 @@ module.exports = (env) => ({
         },
       ],
     }),
+    new HtmlWebpackPlugin({
+      template: 'src/index.html'
+    }),
   ],
   devServer: {
     historyApiFallback: true,
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
   },
 });
