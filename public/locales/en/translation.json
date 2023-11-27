@@ -92,8 +92,10 @@
   },
   "saveAndLoad": {
     "label": "Save/Load",
+    "addingSaveDataMsg": "Saving",
     "loadingSaveDataMsg": "Loading save data",
     "deletingSaveDataMsg": "Deleting save data",
+    "addingSaveDataFailedMsg": "Fail to save",
     "loadingSaveDataFailedMsg": "Cannot load save data",
     "deletingSaveDataFailedMsg": "Cannot delete save data",
     "deleteBtn": {

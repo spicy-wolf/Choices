@@ -92,8 +92,10 @@
   },
   "saveAndLoad": {
     "label": "保存/加载",
+    "addingSaveDataMsg": "保存中",
     "loadingSaveDataMsg": "加载存档中",
     "deletingSaveDataMsg": "正在删除",
+    "addingSaveDataFailedMsg": "保存失败",
     "loadingSaveDataFailedMsg": "加载存档失败",
     "deletingSaveDataFailedMsg": "删除存档失败",
     "deleteBtn": {
