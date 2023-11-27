@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import * as Database from '@src/Database';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { LoadingIndicatorModal } from '@src/Containers/components';
 
 type AddSaveDataCardprops = {
@@ -18,13 +18,15 @@ export const AddSaveDataCard = (props: AddSaveDataCardprops) => {
   const [saveDataDescription, setSaveDataDescription] =
     React.useState<string>();
 
-  const [showsavingModal, setShowSavingModal] = React.useState<boolean>(false);
+  const [showSavingModal, setShowSavingModal] = React.useState<boolean>(false);
+
+  const { t } = useTranslation();
 
   const addManualSaveData = async () => {
     if (!props.defaultSaveData) return;
     try {
       setShowSavingModal(true);
-      await props.createSaveData(saveDataDescription);
+      await props.createSaveData?.(saveDataDescription);
       setShowAddSaveDataCard(false);
       setShowSavingModal(false);
     } catch (ex) {
@@ -87,9 +89,7 @@ export const AddSaveDataCard = (props: AddSaveDataCardprops) => {
         <TextField
           autoFocus
           fullWidth
-          label={
-            <Trans i18nKey="saveAndLoad.saveDescriptionInput.label" />
-          }
+          label={t('saveAndLoad.saveDescriptionInput.label')}
           multiline
           rows={3}
           value={saveDataDescription}
@@ -106,7 +106,7 @@ export const AddSaveDataCard = (props: AddSaveDataCardprops) => {
           component="a"
           onClick={addManualSaveData}
         >
-          <Trans i18nKey="saveAndLoad.saveConfirmBtn.label" />
+          {t('saveAndLoad.saveConfirmBtn.label')}
         </Button>
       </Grid>
       <Grid item xs={6}>
@@ -114,23 +114,23 @@ export const AddSaveDataCard = (props: AddSaveDataCardprops) => {
           fullWidth
           variant="outlined"
           component="a"
+          disabled={!props.defaultSaveData} // edge case, if no defaultSaveData, then disable the button
           onClick={() => setShowAddSaveDataCard(false)}
         >
-          <Trans i18nKey="saveAndLoad.saveCancelBtn.label" />
+          {t('saveAndLoad.saveCancelBtn.label')}
         </Button>
       </Grid>
     </Grid>}
-    {
-      !showAddSaveDataCard && (<Button
-        variant="contained"
-        onClick={onSaveButtonClick}
-        sx={{ my: '0.5rem', mx: '1.5rem' }}
-      >
-        <Trans i18nKey="saveAndLoad.saveNewBtn.label" />
-      </Button>)
-    }
+    {!showAddSaveDataCard && <Button
+      variant="contained"
+      onClick={onSaveButtonClick}
+      disabled={!props.defaultSaveData} // edge case, if no defaultSaveData, then disable the button
+      sx={{ my: '0.5rem', mx: '1.5rem' }}
+    >
+      {t('saveAndLoad.saveNewBtn.label')}
+    </Button>}
     <LoadingIndicatorModal
-      open={showsavingModal}
+      open={showSavingModal}
       handleClose={() => {
         setShowSavingModal(false);
       }}

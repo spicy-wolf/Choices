@@ -16,7 +16,7 @@ type SaveAndLoadProps = {
   saveDataList: Database.Types.SaveDataType[];
   setLoadingMsg: (loadingMsg: string) => void;
 };
-const SaveAndLoad = (props: SaveAndLoadProps) => {
+export const SaveAndLoad = (props: SaveAndLoadProps) => {
   return (
     <>
       <Stack sx={{ height: '100%' }}>
@@ -49,5 +49,3 @@ const SaveAndLoad = (props: SaveAndLoadProps) => {
     </>
   );
 };
-
-export { SaveAndLoad };
