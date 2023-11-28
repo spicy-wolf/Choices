@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,24 +16,26 @@ type YesNoModalProps = {
 };
 
 export const YesNoModal = (props: YesNoModalProps) => {
+  const { t } = useTranslation();
+
   return (<Dialog
     open={props.open}
     onClose={props.onClose}
   >
     <DialogTitle>
-      <Trans i18nKey={props.title} />
+      {t(props.title)}
     </DialogTitle>
     <DialogContent>
       <DialogContentText>
-        <Trans i18nKey={props.body} />
+        {t(props.body)}
       </DialogContentText>
     </DialogContent>
     <DialogActions>
       <Button onClick={async () => await props.onConfirm()}>
-        <Trans i18nKey="yesNoModal.confirmBtn.label" />
+        {t('yesNoModal.confirmBtn.label')}
       </Button>
       <Button onClick={async () => await props.onClose()}>
-        <Trans i18nKey="yesNoModal.cancelBtn.label" />
+        {t('yesNoModal.cancelBtn.label')}
       </Button>
     </DialogActions>
   </Dialog>);
