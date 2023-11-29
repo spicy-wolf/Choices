@@ -8,7 +8,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import CardActionArea from '@mui/material/CardActionArea';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import * as Database from '@src/Database';
 import { LoadingIndicatorModal, YesNoModal } from '@src/Containers/components';
 
@@ -25,6 +25,7 @@ export const SaveDataItem = (props: SaveDataItemProps) => {
   const [loadingLabel, setLoadingLabel] = React.useState('');
   const [loadingError, setLoadingError] = React.useState('');
   const anchorRef = React.useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation();
 
 
   //#region three dot menu
@@ -86,7 +87,7 @@ export const SaveDataItem = (props: SaveDataItemProps) => {
       onClose={() => setOpenMenu(false)}
     >
       <MenuItem onClick={() => setOpenDeleteConfirmationModal(true)}>
-        <Trans i18nKey="saveAndLoad.deleteBtn.label" />
+        {t('saveAndLoad.deleteBtn.label')}
       </MenuItem>
     </Menu>
   );
@@ -97,13 +98,13 @@ export const SaveDataItem = (props: SaveDataItemProps) => {
         <CardHeader
           sx={{ paddingBottom: 0, paddingTop: '0.5rem' }}
           action={<>
-            <IconButton ref={anchorRef} onClick={() => setOpenMenu(true)}>
+            <IconButton data-testid="save-data-item.hamburger-menu" ref={anchorRef} onClick={() => setOpenMenu(true)}>
               <MoreVertIcon />
             </IconButton>
             {menu}
           </>}
           subheader={new Date(props.saveData?.createTimestamp).toLocaleString(
-            undefined,
+            navigator.languages?.[0] ?? 'en-US',
             {
               year: 'numeric',
               month: '2-digit',
