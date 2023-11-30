@@ -4,7 +4,7 @@ import DialogActions from '@mui/material/DialogActions/DialogActions';
 import DialogContent from '@mui/material/DialogContent/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText/DialogContentText';
 import React, { useMemo } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const LoadingIndicatorModal = (props: {
   loadingLabel?: string;
@@ -46,10 +46,10 @@ const LoadingIndicatorModal = (props: {
               navigator?.clipboard.writeText(msgStr);
             }}
           >
-            <Trans i18nKey="loadingIndicatorModal.copyBtn.label" />
+            {t('loadingIndicatorModal.copyBtn.label')}
           </Button>
           <Button autoFocus onClick={props.handleClose}>
-            <Trans i18nKey="loadingIndicatorModal.closeBtn.label" />
+            {t('loadingIndicatorModal.closeBtn.label')}
           </Button>
         </DialogActions>
       )}

@@ -14,9 +14,7 @@ type PauseComponentType = StatementEngine.Types.PauseComponentType;
 type ContentProps = {
   scripts: AnyStatementType[];
   saveData: Database.Types.SaveDataType;
-  setSaveData: React.Dispatch<
-  React.SetStateAction<Database.Types.SaveDataType>
-  >;
+  setSaveData: React.Dispatch<React.SetStateAction<Database.Types.SaveDataType>>;
 };
 
 const Content = (props: ContentProps) => {
@@ -67,10 +65,11 @@ const Content = (props: ContentProps) => {
     if (
       virtualizer &&
       initScrollToLogCursorPos.current !== null &&
-      initScrollToLogCursorPos.current !== undefined
+      initScrollToLogCursorPos.current !== undefined &&
+      !!groupedReadLogs // groupedReadLogs must be init and computed at least once
     ) {
       // find the group index which contains initScrollToLogCursorPos
-      const index = groupedReadLogs.findIndex((item) =>
+      const index = groupedReadLogs?.findIndex((item) =>
         item.find(
           (subItem) => subItem.order === initScrollToLogCursorPos.current
         )
@@ -82,7 +81,7 @@ const Content = (props: ContentProps) => {
       // clear scroll to position as this is one off variable
       initScrollToLogCursorPos.current = null;
     }
-  }, []);
+  }, [groupedReadLogs]);
   //#endregion
 
   // Note: virtualItems is diff everytime call "getVirtualItems"
@@ -129,7 +128,7 @@ const Content = (props: ContentProps) => {
     if (groupedReadLogs?.length === index && !!pauseComponent) {
       return [pauseComponent];
     } else {
-      return groupedReadLogs[index];
+      return groupedReadLogs?.[index];
     }
   };
 
@@ -152,7 +151,7 @@ const Content = (props: ContentProps) => {
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map((virtualRow) => (
+        {!!groupedReadLogs && virtualizer.getVirtualItems().map((virtualRow) => (
           <div
             key={virtualRow.key}
             data-index={virtualRow.index}
