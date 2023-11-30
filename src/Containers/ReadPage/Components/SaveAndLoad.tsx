@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import * as Database from '@src/Database';
 import { SaveDataItem } from './SaveDataItem';
 import { AddSaveDataCard } from './AddSaveDataCard';
@@ -17,14 +17,16 @@ type SaveAndLoadProps = {
   setLoadingMsg: (loadingMsg: string) => void;
 };
 export const SaveAndLoad = (props: SaveAndLoadProps) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <Stack sx={{ height: '100%' }}>
         <Typography variant="h4" sx={{ py: 3, px: 3 }}>
-          <Trans i18nKey="saveAndLoad.label" />
+          {t('saveAndLoad.label')}
         </Typography>
         <List sx={{ overflow: 'auto', flexGrow: 1 }}>
-          {props.saveDataList
+          {[...props.saveDataList] // prevent inline sort
             ?.sort(
               // sort by creation data desc
               (saveData1, saveData2) =>
