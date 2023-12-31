@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import { AnyComponentType } from '../Types';
 
 export const getLastReadLogOrder = (readLogs: AnyComponentType[][]): number => {
@@ -21,3 +28,4 @@ export const getLastReadLogOrder = (readLogs: AnyComponentType[][]): number => {
     }
   }
 };
+

@@ -10,9 +10,4 @@
     "json"
   ],
   "jest.autoRun": "off",
-  "licenser.license": "Custom",
-  "licenser.useSingleLineStyle": false,
-  "licenser.customHeaderFile": "${workspaceFolder}/LICENSE_HEADER",
-  "licenser.disableAutoHeaderInsertion": false,
-  "licenser.disableAutoSave": false
 }

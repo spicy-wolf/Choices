@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import { AbstractDbContext } from './DbContext/DbContext';
 import * as Types from './DbContext/Types';
 
@@ -13,3 +20,4 @@ declare let __USE_FAKE_DB__: boolean;
 const { DbContext } = require('./DbContext/' + (__USE_FAKE_DB__ ? 'FakeDB' : 'IndexedDB'));
 
 export { DbContext, AbstractDbContext, Types };
+

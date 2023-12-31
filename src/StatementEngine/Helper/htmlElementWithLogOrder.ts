@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import * as Constants from '../Constants';
 
 export const getLogOrderFromElement = (element: Element): number | null => {
@@ -18,3 +25,4 @@ export const getElementfromLogOrder = (logOrder: number): Element | null => {
     `[${Constants.HtmlElementAttribute.LOG_ORDER_ATTRIBUTE}="${logOrder}"]`
   );
 };
+

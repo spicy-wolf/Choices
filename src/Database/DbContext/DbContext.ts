@@ -1,7 +1,14 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import * as Types from './Types';
 
 export abstract class AbstractDbContext {
-  public constructor() {}
+  public constructor() { }
   public abstract init(): Promise<void>;
 
   //#region Metadata
@@ -38,3 +45,4 @@ export abstract class AbstractDbContext {
   public abstract deleteSaveDataFromId(saveDataId: string): Promise<void>;
   //#endregion
 }
+

@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import { SaveDataType } from './SaveData.type';
 import { EndOfLineStatementType } from './EndOfLineStatement.type';
 import { FinStatementType } from './FinStatement.type';
@@ -48,3 +55,4 @@ export {
   AnyComponentType,
   AnyPauseComponentType as PauseComponentType,
 };
+

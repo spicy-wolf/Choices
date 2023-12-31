@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import brown from '@mui/material/colors/brown';
 import deepPurple from '@mui/material/colors/deepPurple';
 import blue from '@mui/material/colors/blue';
@@ -69,3 +76,4 @@ export {
   UiThemePaletteNames,
   ContentThemePaletteNames,
 };
+

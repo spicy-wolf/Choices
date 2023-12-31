@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import { describe, expect, test } from '@jest/globals';
 import { renderHook } from '@testing-library/react';
 import { useGroupedReadLogs } from './useGroupedReadLogs';
@@ -53,3 +60,4 @@ describe('test useGroupedReadLogs hook', () => {
     expect(result.current.groupedReadLogs).toEqual(expected);
   });
 });
+

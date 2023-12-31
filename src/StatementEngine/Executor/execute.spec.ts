@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import { describe, expect, test } from '@jest/globals';
 import { execute } from './execute';
 import { CheckStatementType } from '../Helper';
@@ -34,3 +41,4 @@ describe('test execute function', () => {
     expect(arg.executorMock).toBeCalledTimes(1);
   });
 });
+

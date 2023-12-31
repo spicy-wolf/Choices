@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import React, { useEffect } from 'react';
 // import { RouterPathStrings } from '@src/Constants';
 // import * as Utils from '@src/Utils';
@@ -124,7 +131,7 @@ const LibraryPage = () => {
     }
   };
 
-  const onLoadFromJsonObj = async (jsonObj: {metadata: Database.Types.RepoMetadataType, script:  Database.Types.ScriptType}) => {
+  const onLoadFromJsonObj = async (jsonObj: { metadata: Database.Types.RepoMetadataType, script: Database.Types.ScriptType }) => {
     const metadata = jsonObj?.metadata;
     const script = jsonObj?.script;
     if (!metadata || !script) {
@@ -198,3 +205,4 @@ const LibraryPage = () => {
 };
 
 export default LibraryPage;
+
