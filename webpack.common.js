@@ -49,6 +49,7 @@ module.exports = (env) => ({
   plugins: [
     new webpack.DefinePlugin({
       __USE_FAKE_DB__: JSON.stringify(JSON.parse(env.USE_FAKE_DB || 'false')),
+      __URL_BASE_ROOT__: JSON.stringify(env.URL_BASE_ROOT ?? ''),
     }),
     new CopyPlugin({
       patterns: [

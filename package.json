@@ -14,7 +14,7 @@
     "test": "jest",
     "eslint": "eslint .",
     "\n========== deploy ==========": "",
-    "predeployGithub": "npm run build",
+    "predeployGithub": "webpack --progress --color --config webpack.prod.js --env URL_BASE_ROOT=/Choices",
     "deployGithub": "gh-pages -d dist",
     "predeployFirebase": "npm run build",
     "deployFirebase": "firebase deploy"
