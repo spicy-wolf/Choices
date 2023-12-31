@@ -16,3 +16,7 @@ A web app of digital interactive fiction/novel
 - indexeddb
 
 - service worker (cache)
+
+# Development Environment
+## Plugin/Extension
+* [licenser](https://marketplace.visualstudio.com/items?itemName=ymotongpoo.licenser)

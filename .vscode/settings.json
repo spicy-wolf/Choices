@@ -2,12 +2,17 @@
   "files.eol": "\r\n",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": [
     "javascript",
     "typescript",
     "json"
   ],
-  "jest.autoRun": "off"
+  "jest.autoRun": "off",
+  "licenser.license": "Custom",
+  "licenser.useSingleLineStyle": false,
+  "licenser.customHeaderFile": "${workspaceFolder}/LICENSE_HEADER",
+  "licenser.disableAutoHeaderInsertion": false,
+  "licenser.disableAutoSave": false
 }
