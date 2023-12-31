@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 export const generateColorFromStr = (str: string) => {
   const strPad = str.padStart(32, ' ');
   let hash: number = 0;
@@ -11,3 +18,4 @@ export const generateColorFromStr = (str: string) => {
   }
   return color;
 };
+

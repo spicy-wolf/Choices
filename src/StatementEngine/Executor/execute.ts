@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import * as StatementTypes from '../Types';
 import { CheckStatementType } from '../Helper';
 import { executeEndOfLine } from './executeEndOfLine';
@@ -35,3 +42,4 @@ export const execute = (
     console.error('unknown statement type', statement);
   }
 };
+

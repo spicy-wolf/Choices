@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import React, { useLayoutEffect } from 'react';
 import { useState } from 'react';
 
@@ -48,3 +55,4 @@ export const WindowSizeContextProvider = (props: WindowSizeContextProps) => {
 export const useWindowSize = () => {
   return React.useContext<WindowSizeContextType>(ContextInstance);
 };
+

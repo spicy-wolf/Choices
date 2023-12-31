@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import React from 'react';
 import Switch from '@mui/material/Switch';
 import { useSetting } from '@src/Context';
@@ -217,3 +224,4 @@ const Setting = (props: SettingProps) => {
 };
 
 export { Setting };
+

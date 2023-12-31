@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import React, { useEffect, useState } from 'react';
 import { RouterPathStrings } from '@src/Constants';
 import { useQuery } from '@src/Utils';
@@ -102,3 +109,4 @@ const ReadPage = () => {
 };
 
 export default ReadPage;
+

@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import { describe, expect, test } from '@jest/globals';
 import { splitLongSentences } from './splitLongSentences';
 
@@ -31,3 +38,4 @@ describe('test splitLongSentences function', () => {
     }
   );
 });
+

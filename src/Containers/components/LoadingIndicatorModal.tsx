@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import Button from '@mui/material/Button/Button';
 import Dialog from '@mui/material/Dialog/Dialog';
 import DialogActions from '@mui/material/DialogActions/DialogActions';
@@ -58,3 +65,4 @@ const LoadingIndicatorModal = (props: {
 };
 
 export { LoadingIndicatorModal };
+

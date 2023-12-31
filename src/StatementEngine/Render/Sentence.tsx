@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import React from 'react';
 import { SentenceComponentType } from '../Types';
 import { HtmlElementAttribute } from '../Constants';
@@ -14,3 +21,4 @@ const Sentence = (props: SentenceComponentType): JSX.Element => {
 };
 
 export default Sentence;
+

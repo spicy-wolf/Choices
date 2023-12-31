@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 import * as Types from '../Types';
 import { AbstractDbContext } from '../DbContext';
 import FakeMetadata from '@resources/FakeMetadata.json';
@@ -150,3 +157,4 @@ export class FakeDbContext extends AbstractDbContext {
   }
   //#endregion
 }
+

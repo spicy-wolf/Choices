@@ -1,3 +1,10 @@
+/**
+ * Choices - An application of digital interactive fiction/novel
+ * Copyright (C) 2023 Spicy Wolf
+ * 
+ * @license SPDX-License-Identifier: GPL-3.0-only
+ */
+
 const LIBRARY_PAGE: string = '/library';
 const LIBRARY_PAGE_SRC_PARAM: string = 'src';
 const SETTING_PAGE: string = '/setting';
@@ -15,3 +22,4 @@ export {
   READ_PAGE_REPO_PARAM,
   FILE_2_SCRIPT_PAGE,
 };
+
