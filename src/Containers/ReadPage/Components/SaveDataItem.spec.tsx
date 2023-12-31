@@ -13,7 +13,7 @@ describe('test SaveDataItem', () => {
     metadataId: 'metadataId',
     description: 'this is description',
     saveDataType: 'manual',
-    createTimestamp: 1654405690298, // en-Us => 06/04/2022, 22:08:10
+    createTimestamp: 1654405690298, // UTC => 06/05/2022, 05:08:10
     scriptCursorPos: '',
     logCursorPos: 0,
     context: {},
@@ -36,7 +36,7 @@ describe('test SaveDataItem', () => {
 
     // asset
     expect(await findByText(saveData.description)).toBeInTheDocument();
-    expect(await findByText('06/04/2022, 22:08:10')).toBeInTheDocument();
+    expect(await findByText('06/05/2022, 05:08:10')).toBeInTheDocument();
   });
 
   test('should call loadSaveData when load save data', async () => {
