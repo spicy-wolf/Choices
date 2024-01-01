@@ -29,13 +29,7 @@
       "label": "网址"
     },
     "urlFormat": {
-      "label": "网址格式："
-    },
-    "token": {
-      "label": "令牌"
-    },
-    "generateTokenHelperMsg": {
-      "label": "如何生成令牌："
+      "label": "请在输入框中输入一个指向 JSON 文件的直链。"
     },
     "uploadFile": {
       "label": "上传文件"
