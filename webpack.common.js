@@ -8,7 +8,7 @@ const resolve = (pathStr) => {
 };
 
 const DIST_FOLDER = 'dist';
-const PUBLIC_FOLDER = 'public';
+const ASSETS_FOLDER = 'assets';
 
 module.exports = (env) => ({
   mode: 'development',
@@ -53,7 +53,7 @@ module.exports = (env) => ({
     new CopyPlugin({
       patterns: [
         {
-          from: PUBLIC_FOLDER,
+          from: ASSETS_FOLDER,
           to: '', // default output path
         },
       ],
