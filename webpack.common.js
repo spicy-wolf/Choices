@@ -17,7 +17,7 @@ module.exports = (env) => ({
     path: path.resolve(__dirname, DIST_FOLDER),
     filename: '[name].[contenthash].js',
     clean: true,
-    publicPath: env.BASE_URL ?? '/',
+    publicPath: process.env.BASE_URL ?? '/',
   },
   module: {
     rules: [
@@ -50,7 +50,7 @@ module.exports = (env) => ({
   plugins: [
     new webpack.DefinePlugin({
       __USE_FAKE_DB__: JSON.stringify(JSON.parse(env.USE_FAKE_DB || 'false')),
-      __URL_BASE_ROOT__: JSON.stringify(env.BASE_URL ?? ''),
+      __BASE_URL__: JSON.stringify(process.env.BASE_URL ?? ''),
     }),
     new CopyPlugin({
       patterns: [

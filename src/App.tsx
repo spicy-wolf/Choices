@@ -11,14 +11,14 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { DbContextProvider, SettingContextProvider } from '@src/Context';
 import { WindowSizeContextProvider } from './Context/WindowSizeContext';
 
-declare let __URL_BASE_ROOT__: string;
+declare let __BASE_URL__: string;
 
 const App = () => {
   return (
     <DbContextProvider>
       <SettingContextProvider>
         <WindowSizeContextProvider>
-          <Router basename={__URL_BASE_ROOT__ || ''}>
+          <Router basename={__BASE_URL__ || ''}>
             <RootRouter />
           </Router>
         </WindowSizeContextProvider>

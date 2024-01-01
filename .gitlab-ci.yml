@@ -5,6 +5,7 @@ before_script:
   - npm ci
 pages:
   script:
+    - BASE_URL=$BASE_URL
     - npm run build
     - mkdir -p public
     - mv dist/* public

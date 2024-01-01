@@ -9,7 +9,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 
-declare let __URL_BASE_ROOT__: string;
+declare let __BASE_URL__: string;
 
 i18n
   .use(Backend)
@@ -21,7 +21,7 @@ i18n
       escapeValue: false, // not needed for react as it escapes by default
     },
     backend: {
-      loadPath: `${__URL_BASE_ROOT__}/locales/{{lng}}/translation.json`
+      loadPath: `${__BASE_URL__}/locales/{{lng}}/translation.json`
     }
   });
 
