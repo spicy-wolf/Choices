@@ -5,7 +5,7 @@ before_script:
   - npm ci
 pages:
   script:
-    - npm run build
+    - npm run deployWithBaseurl
     - mkdir -p public
     - mv dist/* public
   artifacts:
