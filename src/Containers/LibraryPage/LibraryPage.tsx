@@ -68,7 +68,7 @@ const LibraryPage = () => {
     }
   }, [loadingLabel, loadingError]);
 
-  const onLoadFromUrl = async (urlStr: string, urlAccessToken: string) => {
+  const onLoadFromUrl = async (urlStr: string) => {
     // hide add modal
     setShowAddModal(false);
     // clear prev error
@@ -81,29 +81,11 @@ const LibraryPage = () => {
       if (!url) throw t('loadingStatus.invalidUrl');
 
       let jsonObj: Parameters<typeof onLoadFromJsonObj>[0] = null; //TODO: looks ugly
-      if (url.host === 'api.github.com') {
-        // github API
-        // https://docs.github.com/rest/repos/contents#get-repository-content
-        const httpHeader: HeadersInit = {
-          Accept: 'application/vnd.github.v3.raw',
-        };
-        if (urlAccessToken) {
-          httpHeader.Authorization = `token ${urlAccessToken}`;
-        }
-
-        const response = await fetch(urlStr, {
-          method: 'GET',
-          mode: 'cors',
-          referrerPolicy: 'no-referrer',
-          headers: httpHeader,
-        });
-        jsonObj = await response.json();
-      } else {
-        const response = await fetch(urlStr, {
-          method: 'GET',
-        });
-        jsonObj = await response.json();
-      }
+      const response = await fetch(urlStr, {
+        method: 'GET',
+        mode: 'no-cors'
+      });
+      jsonObj = await response.json();
 
       await onLoadFromJsonObj(jsonObj);
     } catch (ex) {

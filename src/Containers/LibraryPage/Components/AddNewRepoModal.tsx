@@ -28,7 +28,7 @@ enum SourceFromEnum {
 type AddNewRepoModalProps = {
   open: boolean;
   onClose: () => void;
-  onLoadFromUrl: (url: string, urlAccessToken: string) => Promise<void>;
+  onLoadFromUrl: (url: string) => Promise<void>;
   onLoadFromFile: (sourceFile: Blob) => Promise<void>;
 };
 
@@ -39,12 +39,11 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
 
   // Form data
   const [sourceUrl, setSourceUrl] = useState<string>('');
-  const [urlAccessToken, setUrlAccessToken] = useState<string>('');
   const [sourceFile, setSourceFile] = useState<File>();
 
   const onLoadFromUrl = (): void => {
     if (!isValidUrl) return;
-    props.onLoadFromUrl(sourceUrl, urlAccessToken);
+    props.onLoadFromUrl(sourceUrl);
   };
 
   const onLoadFromFile = (): void => {
@@ -65,13 +64,6 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
   const isValidFile = React.useMemo(() => {
     return !!sourceFile;
   }, [sourceFile]);
-
-  // const onHideWrapper = () => {
-  //   setSourceUrl('');
-  //   setUrlAccessToken('');
-  //   setSourceFile(null);
-  //   props.onClose();
-  // };
 
   return (
     <Dialog open={!!props.open} onClose={props.onClose} maxWidth="md" fullWidth>
@@ -105,28 +97,6 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
             />
             <FormHelperText>
               <Trans i18nKey="addNewRepoModal.urlFormat.label" />
-              <Link
-                href="https://docs.github.com/rest/repos/contents#get-repository-content"
-                rel="noreferrer"
-                target="_blank"
-              >
-                GitHub
-              </Link>
-            </FormHelperText>
-            <TextField
-              label={<Trans i18nKey="addNewRepoModal.token.label" />}
-              value={urlAccessToken}
-              onChange={(event) => setUrlAccessToken(event.target.value)}
-            />
-            <FormHelperText>
-              <Trans i18nKey="addNewRepoModal.generateTokenHelperMsg.label" />
-              <Link
-                href="https://github.com/settings/tokens/new"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Github
-              </Link>
             </FormHelperText>
           </Stack>
         </DialogContent>
