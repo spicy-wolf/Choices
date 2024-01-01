@@ -15,9 +15,7 @@
     "eslint": "eslint .",
     "\n========== deploy ==========": "",
     "predeployFirebase": "npm run build",
-    "deployFirebase": "firebase deploy",
-    "predeployWithBaseurl": "webpack --progress --color --config webpack.prod.js --env BASE_URL=/Choices",
-    "deployWithBaseurl": "gh-pages -d dist"
+    "deployFirebase": "firebase deploy"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^1.2.0",
