@@ -124,7 +124,12 @@ const LibraryPage = () => {
 
     // insert into DB
     setRepoLoadingMsg(t('loadingStatus.addToDb'));
-    await metadataListLoader?.addMetadata(metadata, script);
+    if (metadataListLoader?.metadataList?.find(item => item.author === metadata.author && item.repoName === metadata.repoName)) {
+      // TODO: add modal message to allow update
+      await metadataListLoader?.putMetadata(metadata, script);
+    } else {
+      await metadataListLoader?.addMetadata(metadata, script);
+    }
   };
 
   const metadataElements: JSX.Element[] = React.useMemo(() => {

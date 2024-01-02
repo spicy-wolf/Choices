@@ -53,6 +53,21 @@ const useMetadataList = () => {
     }
   };
 
+  const putMetadata = async (
+    metaData: RepoMetadataType,
+    script?: ScriptType
+  ): Promise<string> => {
+    if (!dbContext) return;
+    try {
+      const result = await dbContext.putMetadata(metaData, script);
+      await loadMetadataList();
+
+      return result;
+    } catch (ex) {
+      setError(ex);
+    }
+  };
+
   const deleteMetadata = async (metaDataId: string): Promise<void> => {
     if (!dbContext) return;
     try {
@@ -63,7 +78,7 @@ const useMetadataList = () => {
     }
   };
 
-  return { metadataList, addMetadata, deleteMetadata, error };
+  return { metadataList, addMetadata, putMetadata, deleteMetadata, error };
 };
 
 export default useMetadataList;
