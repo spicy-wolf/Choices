@@ -93,6 +93,7 @@ export default {
   moduleNameMapper: {
     '^@src(.*)$': '<rootDir>/src$1',
     '^@resources(.*)$': '<rootDir>/resources$1',
+    '^.+\\.(css|less|scss)$': 'identity-obj-proxy',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader

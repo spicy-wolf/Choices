@@ -123,5 +123,11 @@
     "setting": {
       "label": "Setting"
     }
+  },
+  "read": {
+    "singletonCheckModal": {
+      "title": "This is already opened in another tab. Go to main page?",
+      "body": "Click 'Yes' to navigate. Click 'No' to close the tab."
+    }
   }
 }
