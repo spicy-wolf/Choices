@@ -46,8 +46,10 @@ export class FakeDbContext extends AbstractDbContext {
     author: string,
     repoName: string
   ): Promise<Types.RepoMetadataType> {
+    // generate an id
+    const metadataId = await this.digestMetadataId(author, repoName);
     const result = this.metadataDb.find(
-      (value) => value?.author === author && value?.repoName === repoName
+      (value) => value?.id === metadataId
     );
     return result;
   }
@@ -56,19 +58,44 @@ export class FakeDbContext extends AbstractDbContext {
     return result;
   }
   public async addMetadata(
-    metaData: Types.RepoMetadataType,
+    metadata: Types.RepoMetadataType,
     script?: Types.ScriptType
   ): Promise<string> {
     // generate an id
-    metaData.id = generateId();
-    this.metadataDb.push(metaData);
+    const metadataId = await this.digestMetadataId(
+      metadata?.author,
+      metadata?.repoName
+    );
+    this.metadataDb.push({ ...metadata, id: metadataId });
 
     if (script) {
-      script.forEach((statement) => (statement.metadataId = metaData.id));
+      script.forEach((statement) => (statement.metadataId = metadataId));
       this.scriptDb = this.scriptDb.concat(script);
     }
 
-    return metaData.id;
+    return metadataId;
+  }
+  public async putMetadata(
+    metadata: Types.RepoMetadataType,
+    script?: Types.ScriptType
+  ): Promise<string> {
+    const metadataId = await this.digestMetadataId(
+      metadata?.author,
+      metadata?.repoName
+    );
+    this.metadataDb = this.metadataDb.filter(
+      (value) => value?.id !== metadataId
+    );
+    this.metadataDb.push({ ...metadata, id: metadataId });
+
+    if (script) {
+      script.forEach((statement) => (statement.metadataId = metadataId));
+      this.scriptDb = this.scriptDb.filter(
+        (script) => script?.metadataId !== metadataId
+      ).concat(script);
+    }
+
+    return metadataId;
   }
   public async deleteMetadataFromId(metadataId: string): Promise<void> {
     // delete save data and reading logs
