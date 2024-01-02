@@ -38,11 +38,11 @@ export const YesNoModal = (props: YesNoModalProps) => {
       </DialogContentText>
     </DialogContent>
     <DialogActions>
-      <Button onClick={async () => await props.onConfirm()}>
-        {t('yesNoModal.confirmBtn.label')}
-      </Button>
       <Button onClick={async () => await props.onClose()}>
         {t('yesNoModal.cancelBtn.label')}
+      </Button>
+      <Button onClick={async () => await props.onConfirm()} variant="contained" >
+        {t('yesNoModal.confirmBtn.label')}
       </Button>
     </DialogActions>
   </Dialog>);

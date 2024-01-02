@@ -5,7 +5,7 @@
  * @license SPDX-License-Identifier: GPL-3.0-only
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 // import { RouterPathStrings } from '@src/Constants';
 // import * as Utils from '@src/Utils';
 import useMetadataList from './Hooks/useMetadataList';
@@ -16,13 +16,12 @@ import Grid from '@mui/material/Grid/Grid';
 import Fab from '@mui/material/Fab/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { LoadingIndicatorModal } from '@src/Containers/components';
-import AddNewRepoModal from './Components/AddNewRepoModal';
+import { AddNewRepo } from './Components/AddNewRepoModal';
 import { useTranslation } from 'react-i18next';
 import {
   MainPageSidebar,
   MainPageSidebarButtonEnum,
 } from '../components/MainPageSidebar';
-import * as Database from '@src/Database';
 
 const LibraryPage = () => {
   const { t } = useTranslation();
@@ -35,102 +34,11 @@ const LibraryPage = () => {
 
   //#region state
   const [showAddModal, setShowAddModal] = React.useState<boolean>();
-  const [showLoadingModal, setShowLoadingModal] =
-    React.useState<boolean>(false);
-  const [repoLoadingMsg, setRepoLoadingMsg] = React.useState<string>();
-  const [repoLoadingErrorMsg, setRepoLoadingErrorMsg] =
-    React.useState<string>('');
   //#endregion
 
   //#region hooks
   const metadataListLoader = useMetadataList();
   //#endregion
-
-  const loadingLabel = React.useMemo(() => {
-    let loadingMsg = repoLoadingMsg || '';
-    if (!metadataListLoader?.metadataList) {
-      loadingMsg = t('loadingStatus.loadReadingList');
-    }
-
-    return loadingMsg;
-  }, [metadataListLoader?.metadataList, repoLoadingMsg]);
-
-  const loadingError = React.useMemo(() => {
-    const errorMsg = metadataListLoader?.error || repoLoadingErrorMsg || '';
-    return errorMsg;
-  }, [metadataListLoader?.error, repoLoadingErrorMsg]);
-
-  useEffect(() => {
-    if (!!loadingLabel || !!loadingError) {
-      setShowLoadingModal(true);
-    } else {
-      setShowLoadingModal(false);
-    }
-  }, [loadingLabel, loadingError]);
-
-  const onLoadFromUrl = async (urlStr: string) => {
-    // hide add modal
-    setShowAddModal(false);
-    // clear prev error
-    setRepoLoadingErrorMsg('');
-
-    try {
-      setRepoLoadingMsg(t('loadingStatus.downloadScript'));
-      const url = new URL(urlStr);
-
-      if (!url) throw t('loadingStatus.invalidUrl');
-
-      let jsonObj: Parameters<typeof onLoadFromJsonObj>[0] = null; //TODO: looks ugly
-      const response = await fetch(urlStr, {
-        method: 'GET',
-        mode: 'no-cors'
-      });
-      jsonObj = await response.json();
-
-      await onLoadFromJsonObj(jsonObj);
-    } catch (ex) {
-      setRepoLoadingErrorMsg(ex);
-    } finally {
-      setRepoLoadingMsg('');
-    }
-  };
-
-  const onLoadFromFile = async (sourceFile: Blob) => {
-    // hide add modal
-    setShowAddModal(false);
-    // clear prev error
-    setRepoLoadingErrorMsg('');
-
-    setRepoLoadingMsg(t('loadingStatus.parseScript'));
-
-    try {
-      const json = JSON.parse(await sourceFile.text());
-      await onLoadFromJsonObj(json);
-    } catch (ex) {
-      setRepoLoadingErrorMsg(ex);
-    } finally {
-      setRepoLoadingMsg('');
-    }
-  };
-
-  const onLoadFromJsonObj = async (jsonObj: { metadata: Database.Types.RepoMetadataType, script: Database.Types.ScriptType }) => {
-    const metadata = jsonObj?.metadata;
-    const script = jsonObj?.script;
-    if (!metadata || !script) {
-      throw t('loadingStatus.invalidScript');
-    }
-
-    // TODO: validation
-
-    // insert into DB
-    setRepoLoadingMsg(t('loadingStatus.addToDb'));
-    if (metadataListLoader?.metadataList?.find(item => item.author === metadata.author && item.repoName === metadata.repoName)) {
-      // TODO: add modal message to allow update
-      await metadataListLoader?.putMetadata(metadata, script);
-    } else {
-      await metadataListLoader?.addMetadata(metadata, script);
-    }
-  };
 
   const metadataElements: JSX.Element[] = React.useMemo(() => {
     let result: JSX.Element[] = [];
@@ -151,16 +59,15 @@ const LibraryPage = () => {
     <>
       <CssBaseline />
       <LoadingIndicatorModal
-        loadingLabel={loadingLabel}
-        error={loadingError}
-        open={!!showLoadingModal}
-        handleClose={() => setShowLoadingModal(false)}
+        open={!metadataListLoader?.metadataList || !!metadataListLoader?.error}
+        loadingLabel={t('loadingStatus.loadReadingList')}
+        error={metadataListLoader?.error}
+        handleClose={() => { }}
       />
-      <AddNewRepoModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onLoadFromUrl={onLoadFromUrl}
-        onLoadFromFile={onLoadFromFile}
+      <AddNewRepo
+        openInputModal={showAddModal}
+        closeInputModal={() => setShowAddModal(false)}
+        metadataListLoader={metadataListLoader}
       />
       <Container sx={{ display: 'flex' }}>
         <MainPageSidebar selected={MainPageSidebarButtonEnum.Library} />

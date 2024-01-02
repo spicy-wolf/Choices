@@ -47,6 +47,10 @@
       "label": "取消"
     }
   },
+  "overwriteRepoModal": {
+    "title": "已经存在《{{repoName}}》作者 {{author}} 。",
+    "body": "是否覆盖？"
+  },
   "repoCard": {
     "deleteConfirmationMsg": "确认删除吗？所有相关存档也会被一起删除。",
     "deleteBtn": {

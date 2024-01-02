@@ -47,6 +47,10 @@
       "label": "Cancel"
     }
   },
+  "overwriteRepoModal": {
+    "title": "The book '{{repoName}}' by {{author}} already exists.",
+    "body": "Are you sure to overwrite?"
+  },
   "repoCard": {
     "deleteConfirmationMsg": "Are you sure to delete? All relative save data will be deleted as well.",
     "deleteBtn": {

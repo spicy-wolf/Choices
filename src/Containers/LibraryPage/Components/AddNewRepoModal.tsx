@@ -17,44 +17,112 @@ import Tab from '@mui/material/Tab';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack/Stack';
 import FormHelperText from '@mui/material/FormHelperText';
-import Link from '@mui/material/Link';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
+import * as Database from '@src/Database';
+import useMetadataList from '../Hooks/useMetadataList';
+import { YesNoModal } from '@src/Containers/components/YesNoModal';
+import { LoadingIndicatorModal } from '@src/Containers/components/LoadingIndicatorModal';
 
 enum SourceFromEnum {
   Url = 1,
   File = 2,
 }
 
-type AddNewRepoModalProps = {
-  open: boolean;
-  onClose: () => void;
-  onLoadFromUrl: (url: string) => Promise<void>;
-  onLoadFromFile: (sourceFile: Blob) => Promise<void>;
+type RawRepoJsonType = {
+  metadata: Database.Types.RepoMetadataType;
+  script: Database.Types.ScriptType;
 };
 
-const AddNewRepoModal = (props: AddNewRepoModalProps) => {
+type AddNewRepoProps = {
+  openInputModal: boolean;
+  closeInputModal: () => void;
+  metadataListLoader: ReturnType<typeof useMetadataList>;
+};
+
+const AddNewRepo = (props: AddNewRepoProps) => {
+  const { t } = useTranslation();
+
   const [selectedSourceFrom, setSelectedSourceFrom] = useState<SourceFromEnum>(
     SourceFromEnum.Url
   );
+  const [pendingOverwriteRepo, setPendingOverwriteRepo] = React.useState<RawRepoJsonType>(null);
+
+  const [repoLoadingMsg, setRepoLoadingMsg] = React.useState<string>();
+  const [repoLoadingErrorMsg, setRepoLoadingErrorMsg] = React.useState<string>('');
 
   // Form data
-  const [sourceUrl, setSourceUrl] = useState<string>('');
+  const [sourceUrl, setSourceUrl] = useState<string>();
   const [sourceFile, setSourceFile] = useState<File>();
 
-  const onLoadFromUrl = (): void => {
+  const onLoadFromUrl = async (): Promise<void> => {
     if (!isValidUrl) return;
-    props.onLoadFromUrl(sourceUrl);
+    props.closeInputModal();
+
+    try {
+      setRepoLoadingErrorMsg('');
+      setRepoLoadingMsg(t('loadingStatus.downloadScript'));
+      const url = new URL(sourceUrl);
+
+      if (!url) throw t('loadingStatus.invalidUrl');
+
+      let jsonObj: Parameters<typeof onLoadFromJsonObj>[0] = null; //TODO: looks ugly
+      const response = await fetch(sourceUrl, {
+        method: 'GET',
+        mode: 'no-cors'
+      });
+      jsonObj = await response.json();
+
+      await onLoadFromJsonObj(jsonObj);
+    } catch (ex) {
+      setRepoLoadingErrorMsg(ex);
+    } finally {
+      setRepoLoadingMsg('');
+    }
   };
 
-  const onLoadFromFile = (): void => {
+  const onLoadFromFile = async (): Promise<void> => {
     if (!isValidFile) return;
-    props.onLoadFromFile(sourceFile);
+    props.closeInputModal();
+
+    try {
+      setRepoLoadingErrorMsg('');
+      setRepoLoadingMsg(t('loadingStatus.parseScript'));
+
+      const json = JSON.parse(await sourceFile.text());
+      await onLoadFromJsonObj(json);
+    } catch (ex) {
+      setRepoLoadingErrorMsg(ex);
+    } finally {
+      setRepoLoadingMsg('');
+    }
+  };
+
+  const onLoadFromJsonObj = async (jsonObj: RawRepoJsonType) => {
+    const metadata = jsonObj?.metadata;
+    const script = jsonObj?.script;
+    if (!metadata || !script) {
+      throw t('loadingStatus.invalidScript');
+    }
+
+    // TODO: validation
+
+    // insert into DB
+    try {
+      setRepoLoadingMsg(t('loadingStatus.addToDb'));
+      if (props.metadataListLoader?.metadataList?.find(item => item.author === metadata.author && item.repoName === metadata.repoName)) {
+        setPendingOverwriteRepo(jsonObj);
+      } else {
+        await props.metadataListLoader?.addMetadata(metadata, script);
+      }
+    } catch (ex) {
+      setRepoLoadingErrorMsg(ex);
+    }
   };
 
   const isValidUrl = React.useMemo(() => {
     try {
-      // TODO: try to create a url to check url format
-      // const url = new URL(sourceUrl);
+      // try to create a url to check url format
+      new URL(sourceUrl);
       return true;
     } catch (ex) {
       return false;
@@ -65,8 +133,39 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
     return !!sourceFile;
   }, [sourceFile]);
 
-  return (
-    <Dialog open={!!props.open} onClose={props.onClose} maxWidth="md" fullWidth>
+  return (<>
+    {/* loading indicator */}
+    <LoadingIndicatorModal
+      open={!!repoLoadingMsg || !!repoLoadingErrorMsg}
+      loadingLabel={repoLoadingMsg}
+      error={repoLoadingErrorMsg}
+      handleClose={() => {
+        setRepoLoadingErrorMsg('');
+        setRepoLoadingMsg('');
+      }}
+    />
+    {/* overwrite repo modal */}
+    <YesNoModal
+      open={!!pendingOverwriteRepo}
+      title={t('overwriteRepoModal.title', {
+        repoName: pendingOverwriteRepo?.metadata?.repoName ?? '',
+        author: pendingOverwriteRepo?.metadata?.author ?? ''
+      }
+      )}
+      body={t('overwriteRepoModal.body')}
+      onClose={() => setPendingOverwriteRepo(null)}
+      onConfirm={async () => {
+        try {
+          await props.metadataListLoader?.putMetadata(pendingOverwriteRepo.metadata, pendingOverwriteRepo.script);
+        } catch (ex) {
+          setRepoLoadingErrorMsg(ex);
+        } finally {
+          setPendingOverwriteRepo(null);
+        }
+      }}
+    />
+    {/* main modal for url/file input */}
+    <Dialog open={!!props.openInputModal} onClose={props.closeInputModal} maxWidth="md" fullWidth>
       <DialogTitle>
         <Trans i18nKey="addNewRepoModal.label" />
       </DialogTitle>
@@ -90,7 +189,7 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
           <Stack spacing={2}>
             <TextField
               required
-              error={!isValidUrl}
+              error={!isValidUrl && sourceUrl !== undefined}
               label={<Trans i18nKey="addNewRepoModal.url.label" />}
               value={sourceUrl}
               onChange={(event) => setSourceUrl(event.target.value)}
@@ -101,10 +200,10 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onClose}>
+          <Button onClick={props.closeInputModal}>
             <Trans i18nKey="addNewRepoModal.cancel.label" />
           </Button>
-          <Button onClick={onLoadFromUrl} disabled={!isValidUrl}>
+          <Button onClick={onLoadFromUrl} disabled={!isValidUrl} variant="contained" >
             <Trans i18nKey="addNewRepoModal.confirm.label" />
           </Button>
         </DialogActions>
@@ -131,15 +230,16 @@ const AddNewRepoModal = (props: AddNewRepoModalProps) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onClose}>
+          <Button onClick={props.closeInputModal}>
             <Trans i18nKey="addNewRepoModal.cancel.label" />
           </Button>
-          <Button onClick={onLoadFromFile} disabled={!isValidFile}>
+          <Button onClick={onLoadFromFile} disabled={!isValidFile} variant="contained" >
             <Trans i18nKey="addNewRepoModal.confirm.label" />
           </Button>
         </DialogActions>
       </TabPanel>
     </Dialog>
+  </>
   );
 };
 
@@ -150,6 +250,3 @@ const TabPanel = (props: { show: boolean; children: React.ReactNode }) => {
     </div>
   );
 };
-
-export default AddNewRepoModal;
-
