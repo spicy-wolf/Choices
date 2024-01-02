@@ -5,6 +5,8 @@ A web app of digital interactive fiction/novel
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=Cloudflare&logoColor=white)](https://storychoices.pages.dev)
 
 [![Unit Tests](https://github.com/spicy-wolf/Choices/actions/workflows/npm.test.yml/badge.svg)](https://github.com/spicy-wolf/Choices/actions/workflows/npm.test.yml)
+![Vercel](https://vercelbadge.vercel.app/api/spicy-wolf/choices)
+[![Publish to Cloudflare Pages](https://github.com/spicy-wolf/Choices/actions/workflows/cloudflare.deploy.yml/badge.svg)](https://github.com/spicy-wolf/Choices/actions/workflows/cloudflare.deploy.yml)
 
 # Libs & Tech
 
