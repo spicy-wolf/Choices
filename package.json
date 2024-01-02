@@ -15,7 +15,9 @@
     "eslint": "eslint .",
     "\n========== deploy ==========": "",
     "predeployFirebase": "npm run build",
-    "deployFirebase": "firebase deploy"
+    "deployFirebase": "firebase deploy",
+    "predeployCloudFlare": "npm run build",
+    "deployCloudFlare": "wrangler pages deploy dist --project-name storychoices"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^1.2.0",
@@ -48,7 +50,8 @@
     "webpack": "^5.76.2",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.13.1",
-    "webpack-merge": "^5.8.0"
+    "webpack-merge": "^5.8.0",
+    "wrangler": "^3.22.1"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
