@@ -20,18 +20,13 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { Trans, useTranslation } from 'react-i18next';
 import * as Database from '@src/Database';
 import useMetadataList from '../Hooks/useMetadataList';
-import { YesNoModal } from '@src/Containers/components/YesNoModal';
 import { LoadingIndicatorModal } from '@src/Containers/components/LoadingIndicatorModal';
+import { YesNoModal } from '@src/Containers/components/YesNoModal';
 
 enum SourceFromEnum {
   Url = 1,
   File = 2,
 }
-
-type RawRepoJsonType = {
-  metadata: Database.Types.RepoMetadataType;
-  script: Database.Types.ScriptType;
-};
 
 type AddNewRepoProps = {
   openInputModal: boolean;
@@ -39,13 +34,13 @@ type AddNewRepoProps = {
   metadataListLoader: ReturnType<typeof useMetadataList>;
 };
 
-const AddNewRepo = (props: AddNewRepoProps) => {
+export const AddNewRepo = (props: AddNewRepoProps) => {
   const { t } = useTranslation();
 
   const [selectedSourceFrom, setSelectedSourceFrom] = useState<SourceFromEnum>(
     SourceFromEnum.Url
   );
-  const [pendingOverwriteRepo, setPendingOverwriteRepo] = React.useState<RawRepoJsonType>(null);
+  const [pendingOverwriteRepo, setPendingOverwriteRepo] = React.useState<Database.Types.RepoMetadataType>(null);
 
   const [repoLoadingMsg, setRepoLoadingMsg] = React.useState<string>();
   const [repoLoadingErrorMsg, setRepoLoadingErrorMsg] = React.useState<string>('');
@@ -65,12 +60,11 @@ const AddNewRepo = (props: AddNewRepoProps) => {
 
       if (!url) throw t('loadingStatus.invalidUrl');
 
-      let jsonObj: Parameters<typeof onLoadFromJsonObj>[0] = null; //TODO: looks ugly
       const response = await fetch(sourceUrl, {
         method: 'GET',
         mode: 'no-cors'
       });
-      jsonObj = await response.json();
+      const jsonObj: Database.Types.RepoMetadataType = await response.json();
 
       await onLoadFromJsonObj(jsonObj);
     } catch (ex) {
@@ -88,8 +82,8 @@ const AddNewRepo = (props: AddNewRepoProps) => {
       setRepoLoadingErrorMsg('');
       setRepoLoadingMsg(t('loadingStatus.parseScript'));
 
-      const json = JSON.parse(await sourceFile.text());
-      await onLoadFromJsonObj(json);
+      const jsonObj = JSON.parse(await sourceFile.text());
+      await onLoadFromJsonObj(jsonObj);
     } catch (ex) {
       setRepoLoadingErrorMsg(ex);
     } finally {
@@ -97,10 +91,8 @@ const AddNewRepo = (props: AddNewRepoProps) => {
     }
   };
 
-  const onLoadFromJsonObj = async (jsonObj: RawRepoJsonType) => {
-    const metadata = jsonObj?.metadata;
-    const script = jsonObj?.script;
-    if (!metadata || !script) {
+  const onLoadFromJsonObj = async (metadataWithScript: Database.Types.RepoMetadataType) => {
+    if (!metadataWithScript) {
       throw t('loadingStatus.invalidScript');
     }
 
@@ -109,10 +101,11 @@ const AddNewRepo = (props: AddNewRepoProps) => {
     // insert into DB
     try {
       setRepoLoadingMsg(t('loadingStatus.addToDb'));
-      if (props.metadataListLoader?.metadataList?.find(item => item.author === metadata.author && item.repoName === metadata.repoName)) {
-        setPendingOverwriteRepo(jsonObj);
+      if (props.metadataListLoader?.metadataList?.find(item => item.author === metadataWithScript.author && item.repoName === metadataWithScript.repoName)) {
+        setPendingOverwriteRepo(metadataWithScript);
       } else {
-        await props.metadataListLoader?.addMetadata(metadata, script);
+        const { script, ...metadata } = metadataWithScript;
+        await props.metadataListLoader?.addMetadataWithScript(metadata, script);
       }
     } catch (ex) {
       setRepoLoadingErrorMsg(ex);
@@ -148,15 +141,16 @@ const AddNewRepo = (props: AddNewRepoProps) => {
     <YesNoModal
       open={!!pendingOverwriteRepo}
       title={t('overwriteRepoModal.title', {
-        repoName: pendingOverwriteRepo?.metadata?.repoName ?? '',
-        author: pendingOverwriteRepo?.metadata?.author ?? ''
+        repoName: pendingOverwriteRepo?.repoName ?? '',
+        author: pendingOverwriteRepo?.author ?? ''
       }
       )}
       body={t('overwriteRepoModal.body')}
       onClose={() => setPendingOverwriteRepo(null)}
       onConfirm={async () => {
         try {
-          await props.metadataListLoader?.putMetadata(pendingOverwriteRepo.metadata, pendingOverwriteRepo.script);
+          const { script, ...metadata } = pendingOverwriteRepo;
+          await props.metadataListLoader?.putMetadataWithScript(metadata, script);
         } catch (ex) {
           setRepoLoadingErrorMsg(ex);
         } finally {
@@ -250,3 +244,4 @@ const TabPanel = (props: { show: boolean; children: React.ReactNode }) => {
     </div>
   );
 };
+

@@ -5,10 +5,13 @@
  * @license SPDX-License-Identifier: GPL-3.0-only
  */
 
+import type { ScriptType } from './Script.type';
+
 export type RepoMetadataType = {
   id?: string;
   author?: string;
   repoName?: string;
   description?: string;
+  script?: ScriptType;
 };
 

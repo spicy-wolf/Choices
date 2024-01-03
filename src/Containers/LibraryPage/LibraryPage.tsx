@@ -16,7 +16,7 @@ import Grid from '@mui/material/Grid/Grid';
 import Fab from '@mui/material/Fab/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { LoadingIndicatorModal } from '@src/Containers/components';
-import { AddNewRepo } from './Components/AddNewRepoModal';
+import { AddNewRepo } from './Components/AddNewRepo';
 import { useTranslation } from 'react-i18next';
 import {
   MainPageSidebar,
@@ -47,7 +47,7 @@ const LibraryPage = () => {
         <Grid key={item.id} item xs={12} md={4}>
           <RepoCard
             item={item}
-            deleteMetadata={metadataListLoader?.deleteMetadata}
+            deleteMetadata={metadataListLoader?.deleteMetadataWithScript}
           />
         </Grid>
       ));
