@@ -48,7 +48,7 @@ const useSaveData = (metadataId: string) => {
             createTimestamp: Date.now(),
             saveDataType: 'default',
 
-            scriptCursorPos: '',
+            statementCursorPos: '',
             logCursorPos: null,
 
             context: {},

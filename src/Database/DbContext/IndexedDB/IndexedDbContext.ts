@@ -16,7 +16,7 @@ declare interface DbResultEvent<T> extends Event {
 export class IndexedDbContext extends AbstractDbContext {
   private readonly DB_NAME: string = 'choices';
   private readonly METADATA_TB_NAME: string = 'metadata';
-  private readonly SCRIPT_TB_NAME: string = 'script';
+  private readonly STATEMENT_TB_NAME: string = 'statement';
   private readonly SAVE_DATA_TB_NAME: string = 'savedata';
   private readonly READ_LOG_TB_NAME: string = 'readlog';
 
@@ -27,14 +27,12 @@ export class IndexedDbContext extends AbstractDbContext {
     Utils.propertyOf<Types.RepoMetadataType>('author');
   private readonly METADATA_REPONAME_NAME: string =
     Utils.propertyOf<Types.RepoMetadataType>('repoName');
-  private readonly SCRIPT_ID_NAME: string =
-    Utils.propertyOf<Types.ScriptType extends (infer U)[] ? U : never>('id');
-  private readonly SCRIPT_METADATAID_NAME: string =
-    Utils.propertyOf<Types.ScriptType extends (infer U)[] ? U : never>(
-      'metadataId'
-    );
-  private readonly SCRIPT_ORDER_NAME: string =
-    Utils.propertyOf<Types.ScriptType extends (infer U)[] ? U : never>('order');
+  private readonly STATEMENT_ID_NAME: string =
+    Utils.propertyOf<Types.StatementType>('id');
+  private readonly STATEMENT_METADATAID_NAME: string =
+    Utils.propertyOf<Types.StatementType>('metadataId');
+  private readonly STATEMENT_ORDER_NAME: string =
+    Utils.propertyOf<Types.StatementType>('order');
   private readonly SAVE_DATA_ID_NAME: string =
     Utils.propertyOf<Types.SaveDataType>('id');
   private readonly SAVE_DATA_METADATAID_NAME: string =
@@ -72,13 +70,13 @@ export class IndexedDbContext extends AbstractDbContext {
           );
           //#endregion
 
-          //#region script table
-          const scriptObjectStore = db.createObjectStore(this.SCRIPT_TB_NAME, {
-            keyPath: this.SCRIPT_ID_NAME,
+          //#region statement table
+          const statementObjectStore = db.createObjectStore(this.STATEMENT_TB_NAME, {
+            keyPath: this.STATEMENT_ID_NAME,
           });
-          scriptObjectStore.createIndex(
-            `${this.SCRIPT_METADATAID_NAME}_${this.SCRIPT_ORDER_NAME}`,
-            [this.SCRIPT_METADATAID_NAME, this.SCRIPT_ORDER_NAME],
+          statementObjectStore.createIndex(
+            `${this.STATEMENT_METADATAID_NAME}_${this.STATEMENT_ORDER_NAME}`,
+            [this.STATEMENT_METADATAID_NAME, this.STATEMENT_ORDER_NAME],
             {
               unique: true,
             }
@@ -168,7 +166,7 @@ export class IndexedDbContext extends AbstractDbContext {
   }
   public async addMetadata(
     metadata: Types.RepoMetadataType,
-    script: Types.ScriptType
+    statement: Types.StatementType[]
   ): Promise<string> {
     if (!metadata) throw 'null metadata';
     if (!metadata?.author || !metadata?.repoName) throw 'metadata incomplete';
@@ -180,7 +178,7 @@ export class IndexedDbContext extends AbstractDbContext {
     );
 
     const transaction = this.db.transaction(
-      [this.METADATA_TB_NAME, this.SCRIPT_TB_NAME],
+      [this.METADATA_TB_NAME, this.STATEMENT_TB_NAME],
       'readwrite'
     );
 
@@ -188,8 +186,8 @@ export class IndexedDbContext extends AbstractDbContext {
     transaction
       .objectStore(this.METADATA_TB_NAME)
       .add({ ...metadata, id: metadataId });
-    // remove old scripts, then insert new ones
-    this.replaceScriptsHelper(transaction, metadataId, script);
+    // remove old statements, then insert new ones
+    this.replaceStatementsHelper(transaction, metadataId, statement);
 
     return new Promise((resolve, reject) => {
       transaction.oncomplete = () => {
@@ -205,7 +203,7 @@ export class IndexedDbContext extends AbstractDbContext {
   }
   public async putMetadata(
     metadata: Types.RepoMetadataType,
-    script: Types.ScriptType
+    statements: Types.StatementType[]
   ): Promise<string> {
     if (!metadata) throw 'null metadata';
 
@@ -216,7 +214,7 @@ export class IndexedDbContext extends AbstractDbContext {
     );
 
     const transaction = this.db.transaction(
-      [this.METADATA_TB_NAME, this.SCRIPT_TB_NAME],
+      [this.METADATA_TB_NAME, this.STATEMENT_TB_NAME],
       'readwrite'
     );
 
@@ -224,8 +222,8 @@ export class IndexedDbContext extends AbstractDbContext {
     transaction
       .objectStore(this.METADATA_TB_NAME)
       .put({ ...metadata, id: metadataId });
-    // remove old scripts, then insert new ones
-    this.replaceScriptsHelper(transaction, metadataId, script);
+    // remove old statements, then insert new ones
+    this.replaceStatementsHelper(transaction, metadataId, statements);
 
     return new Promise((resolve, reject) => {
       transaction.oncomplete = () => {
@@ -239,28 +237,28 @@ export class IndexedDbContext extends AbstractDbContext {
       };
     });
   }
-  private replaceScriptsHelper(
+  private replaceStatementsHelper(
     transaction: IDBTransaction,
     metadataId: string,
-    script: Types.ScriptType
+    statements: Types.StatementType[]
   ) {
-    if (!script || script.length === 0) {
+    if (!statements || statements.length === 0) {
       transaction.abort();
       return;
     }
 
-    for (const statement of script) {
+    for (const statement of statements) {
       if (!statement.id) {
         transaction.abort();
         return;
       }
     }
-    // remove all existed script first
-    const oldScriptRequest = transaction
-      .objectStore(this.SCRIPT_TB_NAME)
-      .index(`${this.SCRIPT_METADATAID_NAME}_${this.SCRIPT_ORDER_NAME}`)
+    // remove all existed statement first
+    const oldStatementRequest = transaction
+      .objectStore(this.STATEMENT_TB_NAME)
+      .index(`${this.STATEMENT_METADATAID_NAME}_${this.STATEMENT_ORDER_NAME}`)
       .openCursor(IDBKeyRange.bound([metadataId, 0], [metadataId, '']), 'next');
-    oldScriptRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
+    oldStatementRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
       const deletionPromiseList: Promise<void>[] = [];
       const cursor = event.target.result;
       if (cursor) {
@@ -273,12 +271,12 @@ export class IndexedDbContext extends AbstractDbContext {
         );
         cursor.continue();
       } else {
-        // when all delete done, then add script
+        // when all delete done, then add statement
         Promise.all(deletionPromiseList)
           .then(() => {
-            script?.forEach((item, index) => {
+            statements?.forEach((item, index) => {
               transaction
-                .objectStore(this.SCRIPT_TB_NAME)
+                .objectStore(this.STATEMENT_TB_NAME)
                 .add({ ...item, metadataId: metadataId, order: index });
             });
           })
@@ -295,7 +293,7 @@ export class IndexedDbContext extends AbstractDbContext {
       [
         this.SAVE_DATA_TB_NAME,
         this.READ_LOG_TB_NAME,
-        this.SCRIPT_TB_NAME,
+        this.STATEMENT_TB_NAME,
         this.METADATA_TB_NAME,
       ],
       'readwrite'
@@ -330,12 +328,12 @@ export class IndexedDbContext extends AbstractDbContext {
     saveDataRequest.onerror = () => { };
     //#endregion
 
-    //#region delete scripts
-    const scriptRequest = transaction
-      .objectStore(this.SCRIPT_TB_NAME)
-      .index(`${this.SCRIPT_METADATAID_NAME}_${this.SCRIPT_ORDER_NAME}`)
+    //#region delete statements
+    const statementRequest = transaction
+      .objectStore(this.STATEMENT_TB_NAME)
+      .index(`${this.STATEMENT_METADATAID_NAME}_${this.STATEMENT_ORDER_NAME}`)
       .openCursor(IDBKeyRange.bound([metadataId, 0], [metadataId, '']));
-    scriptRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
+    statementRequest.onsuccess = (event: DbResultEvent<IDBCursorWithValue>) => {
       const cursor = event.target.result;
 
       if (cursor) {
@@ -365,19 +363,19 @@ export class IndexedDbContext extends AbstractDbContext {
   }
   //#endregion
 
-  //#region Script
-  public async getScriptFromMetadataId(
+  //#region Statement
+  public async getStatementsFromMetadataId(
     metadataId: string
-  ): Promise<Types.ScriptType> {
-    const transaction = this.db.transaction([this.SCRIPT_TB_NAME], 'readonly');
+  ): Promise<Types.StatementType[]> {
+    const transaction = this.db.transaction([this.STATEMENT_TB_NAME], 'readonly');
 
-    const scriptRequest = transaction
-      .objectStore(this.SCRIPT_TB_NAME)
-      .index(`${this.SCRIPT_METADATAID_NAME}_${this.SCRIPT_ORDER_NAME}`)
+    const statementRequest = transaction
+      .objectStore(this.STATEMENT_TB_NAME)
+      .index(`${this.STATEMENT_METADATAID_NAME}_${this.STATEMENT_ORDER_NAME}`)
       .getAll(IDBKeyRange.bound([metadataId, 0], [metadataId, '']));
 
     return new Promise((resolve, reject) => {
-      scriptRequest.onsuccess = (event: DbResultEvent<Types.ScriptType>) => {
+      statementRequest.onsuccess = (event: DbResultEvent<Types.StatementType[]>) => {
         let result = event.target.result;
         result = result.sort((item) => item.order - item.order);
         resolve(result);

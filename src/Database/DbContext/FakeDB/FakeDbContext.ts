@@ -8,14 +8,14 @@
 import * as Types from '../Types';
 import { AbstractDbContext } from '../DbContext';
 import FakeMetadata from '@resources/FakeMetadata.json';
-import FakeScript from '@resources/FakeScript.json';
+import FakeStatement from '@resources/FakeStatement.json';
 import FakeSaveData from '@resources/FakeSaveData.json';
 import FakeReadLog from '@resources/FakeReadLog.json';
 import { generateId } from '@src/Utils';
 
 export class FakeDbContext extends AbstractDbContext {
   private metadataDb: Types.RepoMetadataType[] = [];
-  private scriptDb: Types.ScriptType = [];
+  private statementDb: Types.StatementType[] = [];
   private saveDataDb: Types.SaveDataType[] = [];
   private readLogDb: Types.ReadLogType[] = [];
 
@@ -26,10 +26,10 @@ export class FakeDbContext extends AbstractDbContext {
     // mock read DB
     this.metadataDb = [...FakeMetadata];
 
-    this.scriptDb = [];
-    for (let i = 0; i < FakeScript.length; i++) {
-      this.scriptDb.push({
-        ...(FakeScript as Types.ScriptType)[i],
+    this.statementDb = [];
+    for (let i = 0; i < FakeStatement.length; i++) {
+      this.statementDb.push({
+        ...(FakeStatement as Types.StatementType[])[i],
         order: i,
       });
     }
@@ -59,7 +59,7 @@ export class FakeDbContext extends AbstractDbContext {
   }
   public async addMetadata(
     metadata: Types.RepoMetadataType,
-    script?: Types.ScriptType
+    statements?: Types.StatementType[]
   ): Promise<string> {
     // generate an id
     const metadataId = await this.digestMetadataId(
@@ -68,16 +68,16 @@ export class FakeDbContext extends AbstractDbContext {
     );
     this.metadataDb.push({ ...metadata, id: metadataId });
 
-    if (script) {
-      script.forEach((statement) => (statement.metadataId = metadataId));
-      this.scriptDb = this.scriptDb.concat(script);
+    if (statements) {
+      statements.forEach((statement) => (statement.metadataId = metadataId));
+      this.statementDb = this.statementDb.concat(statements);
     }
 
     return metadataId;
   }
   public async putMetadata(
     metadata: Types.RepoMetadataType,
-    script?: Types.ScriptType
+    statements?: Types.StatementType[]
   ): Promise<string> {
     const metadataId = await this.digestMetadataId(
       metadata?.author,
@@ -88,11 +88,11 @@ export class FakeDbContext extends AbstractDbContext {
     );
     this.metadataDb.push({ ...metadata, id: metadataId });
 
-    if (script) {
-      script.forEach((statement) => (statement.metadataId = metadataId));
-      this.scriptDb = this.scriptDb.filter(
-        (script) => script?.metadataId !== metadataId
-      ).concat(script);
+    if (statements) {
+      statements.forEach((statement) => (statement.metadataId = metadataId));
+      this.statementDb = this.statementDb.filter(
+        (statement) => statement?.metadataId !== metadataId
+      ).concat(statements);
     }
 
     return metadataId;
@@ -111,11 +111,11 @@ export class FakeDbContext extends AbstractDbContext {
   }
   //#endregion
 
-  //#region Script
-  public async getScriptFromMetadataId(
+  //#region Statements
+  public async getStatementsFromMetadataId(
     metaDataId: string
-  ): Promise<Types.ScriptType> {
-    return this.scriptDb
+  ): Promise<Types.StatementType[]> {
+    return this.statementDb
       .filter((item) => item.metadataId === metaDataId)
       .sort((item1, item2) => item1.order - item2.order);
   }

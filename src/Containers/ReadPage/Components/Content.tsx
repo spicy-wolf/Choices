@@ -19,7 +19,7 @@ type AnyStatementType = StatementEngine.Types.AnyStatementType;
 type AnyComponentType = StatementEngine.Types.AnyComponentType;
 type PauseComponentType = StatementEngine.Types.PauseComponentType;
 type ContentProps = {
-  scripts: AnyStatementType[];
+  statements: AnyStatementType[];
   saveData: Database.Types.SaveDataType;
   setSaveData: React.Dispatch<React.SetStateAction<Database.Types.SaveDataType>>;
 };
@@ -38,7 +38,7 @@ const Content = (props: ContentProps) => {
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
 
   const { doExecution } = StatementEngine.useExecutor(
-    props.scripts,
+    props.statements,
     props.saveData as StatementEngine.Types.SaveDataType,
     props.setSaveData,
     setPauseComponent
@@ -114,8 +114,8 @@ const Content = (props: ContentProps) => {
     readLogCount,
     virtualLastItemIndex,
     pauseComponent,
-    props.saveData?.scriptCursorPos,
-    // props.saveData // TODO: what if no updates in scriptCursorPos???
+    props.saveData?.statementCursorPos,
+    // props.saveData // TODO: what if no updates in statementCursorPos???
   ]);
 
   const scrollToIndex = (index: number) => {

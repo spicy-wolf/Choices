@@ -10,7 +10,7 @@ import { useDbContext } from '@src/Context/DbContext';
 import * as Database from '@src/Database';
 
 type RepoMetadataType = Database.Types.RepoMetadataType;
-type ScriptType = Database.Types.ScriptType;
+type StatementType = Database.Types.StatementType;
 
 const useMetadataList = () => {
   const { dbContext } = useDbContext();
@@ -40,11 +40,11 @@ const useMetadataList = () => {
 
   const addMetadata = async (
     metaData: RepoMetadataType,
-    script?: ScriptType
+    statements?: StatementType[]
   ): Promise<string> => {
     if (!dbContext) return;
     try {
-      const result = await dbContext.addMetadata(metaData, script);
+      const result = await dbContext.addMetadata(metaData, statements);
       await loadMetadataList();
 
       return result;
@@ -55,11 +55,11 @@ const useMetadataList = () => {
 
   const putMetadata = async (
     metaData: RepoMetadataType,
-    script?: ScriptType
+    statements?: StatementType[]
   ): Promise<string> => {
     if (!dbContext) return;
     try {
-      const result = await dbContext.putMetadata(metaData, script);
+      const result = await dbContext.putMetadata(metaData, statements);
       await loadMetadataList();
 
       return result;

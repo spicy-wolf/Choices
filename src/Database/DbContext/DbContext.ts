@@ -22,20 +22,20 @@ export abstract class AbstractDbContext {
     repoId: string
   ): Promise<Types.RepoMetadataType>;
   public abstract addMetadata(
-    metaData: Types.RepoMetadataType,
-    script?: Types.ScriptType
-  ): Promise<string>; // return metaData id
+    metadata: Types.RepoMetadataType,
+    statements?: Types.StatementType[]
+  ): Promise<string>; // return metadata id
   public abstract putMetadata(
-    metaData: Types.RepoMetadataType,
-    script?: Types.ScriptType
+    metadata: Types.RepoMetadataType,
+    statements?: Types.StatementType[]
   ): Promise<string>;
   public abstract deleteMetadataFromId(metadataId: string): Promise<void>;
   //#endregion
 
-  //#region Script
-  public abstract getScriptFromMetadataId(
-    metaDataId: string
-  ): Promise<Types.ScriptType>;
+  //#region Statements
+  public abstract getStatementsFromMetadataId(
+    metadataId: string
+  ): Promise<Types.StatementType[]>;
   //#endregion
 
   //#region SaveData (included ReadLogs)

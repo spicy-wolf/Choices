@@ -73,7 +73,7 @@ describe('test useExecutor hook', () => {
       }
     ];
     const saveData: StatementTypes.SaveDataType = {
-      scriptCursorPos: scripts[1].id,
+      statementCursorPos: scripts[1].id,
       logCursorPos: undefined,
       context: {},
       readLogs: []

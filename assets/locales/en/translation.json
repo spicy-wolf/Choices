@@ -2,10 +2,10 @@
   "loadingStatus": {
     "loadReadingList": "Load reading list",
     "downloadScript": "Downloading script",
-    "parseScript": "Parsing script",
+    "parseStatements": "Parsing script",
     "addToDb": "Updating database",
     "invalidUrl": "Invalid url",
-    "invalidScript": "Invalid data. please make sure data has 'metadata' and 'script'"
+    "invalidStatements": "Invalid data. please make sure data has 'metadata' and 'script'"
   },
   "yesNoModal": {
     "confirmBtn": {

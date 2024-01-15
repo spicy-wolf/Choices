@@ -36,7 +36,7 @@ describe('test executeJump', () => {
     expect(setPauseComponent).not.toBeCalled();
   });
 
-  test('should set given script cursor when give jump statement', () => {
+  test('should set given statement cursor when give jump statement', () => {
     let actual: StatementTypes.SaveDataType = null;
 
     // arrange
@@ -47,7 +47,7 @@ describe('test executeJump', () => {
       targetId: '8Wx4ShlqBF'
     };
     const saveData: StatementTypes.SaveDataType = {
-      scriptCursorPos: 'AjwAUo8nui',
+      statementCursorPos: 'AjwAUo8nui',
       logCursorPos: null,
       context: {},
       readLogs: null
@@ -67,7 +67,7 @@ describe('test executeJump', () => {
 
     // asset
     expect(setPauseComponent).not.toBeCalled();
-    expect(actual?.scriptCursorPos).not.toEqual(defaultNextStatementId);
-    expect(actual?.scriptCursorPos).toEqual(statement.targetId);
+    expect(actual?.statementCursorPos).not.toEqual(defaultNextStatementId);
+    expect(actual?.statementCursorPos).toEqual(statement.targetId);
   });
 });

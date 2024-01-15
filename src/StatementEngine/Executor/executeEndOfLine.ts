@@ -21,7 +21,7 @@ export const executeEndOfLine = (
     const newSaveData = { ..._saveData };
     newSaveData.readLogs = _saveData.readLogs ? [..._saveData.readLogs] : [];
     // move to next statement
-    newSaveData.scriptCursorPos = helpers?.defaultNextStatementId;
+    newSaveData.statementCursorPos = helpers?.defaultNextStatementId;
 
     const lastReadLogOrder = newSaveData.readLogs.at(-1)?.order ?? -1;
     // update reading log

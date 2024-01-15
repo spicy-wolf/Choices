@@ -2,10 +2,10 @@
   "loadingStatus": {
     "loadReadingList": "加载阅读列表",
     "downloadScript": "下载脚本中",
-    "parseScript": "解析脚本中",
+    "parseStatements": "解析脚本中",
     "addToDb": "更新数据库",
     "invalidUrl": "无效的链接",
-    "invalidScript": "脚本损坏，请检查脚本中是否包含'metadata'和'script'项"
+    "invalidStatements": "脚本损坏，请检查脚本中是否包含'metadata'和'script'项"
   },
   "yesNoModal": {
     "confirmBtn": {

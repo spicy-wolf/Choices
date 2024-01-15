@@ -3,7 +3,7 @@ import { LoadingIndicatorModal } from '@src/Containers/components';
 import SidePanel from './Components/SidePanel';
 import Content from './Components/Content';
 import { useMetadata } from './Hooks/useMetadata';
-import { useScripts } from './Hooks/useScripts';
+import { useStatements } from './Hooks/useStatements';
 import { useSaveData } from './Hooks/useSaveData';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -18,7 +18,7 @@ export const ReadPageInner = (props: ReadPageInnerProps) => {
   //#region hooks
   const [showLoadingModal, setShowLoadingModal] = React.useState<boolean>(false);
   const [metadata, metadataLoadingError] = useMetadata(props.repoName, props.authorName);
-  const [scripts, scriptLoadingError] = useScripts(metadata?.id);
+  const [statements, statementLoadingError] = useStatements(metadata?.id);
   const [
     {
       saveDataList, createSaveData, loadSaveData, deleteSaveData, defaultSaveData, setDefaultSaveData,
@@ -32,18 +32,18 @@ export const ReadPageInner = (props: ReadPageInnerProps) => {
     let _loadingMsg = '';
     if (!metadata) {
       _loadingMsg = 'Loading metadata.';
-    } else if (!scripts) {
-      _loadingMsg = 'Loading scripts.';
+    } else if (!statements) {
+      _loadingMsg = 'Loading statements.';
     } else if (!saveDataList || saveDataList.length === 0 || !defaultSaveData) {
       _loadingMsg = 'Loading save data.';
     }
 
     return _loadingMsg || loadingMsg;
-  }, [metadata, scripts, saveDataList, defaultSaveData, loadingMsg]);
+  }, [metadata, statements, saveDataList, defaultSaveData, loadingMsg]);
 
   const loadingError = React.useMemo(() => {
-    return metadataLoadingError || scriptLoadingError || saveDataLoadingError;
-  }, [metadataLoadingError, scriptLoadingError, saveDataLoadingError]);
+    return metadataLoadingError || statementLoadingError || saveDataLoadingError;
+  }, [metadataLoadingError, statementLoadingError, saveDataLoadingError]);
 
   useEffect(() => {
     if (!!loadingLabel || !!loadingError) {
@@ -77,7 +77,7 @@ export const ReadPageInner = (props: ReadPageInnerProps) => {
               setLoadingMsg={setLoadingMsg} />
             <Content
               key={defaultSaveData?.id}
-              scripts={scripts}
+              statements={statements}
               saveData={defaultSaveData}
               setSaveData={setDefaultSaveData} />
           </>

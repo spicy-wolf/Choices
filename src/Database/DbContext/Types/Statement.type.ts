@@ -7,7 +7,7 @@
 
 import { Types } from '@src/StatementEngine';
 
-export type ScriptType = (Types.AnyStatementType & {
+export type StatementType = (Types.AnyStatementType & {
   metadataId: string;
-})[];
+});
 

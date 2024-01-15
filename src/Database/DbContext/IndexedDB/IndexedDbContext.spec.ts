@@ -18,7 +18,7 @@ const initMetadata: Types.RepoMetadataType = {
   description: 'im description',
 };
 
-const initScript: Types.ScriptType = [
+const initStatements: Types.StatementType[] = [
   {
     id: '7bc98165-91ce-42a0-a126-e0ff16648f4b',
     metadataId: '',
@@ -47,7 +47,7 @@ const altMetadata: Types.RepoMetadataType = {
   description: 'im description Alt',
 };
 
-const altScript: Types.ScriptType = [
+const altStatements: Types.StatementType[] = [
   {
     id: '7bc98165-91ce-42a0-a126-e0ff16648f4b',
     metadataId: '',
@@ -83,7 +83,7 @@ const initSaveData: Types.SaveDataType = {
   saveDataType: 'default',
   createTimestamp: 1654405690298,
 
-  scriptCursorPos: '',
+  statementCursorPos: '',
   logCursorPos: 0,
 
   context: {},
@@ -104,7 +104,7 @@ describe('indexed db test', () => {
   describe('test metadata', () => {
     test('test metadata add and get', async () => {
       // test add
-      const metadataId = await dbContext.addMetadata(initMetadata, initScript);
+      const metadataId = await dbContext.addMetadata(initMetadata, initStatements);
       expect(metadataId?.length).toBeGreaterThan(0);
 
       // test get
@@ -119,10 +119,10 @@ describe('indexed db test', () => {
       expect(metadata).toBeDefined();
       expect(metadata).toEqual({ ...initMetadata, id: metadataId });
 
-      // test get script
-      const script = await dbContext.getScriptFromMetadataId(metadataId);
-      expect(script?.length).toEqual(initScript.length);
-      script.forEach((statement, index) => {
+      // test get statement
+      const statement = await dbContext.getStatementsFromMetadataId(metadataId);
+      expect(statement?.length).toEqual(initStatements.length);
+      statement.forEach((statement, index) => {
         expect(statement.metadataId).toEqual(metadataId);
         expect(statement.order).toEqual(index);
       });
@@ -130,9 +130,9 @@ describe('indexed db test', () => {
 
     test('test metadata put and get', async () => {
       // prepare add
-      const metadataId = await dbContext.addMetadata(initMetadata, initScript);
+      const metadataId = await dbContext.addMetadata(initMetadata, initStatements);
       // test put
-      await dbContext.putMetadata(altMetadata, altScript);
+      await dbContext.putMetadata(altMetadata, altStatements);
 
       // test get
       const allMetadata = await dbContext.getAllMetadata();
@@ -146,35 +146,35 @@ describe('indexed db test', () => {
       expect(metadata).toBeDefined();
       expect(metadata).toEqual({ ...altMetadata, id: metadataId });
 
-      // test get script
-      const script = await dbContext.getScriptFromMetadataId(metadataId);
-      expect(script?.length).toEqual(altScript.length);
-      script.forEach((statement, index) => {
+      // test get statement
+      const statement = await dbContext.getStatementsFromMetadataId(metadataId);
+      expect(statement?.length).toEqual(altStatements.length);
+      statement.forEach((statement, index) => {
         expect(statement.metadataId).toEqual(metadataId);
         expect(statement.order).toEqual(index);
       });
     });
 
-    test('test metadata delete with script', async () => {
+    test('test metadata delete with statement', async () => {
       // prepare add
-      const metadataId = await dbContext.addMetadata(initMetadata, initScript);
+      const metadataId = await dbContext.addMetadata(initMetadata, initStatements);
       let allMetadata = await dbContext.getAllMetadata();
       expect(allMetadata?.length).toEqual(1);
-      let script = await dbContext.getScriptFromMetadataId(metadataId);
-      expect(script?.length).toEqual(initScript.length);
+      let statement = await dbContext.getStatementsFromMetadataId(metadataId);
+      expect(statement?.length).toEqual(initStatements.length);
 
       // test deletion
       await dbContext.deleteMetadataFromId(metadataId);
       allMetadata = await dbContext.getAllMetadata();
-      // test script deletion
-      script = await dbContext.getScriptFromMetadataId(metadataId);
-      expect(script?.length).toEqual(0);
+      // test statement deletion
+      statement = await dbContext.getStatementsFromMetadataId(metadataId);
+      expect(statement?.length).toEqual(0);
     });
 
-    describe('metadata & script error tests', () => {
+    describe('metadata & statement error tests', () => {
       test('expect null metadata throw exception', async () => {
         try {
-          await dbContext.addMetadata(null, initScript);
+          await dbContext.addMetadata(null, initStatements);
           throw new Error('Expect fail');
         } catch (err) {
           expect(err).not.toBeNull();
@@ -184,7 +184,7 @@ describe('indexed db test', () => {
         try {
           await dbContext.addMetadata(
             { ...initMetadata, author: '' }, // remove author
-            initScript
+            initStatements
           );
           throw new Error('Expect fail');
         } catch (err) {
@@ -196,7 +196,7 @@ describe('indexed db test', () => {
         try {
           await dbContext.addMetadata(
             { ...initMetadata, repoName: '' }, // remove repoName
-            initScript
+            initStatements
           );
           throw new Error('Expect fail');
         } catch (err) {
@@ -204,7 +204,7 @@ describe('indexed db test', () => {
         }
       });
 
-      test('expect empty script throw exception', async () => {
+      test('expect empty statement throw exception', async () => {
         try {
           await dbContext.addMetadata(initMetadata, []);
           throw new Error('Expect fail');
@@ -231,7 +231,7 @@ describe('indexed db test', () => {
     });
   });
 
-  describe('test script and reading log', () => {
+  describe('test statement and reading log', () => {
     test('test no save data at init', async () => {
       const saveDataList = await dbContext.getAllSaveDataFromMetadataId(
         initSaveData.metadataId
@@ -266,7 +266,7 @@ describe('indexed db test', () => {
       const altSaveData: Types.SaveDataType = {
         ...initSaveData,
         id: newSaveDataId,
-        scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
+        statementCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
         logCursorPos: 0,
 
         readLogs: [
@@ -302,7 +302,7 @@ describe('indexed db test', () => {
       const saveData: Types.SaveDataType = {
         ...initSaveData,
         id: '',
-        scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
+        statementCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
         logCursorPos: 0,
 
         readLogs: [
@@ -372,7 +372,7 @@ describe('indexed db test', () => {
       await dbContext.addSaveData({
         ...initSaveData,
         metadataId: metadataId,
-        scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
+        statementCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
         logCursorPos: 0,
         readLogs: [
           {
@@ -416,7 +416,7 @@ describe('indexed db test', () => {
           const saveData: Types.SaveDataType = {
             ...initSaveData,
             id: 'im test id',
-            scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
+            statementCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
             logCursorPos: 0,
 
             readLogs: [
@@ -447,7 +447,7 @@ describe('indexed db test', () => {
           const saveData: Types.SaveDataType = {
             ...initSaveData,
             id: 'im test id',
-            scriptCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
+            statementCursorPos: '2d30d7c9-63d8-4254-aa48-59feb69f17d1',
             logCursorPos: 0,
 
             readLogs: [

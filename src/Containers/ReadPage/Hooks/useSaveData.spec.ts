@@ -70,7 +70,7 @@ describe('test useSaveData hook', () => {
       description: '',
       createTimestamp: Date.now(),
       saveDataType: 'default',
-      scriptCursorPos: 'scriptCursorPos',
+      statementCursorPos: 'statementCursorPos',
       logCursorPos: 0,
       context: {},
       readLogs: [],
@@ -105,14 +105,14 @@ describe('test useSaveData hook', () => {
       description: '',
       createTimestamp: Date.now(),
       saveDataType: 'default',
-      scriptCursorPos: 'scriptCursorPos#1',
+      statementCursorPos: 'statementCursorPos#1',
       logCursorPos: 0,
       context: {},
       readLogs: [],
     } as Database.Types.SaveDataType;
     const newDefaultSaveData = {
       ...defaultSaveData,
-      scriptCursorPos: 'scriptCursorPos#2',
+      statementCursorPos: 'statementCursorPos#2',
       logCursorPos: 100,
     };
     _dbContext.getAllSaveDataFromMetadataId = jest.fn().mockReturnValue([
@@ -146,7 +146,7 @@ describe('test useSaveData hook', () => {
       description: '',
       createTimestamp: (new Date('2023-01-01')).valueOf(),
       saveDataType: 'default',
-      scriptCursorPos: 'scriptCursorPos#1',
+      statementCursorPos: 'statementCursorPos#1',
       logCursorPos: 0,
       context: {},
       readLogs: [
