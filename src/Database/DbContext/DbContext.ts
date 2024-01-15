@@ -6,6 +6,7 @@
  */
 
 import * as Types from './Types';
+import * as Utils from '@src/Utils';
 
 export abstract class AbstractDbContext {
   public constructor() { }
@@ -24,6 +25,10 @@ export abstract class AbstractDbContext {
     metaData: Types.RepoMetadataType,
     script?: Types.ScriptType
   ): Promise<string>; // return metaData id
+  public abstract putMetadata(
+    metaData: Types.RepoMetadataType,
+    script?: Types.ScriptType
+  ): Promise<string>;
   public abstract deleteMetadataFromId(metadataId: string): Promise<void>;
   //#endregion
 
@@ -44,5 +49,19 @@ export abstract class AbstractDbContext {
   public abstract putSaveData(saveData: Types.SaveDataType): Promise<void>;
   public abstract deleteSaveDataFromId(saveDataId: string): Promise<void>;
   //#endregion
+
+  protected async digestMetadataId(
+    author: string,
+    repoName: string
+  ): Promise<string> {
+    const str = JSON.stringify({
+      author: author?.trim(),
+      repoName: repoName?.trim(),
+    });
+    if (!str) throw 'Invalid author or repo name';
+
+    const metadataId = await Utils.digestString(str);
+    return metadataId;
+  }
 }
 

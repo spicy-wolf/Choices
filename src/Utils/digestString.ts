@@ -15,4 +15,3 @@ export const digestString = async (str: string): Promise<string> => {
     .join(''); // convert bytes to hex string
   return hashHex;
 };
-

@@ -146,7 +146,7 @@ export class IndexedDbContext extends AbstractDbContext {
     repoName: string
   ): Promise<Types.RepoMetadataType> {
     // generate metadata id base on author and repo name
-    const metadataId = await this.computeMetadataId(author, repoName);
+    const metadataId = await this.digestMetadataId(author, repoName);
     return await this.getMetadataFromId(metadataId);
   }
   public async getMetadataFromId(id: string): Promise<Types.RepoMetadataType> {
@@ -174,7 +174,7 @@ export class IndexedDbContext extends AbstractDbContext {
     if (!metadata?.author || !metadata?.repoName) throw 'metadata incomplete';
 
     // generate metadata id base on author and repo name
-    const metadataId = await this.computeMetadataId(
+    const metadataId = await this.digestMetadataId(
       metadata?.author,
       metadata?.repoName
     );
@@ -210,7 +210,7 @@ export class IndexedDbContext extends AbstractDbContext {
     if (!metadata) throw 'null metadata';
 
     // generate metadata id base on author and repo name
-    const metadataId = await this.computeMetadataId(
+    const metadataId = await this.digestMetadataId(
       metadata?.author,
       metadata?.repoName
     );
@@ -578,16 +578,5 @@ export class IndexedDbContext extends AbstractDbContext {
     });
   }
   //#endregion
-
-  private async computeMetadataId(
-    author: string,
-    repoName: string
-  ): Promise<string> {
-    const str = author?.trim() + repoName?.trim();
-    if (!str) throw 'Invalid author or repo name';
-
-    const metadataId = await Utils.digestString(str);
-    return metadataId;
-  }
 }
 
