@@ -22,7 +22,7 @@ export const executeSentence = (
     const newSaveData = { ..._saveData };
     newSaveData.readLogs = _saveData.readLogs ? [..._saveData.readLogs] : [];
     // move to next statement
-    newSaveData.scriptCursorPos = helpers?.defaultNextStatementId;
+    newSaveData.statementCursorPos = helpers?.defaultNextStatementId;
 
     // add read logs
     const lastReadLogOrder = newSaveData.readLogs.at(-1)?.order ?? -1;

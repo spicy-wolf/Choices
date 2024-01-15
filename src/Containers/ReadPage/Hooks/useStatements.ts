@@ -9,18 +9,18 @@ import { useEffect, useState } from 'react';
 import { useDbContext } from '@src/Context/DbContext';
 import * as Database from '@src/Database';
 
-type ScriptType = Database.Types.ScriptType;
+type StatementType = Database.Types.StatementType;
 
-export const useScripts = (metadataId: string) => {
+export const useStatements = (metadataId: string) => {
   const { dbContext } = useDbContext();
-  const [scripts, setScripts] = useState<ScriptType>();
+  const [statements, setStatements] = useState<StatementType[]>();
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
     load();
 
     return () => {
-      setScripts(null);
+      setStatements(null);
       setError('');
     };
   }, [metadataId, dbContext]);
@@ -29,11 +29,11 @@ export const useScripts = (metadataId: string) => {
     if (!dbContext) return;
 
     if (metadataId) {
-      const _scripts: ScriptType = await dbContext.getScriptFromMetadataId(
+      const _statements: StatementType[] = await dbContext.getStatementsFromMetadataId(
         metadataId
       );
-      if (_scripts) {
-        setScripts(_scripts);
+      if (_statements) {
+        setStatements(_statements);
         setError('');
       } else {
         setError(`Unknown metadata id: ${metadataId}`);
@@ -41,6 +41,6 @@ export const useScripts = (metadataId: string) => {
     }
   };
 
-  return [scripts, error] as const;
+  return [statements, error] as const;
 };
 

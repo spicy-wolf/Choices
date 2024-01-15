@@ -10,7 +10,7 @@ import * as Database from '@src/Database';
 
 type SaveDataDispatchType =
   | { type: 'setValue'; payload: Database.Types.SaveDataType }
-  | { type: 'updateScriptCursorPos'; payload: string }
+  | { type: 'updateStatementCursorPos'; payload: string }
   | { type: 'updateLogCursorPos'; payload: number }
   | {
     type: 'updateSaveDataContext';
@@ -30,9 +30,9 @@ const useSaveDataReducer = () => {
       } else {
         newState = { ...action.payload };
       }
-    } else if (action.type === 'updateScriptCursorPos') {
-      if (action.payload !== state.scriptCursorPos) {
-        newState = { ...state, scriptCursorPos: action.payload };
+    } else if (action.type === 'updateStatementCursorPos') {
+      if (action.payload !== state.statementCursorPos) {
+        newState = { ...state, statementCursorPos: action.payload };
       }
     } else if (action.type === 'updateLogCursorPos') {
       if (action.payload !== state.logCursorPos) {

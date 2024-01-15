@@ -21,7 +21,7 @@ describe('test SaveDataItem', () => {
     description: 'this is description',
     saveDataType: 'manual',
     createTimestamp: 1654405690298, // UTC => 06/05/2022, 05:08:10
-    scriptCursorPos: '',
+    statementCursorPos: '',
     logCursorPos: 0,
     context: {},
     readLogs: [],

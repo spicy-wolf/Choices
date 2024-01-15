@@ -46,7 +46,7 @@ describe('test executeEndOfLine', () => {
       type: 'eol'
     };
     const saveData: StatementTypes.SaveDataType = {
-      scriptCursorPos: 'AjwAUo8nui',
+      statementCursorPos: 'AjwAUo8nui',
       logCursorPos: null,
       context: {},
       readLogs: null
@@ -67,7 +67,7 @@ describe('test executeEndOfLine', () => {
     // asset
     expect(setPauseComponent).not.toBeCalled();
     expect(actual).toEqual({
-      scriptCursorPos: defaultNextStatementId,
+      statementCursorPos: defaultNextStatementId,
       logCursorPos: null,
       context: {},
       readLogs: [
@@ -90,7 +90,7 @@ describe('test executeEndOfLine', () => {
       type: 'eol'
     };
     const saveData: StatementTypes.SaveDataType = {
-      scriptCursorPos: 'AjwAUo8nui',
+      statementCursorPos: 'AjwAUo8nui',
       logCursorPos: null,
       context: {},
       readLogs: [
@@ -118,7 +118,7 @@ describe('test executeEndOfLine', () => {
     expect(setPauseComponent).not.toBeCalled();
     expect(actual.readLogs).not.toBe(saveData.readLogs); // check the old array is not reuse
     expect(actual).toEqual({
-      scriptCursorPos: defaultNextStatementId,
+      statementCursorPos: defaultNextStatementId,
       logCursorPos: null,
       context: {},
       readLogs: [

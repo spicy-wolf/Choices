@@ -42,7 +42,7 @@ export const useExecutor = (
     //#region execute scripts
     if (scripts.length === 0) return;
 
-    const currentStatementId = saveData?.scriptCursorPos;
+    const currentStatementId = saveData?.statementCursorPos;
     const currentStatementCursorIndex =
       scriptIdIndexDic[currentStatementId] ?? 0;
     const currentStatement: AnyStatementType =

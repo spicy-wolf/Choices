@@ -21,7 +21,7 @@ export const executeJump = (
       // console.error // or log exception
     } else {
       // move to given statement
-      newSaveData.scriptCursorPos = statement.targetId;
+      newSaveData.statementCursorPos = statement.targetId;
     }
 
     return newSaveData;

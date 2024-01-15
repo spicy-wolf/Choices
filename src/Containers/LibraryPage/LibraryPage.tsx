@@ -101,7 +101,7 @@ const LibraryPage = () => {
     // clear prev error
     setRepoLoadingErrorMsg('');
 
-    setRepoLoadingMsg(t('loadingStatus.parseScript'));
+    setRepoLoadingMsg(t('loadingStatus.parseStatements'));
 
     try {
       const json = JSON.parse(await sourceFile.text());
@@ -113,11 +113,11 @@ const LibraryPage = () => {
     }
   };
 
-  const onLoadFromJsonObj = async (jsonObj: { metadata: Database.Types.RepoMetadataType, script: Database.Types.ScriptType }) => {
+  const onLoadFromJsonObj = async (jsonObj: { metadata: Database.Types.RepoMetadataType, statements: Database.Types.StatementType[] }) => {
     const metadata = jsonObj?.metadata;
-    const script = jsonObj?.script;
-    if (!metadata || !script) {
-      throw t('loadingStatus.invalidScript');
+    const statements = jsonObj?.statements;
+    if (!metadata || !statements) {
+      throw t('loadingStatus.invalidStatements');
     }
 
     // TODO: validation
@@ -126,9 +126,9 @@ const LibraryPage = () => {
     setRepoLoadingMsg(t('loadingStatus.addToDb'));
     if (metadataListLoader?.metadataList?.find(item => item.author === metadata.author && item.repoName === metadata.repoName)) {
       // TODO: add modal message to allow update
-      await metadataListLoader?.putMetadata(metadata, script);
+      await metadataListLoader?.putMetadata(metadata, statements);
     } else {
-      await metadataListLoader?.addMetadata(metadata, script);
+      await metadataListLoader?.addMetadata(metadata, statements);
     }
   };
 

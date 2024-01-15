@@ -50,7 +50,7 @@ describe('test executeParagraph', () => {
       data: 'This is a a paragraph'
     };
     const saveData: StatementTypes.SaveDataType = {
-      scriptCursorPos: 'AjwAUo8nui',
+      statementCursorPos: 'AjwAUo8nui',
       logCursorPos: null,
       context: {},
       readLogs: null
@@ -72,7 +72,7 @@ describe('test executeParagraph', () => {
     expect(setPauseComponent).not.toBeCalled();
     expect(mockSplitLongSentences).toBeCalledWith(statement.data);
     expect(actual).toEqual({
-      scriptCursorPos: defaultNextStatementId,
+      statementCursorPos: defaultNextStatementId,
       logCursorPos: null,
       context: {},
       readLogs: [
@@ -106,7 +106,7 @@ describe('test executeParagraph', () => {
       data: 'This is a long paragraph'
     };
     const saveData: StatementTypes.SaveDataType = {
-      scriptCursorPos: 'AjwAUo8nui',
+      statementCursorPos: 'AjwAUo8nui',
       logCursorPos: null,
       context: {},
       readLogs: [
@@ -135,7 +135,7 @@ describe('test executeParagraph', () => {
     expect(mockSplitLongSentences).toBeCalledWith(statement.data);
     expect(actual.readLogs).not.toBe(saveData.readLogs); // check the old array is not reuse
     expect(actual).toEqual({
-      scriptCursorPos: defaultNextStatementId,
+      statementCursorPos: defaultNextStatementId,
       logCursorPos: null,
       context: {},
       readLogs: [
@@ -173,7 +173,7 @@ describe('test executeParagraph', () => {
       data: '' // This is a an empty paragraph
     };
     const saveData: StatementTypes.SaveDataType = {
-      scriptCursorPos: 'AjwAUo8nui',
+      statementCursorPos: 'AjwAUo8nui',
       logCursorPos: null,
       context: {},
       readLogs: [
@@ -202,7 +202,7 @@ describe('test executeParagraph', () => {
     expect(mockSplitLongSentences).toBeCalledWith(statement.data);
     expect(actual.readLogs).not.toBe(saveData.readLogs); // check the old array is not reuse
     expect(actual).toEqual({
-      scriptCursorPos: defaultNextStatementId,
+      statementCursorPos: defaultNextStatementId,
       logCursorPos: null,
       context: {},
       readLogs: [

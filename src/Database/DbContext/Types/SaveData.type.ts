@@ -15,7 +15,7 @@ export type SaveDataType = {
   createTimestamp: number;
   saveDataType: 'default' | 'manual';
 
-  scriptCursorPos: string;
+  statementCursorPos: string;
   logCursorPos: number;
 
   context: SaveDataContext;
